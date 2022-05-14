@@ -16,9 +16,9 @@ exports.get = async(_word) => {
 
   const _meaning = $('.significado span')
 
-  const phraseFont = $('.fonte')
-  const phrase = $('.frase span')
-  const phraseAuthor = $('.frase span em')
+  const _phraseFont = $('.fonte')
+  const _phrase = $('.frase span')
+  const _phraseAuthor = $('.frase span em')
 
   if(_meaning.length <= 0) {
     return { 
@@ -27,9 +27,9 @@ exports.get = async(_word) => {
     }
   }
 
-  console.log('fonte', phraseFont[0].children[0].data) 
-  console.log('frase', phrase[0].children[0].data) 
-  console.log('autor', phraseAuthor[0].children[0].data) 
+  let phraseFont = _phraseFont[0].children[0].data
+  let phrase = _phrase[0].children[0].data
+  let phraseAuthor = _phraseAuthor[0].children[0].data
 
   let grammatical_class = _meaning[0].children[0].data
   let meaning = _meaning[1].children[0].data
@@ -74,6 +74,11 @@ exports.get = async(_word) => {
       "meaning": meaning,
       "synonyms": synonyms,
       "antonyms": antonyms
+    },
+    "phrase": {
+      "font": phraseFont,
+      "phrase": phrase,
+      "author": phraseAuthor
     }
   }
 }
