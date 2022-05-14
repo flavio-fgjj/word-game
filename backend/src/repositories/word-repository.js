@@ -16,12 +16,20 @@ exports.get = async(_word) => {
 
   const _meaning = $('.significado span')
 
+  const phraseFont = $('.fonte')
+  const phrase = $('.frase span')
+  const phraseAuthor = $('.frase span em')
+
   if(_meaning.length <= 0) {
     return { 
       "success": "NOK",
       "message": "Palavra invalida"
     }
   }
+
+  console.log('fonte', phraseFont[0].children[0].data) 
+  console.log('frase', phrase[0].children[0].data) 
+  console.log('autor', phraseAuthor[0].children[0].data) 
 
   let grammatical_class = _meaning[0].children[0].data
   let meaning = _meaning[1].children[0].data
