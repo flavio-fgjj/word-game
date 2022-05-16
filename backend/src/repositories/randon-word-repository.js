@@ -3,7 +3,7 @@ require('dotenv').config()
 const axios = require('axios')
 const cheerio = require('cheerio')
 
-exports.get = async() => {
+exports.get = async(fs, fs2) => {
   
   /*
     ### first parameter -> fs ###
@@ -27,7 +27,8 @@ exports.get = async() => {
         13 - Transporte
   */
 
-  const url = `${process.env.RANDON_URL}palavras-aleatorias.php?fs=4&fs2=5&Submit=Nova+palavra`
+  const url = `${process.env.RANDON_URL}palavras-aleatorias.php?fs=${fs}&fs2=${fs2}&Submit=Nova+palavra`
+  console.log(url)
   const search = await axios.get(url)
 
   const $ = cheerio.load(search.data)
