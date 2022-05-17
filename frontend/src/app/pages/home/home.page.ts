@@ -1,6 +1,5 @@
 import { AfterViewInit, OnInit , Component } from '@angular/core';
 import { LoadingController, AlertController } from '@ionic/angular';
-import { isThisWeek } from 'date-fns';
 import { DataService } from 'src/app/services/data.service';
 
 @Component({
@@ -30,6 +29,9 @@ export class HomePage implements  OnInit, AfterViewInit {
 
   public fs2 = '0';
 
+  public meaning: string = null;
+  public grammaticalClass: string = null;
+
   public arrayRandonSearch = {
     items: [
      { value: 0, text: 'Dicionario Completo' },
@@ -56,8 +58,8 @@ export class HomePage implements  OnInit, AfterViewInit {
     private alertController: AlertController) {}
 
   ngOnInit() {
-    this.wordArray = ['Flavio', 'Estela', 'Joao', 'Teo'];
-    this.startSquqre();
+    // this.wordArray = ['Flavio', 'Estela', 'Joao', 'Teo'];
+    // this.startSquqre();
   }
 
   ngAfterViewInit(): void {}
@@ -84,7 +86,16 @@ export class HomePage implements  OnInit, AfterViewInit {
           }
         }
 
-        this.startSquqre();
+        await this.startSquqre();
+
+        await this.service
+        .getWordData(this.word)
+        .then(async info => {
+          let retInfoWord = await info['data'];
+          this.grammaticalClass = retInfoWord.grammatical_class;
+          this.meaning = `Significado: ${retInfoWord.meaning}`;
+          console.log(this.meaning, this.grammaticalClass);
+        })
       })
       .catch(err => console.log(err));
 
@@ -108,7 +119,7 @@ export class HomePage implements  OnInit, AfterViewInit {
     return this.wordArray.length < 4 ? false : true;
   }
 
-  startSquqre() {
+  async startSquqre() {
     this.word = this.wordArray[0];
 
     this.alreadyStarted = true;

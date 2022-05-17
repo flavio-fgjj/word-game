@@ -20,7 +20,7 @@ export class DataService {
     return await this.http.get(`${this.baseUrl}/api/randon-word/?q1=4&q2=${fs2}`).toPromise();
   }
 
-  public getWordData(word: string) {
-    return this.http.get(`${this.baseUrl}/api/randon-word/${word}`);
+  public async getWordData(word: string) {
+    return await this.http.get(`${this.baseUrl}/api/word/${word}`).toPromise();
   }
 }

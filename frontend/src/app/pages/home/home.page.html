@@ -50,11 +50,15 @@
       </div>
     </div>
 
-    <ion-label style="text-align: center;" slot="end">
+    <ion-label style="text-align: center;">
       <h2 id="errorMessage" class="error-message hide"> {{ errorMessage }}</h2>
     </ion-label>
 
-    
+    <ion-label id="meaning" style="text-align: center;">
+      <h1 class="grammaticalClass"> {{ grammaticalClass }}</h1>
+      <h2 class="meaning">{{ meaning }}</h2>
+    </ion-label>
+
   </div>
   <div id="keyboard-container">
     <div class="keyboard-row">
