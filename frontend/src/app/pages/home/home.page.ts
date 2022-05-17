@@ -14,11 +14,14 @@ export class HomePage implements  OnInit, AfterViewInit {
   public guessedWords = [[]];
   public availableSpace = 1;
 
-  public word = 'vida';
+  public word: string = null;
+
   public guessedWordCount = 0;
 
   public limitTry = 0;
   public actual = 0;
+
+  public actualWordArray = 0;
 
   public wordSquares = [];
   public keys: any = null;
@@ -52,7 +55,10 @@ export class HomePage implements  OnInit, AfterViewInit {
     private service: DataService,
     private alertController: AlertController) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.wordArray = ['Flavio', 'Estela', 'Joao', 'Teo'];
+    this.startSquqre();
+  }
 
   ngAfterViewInit(): void {}
 
@@ -78,7 +84,6 @@ export class HomePage implements  OnInit, AfterViewInit {
           }
         }
 
-        console.log(this.wordArray);
         this.startSquqre();
       })
       .catch(err => console.log(err));
@@ -91,7 +96,9 @@ export class HomePage implements  OnInit, AfterViewInit {
     this.service.getRandonWords(this.fs2).then(async (r: string[]) => {
       aux = await r;
       aux = aux.filter(itemAux => itemAux.toString().length <= 8);
+
       aux.forEach(x => {
+
         if(this.wordArray.length < 4) {
           this.wordArray.push(x.toString());
         }
@@ -103,9 +110,12 @@ export class HomePage implements  OnInit, AfterViewInit {
 
   startSquqre() {
     this.word = this.wordArray[0];
+
     this.alreadyStarted = true;
+
     this.createSquares();
     this.keys = document.querySelectorAll('.keyboard-row button');
+    
     this.actual = 1;
     this.limitTry = 4;
   }

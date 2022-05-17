@@ -11,9 +11,9 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content  padding>
+  
   <div id="container">
-    <span class="process" *ngIf="alreadyStarted">tentativa {{actual}} de {{limitTry}}</span>
 
     <ion-item-group style="display:inline-block" *ngIf="!alreadyStarted">
       <ion-item>
@@ -22,73 +22,83 @@
             {{ t.text }}
           </ion-select-option>
         </ion-select>
-        <ion-button *ngIf="!alreadyStarted" color="dark" (click)="start()" class="ion-text-center">Começar</ion-button>
+        <ion-button *ngIf="!alreadyStarted" color="dark" (click)="start()" class="ion-text-center" style="margin-left: 20px;">Começar</ion-button>
       </ion-item>
     </ion-item-group>
 
     <div *ngIf="alreadyStarted" id="board-container">
-      <!-- <ion-item-divider ></ion-item-divider> -->
-
+      <span class="process" *ngIf="alreadyStarted">tentativa {{actual}} de {{limitTry}}</span>
       <div id="board">
-        <div *ngFor="let div of wordSquares" class="square animate__animated" [id]="div.id">
-          
+        <div *ngFor="let div of wordSquares" class="square hide" id="{{div.id}}_try1">
         </div>
       </div>
-      
-      <!-- <ion-item-divider ></ion-item-divider> -->
+      <div id="board">
+        <div *ngFor="let div of wordSquares" class="square hide" id="{{div.id}}_try2">
+        </div>
+      </div>
+      <div id="board">
+        <div *ngFor="let div of wordSquares" class="square hide" id="{{div.id}}_try3">
+        </div>
+      </div>
+      <div id="board">
+        <div *ngFor="let div of wordSquares" class="square hide" id="{{div.id}}_try4">
+        </div>
+      </div>
+      <div id="board">
+        <div *ngFor="let div of wordSquares" class="square animate__animated" [id]="div.id">
+        </div>
+      </div>
     </div>
 
     <ion-label style="text-align: center;" slot="end">
       <h2 id="errorMessage" class="error-message hide"> {{ errorMessage }}</h2>
     </ion-label>
 
-    <div id="keyboard-container" slot="fixed">
-      <div class="keyboard-row">
-        <button data-key="q" (click)="updateGuessedWords('q')">q</button>
-        <button data-key="w" (click)="updateGuessedWords('w')">w</button>
-        <button data-key="e" (click)="updateGuessedWords('e')">e</button>
-        <button data-key="r" (click)="updateGuessedWords('r')">r</button>
-        <button data-key="t" (click)="updateGuessedWords('t')">t</button>
-        <button data-key="y" (click)="updateGuessedWords('y')">y</button>
-        <button data-key="u" (click)="updateGuessedWords('u')">u</button>
-        <button data-key="i" (click)="updateGuessedWords('i')">i</button>
-        <button data-key="o" (click)="updateGuessedWords('o')">o</button>
-        <button data-key="p" (click)="updateGuessedWords('p')">p</button>
-      </div>
-      <div class="keyboard-row">
-        <div class="spacer-half"></div>
-        <button data-key="a" (click)="updateGuessedWords('a')">a</button>
-        <button data-key="s" (click)="updateGuessedWords('s')">s</button>
-        <button data-key="d" (click)="updateGuessedWords('d')">d</button>
-        <button data-key="f" (click)="updateGuessedWords('f')">f</button>
-        <button data-key="g" (click)="updateGuessedWords('g')">g</button>
-        <button data-key="h" (click)="updateGuessedWords('h')">h</button>
-        <button data-key="j" (click)="updateGuessedWords('j')">j</button>
-        <button data-key="k" (click)="updateGuessedWords('k')">k</button>
-        <button data-key="l" (click)="updateGuessedWords('l')">l</button>
-        <div class="spacer-half"></div>
-      </div>
-      <div class="keyboard-row">
-        <button data-key="enter" class="wide-button" (click)="handleSubmitWord()">Enter</button>
-        <button data-key="z" (click)="updateGuessedWords('z')">z</button>
-        <button data-key="x" (click)="updateGuessedWords('x')">x</button>
-        <button data-key="c" (click)="updateGuessedWords('c')">c</button>
-        <button data-key="v" (click)="updateGuessedWords('v')">v</button>
-        <button data-key="b" (click)="updateGuessedWords('b')">b</button>
-        <button data-key="n" (click)="updateGuessedWords('n')">n</button>
-        <button data-key="m" (click)="updateGuessedWords('m')">m</button>
-        <button data-key="del" class="wide-button" (click)="handleDeleteLetter()">Del</button>
-      </div>
+    
+  </div>
+  <div id="keyboard-container">
+    <div class="keyboard-row">
+      <button data-key="q" (click)="updateGuessedWords('q')">q</button>
+      <button data-key="w" (click)="updateGuessedWords('w')">w</button>
+      <button data-key="e" (click)="updateGuessedWords('e')">e</button>
+      <button data-key="r" (click)="updateGuessedWords('r')">r</button>
+      <button data-key="t" (click)="updateGuessedWords('t')">t</button>
+      <button data-key="y" (click)="updateGuessedWords('y')">y</button>
+      <button data-key="u" (click)="updateGuessedWords('u')">u</button>
+      <button data-key="i" (click)="updateGuessedWords('i')">i</button>
+      <button data-key="o" (click)="updateGuessedWords('o')">o</button>
+      <button data-key="p" (click)="updateGuessedWords('p')">p</button>
+    </div>
+    <div class="keyboard-row">
+      <div class="spacer-half"></div>
+      <button data-key="a" (click)="updateGuessedWords('a')">a</button>
+      <button data-key="s" (click)="updateGuessedWords('s')">s</button>
+      <button data-key="d" (click)="updateGuessedWords('d')">d</button>
+      <button data-key="f" (click)="updateGuessedWords('f')">f</button>
+      <button data-key="g" (click)="updateGuessedWords('g')">g</button>
+      <button data-key="h" (click)="updateGuessedWords('h')">h</button>
+      <button data-key="j" (click)="updateGuessedWords('j')">j</button>
+      <button data-key="k" (click)="updateGuessedWords('k')">k</button>
+      <button data-key="l" (click)="updateGuessedWords('l')">l</button>
+      <div class="spacer-half"></div>
+    </div>
+    <div class="keyboard-row">
+      <button data-key="enter" class="wide-button" (click)="handleSubmitWord()">Enter</button>
+      <button data-key="z" (click)="updateGuessedWords('z')">z</button>
+      <button data-key="x" (click)="updateGuessedWords('x')">x</button>
+      <button data-key="c" (click)="updateGuessedWords('c')">c</button>
+      <button data-key="v" (click)="updateGuessedWords('v')">v</button>
+      <button data-key="b" (click)="updateGuessedWords('b')">b</button>
+      <button data-key="n" (click)="updateGuessedWords('n')">n</button>
+      <button data-key="m" (click)="updateGuessedWords('m')">m</button>
+      <button data-key="del" class="wide-button" (click)="handleDeleteLetter()">Del</button>
     </div>
   </div>
-  <ion-footer>
-
-  </ion-footer>
+  
 </ion-content>
 
 <ion-footer collapse="fade">
   <ion-toolbar>
     <ion-title style="text-align: center">By Flavio</ion-title>
-    
   </ion-toolbar>
 </ion-footer>
