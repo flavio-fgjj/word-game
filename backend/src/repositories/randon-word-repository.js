@@ -28,7 +28,6 @@ exports.get = async(fs, fs2) => {
   */
 
   const url = `${process.env.RANDON_URL}palavras-aleatorias.php?fs=${fs}&fs2=${fs2}&Submit=Nova+palavra`
-  console.log(url)
   const search = await axios.get(url)
 
   const $ = cheerio.load(search.data)

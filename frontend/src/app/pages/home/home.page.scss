@@ -1,0 +1,152 @@
+#container {
+  text-align: center;
+
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+#container strong {
+  font-size: 20px;
+  line-height: 26px;
+}
+
+#container p {
+  font-size: 16px;
+  line-height: 22px;
+
+  color: #8c8c8c;
+
+  margin: 0;
+}
+
+#container a {
+  text-decoration: none;
+}
+
+// custom
+#board-container {
+  //position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+#board {
+  // display: grid;
+  // grid-template-columns: repeat(1, 1fr);
+  // grid-gap: 5px;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  padding: 10px;
+  box-sizing: border-box;
+
+  width: 100%;
+  margin: 0 auto 8px;
+  touch-action: manipulation;
+}
+
+.square {
+  border: 2px solid #111D12;
+  width: 40px;
+  height: 40px;
+  max-width: 40px;
+  max-height: 40px;
+  font-size: 30px;
+  font-weight: bold;
+  color: lightslategrey;
+  text-transform: uppercase;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 10px;
+
+  border-radius: 40px;
+
+  flex-grow: 1;
+  user-select: none;
+}
+
+#keyboard-container {
+  height: 200px;
+  margin-left: 10px;
+  margin-right: 5px;
+  padding-top: 100px;
+}
+
+.keyboard-row {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin: 0 auto 8px;
+  touch-action: manipulation;
+}
+
+.keyboard-row button {
+  font-family: inherit;
+  font-weight: bold;
+  border: 0;
+  padding: 0;
+  height: 58px;
+  cursor: pointer;
+  background-color: #111D12;
+  color: rgb(215, 218, 220);
+  flex-grow: 1;
+  text-transform: uppercase;
+  margin-right: 6px;
+  border-radius: 4px;
+  user-select: none;
+}
+
+.keyboard-row button.wide-button {
+  flex-grow: 1.5;
+}
+
+.spacer-half {
+  flex-grow: 0.5;
+}
+
+.error-message {
+  color: #FF0000;
+  font-weight: bold;
+}
+
+.hide {
+  display: none;
+}
+
+.show {
+  display: block;
+}
+
+.divider {
+  margin-bottom: 21px;
+}
+
+.info-button {
+  --background: var(--ion-color-btn-info);
+  margin-right:20px;
+}
+
+.footer {
+  --background: var(--ion-color-dark-tint);
+}
+
+.process {
+  color: rgb(58, 58, 60);
+  font-size: 1rem;
+  font-weight: bold;
+  margin: 0.4rem 0 0.4rem 0;
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+}
+
+.customPaddingLeft {
+  padding-left: 10px;
+}
