@@ -37,7 +37,7 @@
   padding-top: 10px;
 }
 
-#board {
+#board, #board_try1, #board_try2, #board_try3, #board_try4 {
   // display: grid;
   // grid-template-columns: repeat(1, 1fr);
   // grid-gap: 5px;
@@ -77,7 +77,7 @@
 }
 
 #keyboard-container {
-  //position: absolute;
+  position: absolute;
   text-align: center;
 
   height: 200px;
@@ -124,16 +124,22 @@
 }
 
 .error-message {
-  color: #FF0000;
+  background-color: #FF0000;
+  color: #FFF;
   font-weight: bold;
+  font-size: 2rem;
 }
 
 .hide {
-  display: none;
+  display: none !important;
 }
 
 .show {
   display: block;
+}
+
+.showFlex {
+  display: flex;
 }
 
 .divider {
@@ -152,10 +158,14 @@
 .process {
   width: 100%;
   //color: rgb(245, 216, 138);
-  color: var(--ion-color-primary-shade);
+  color: var(  --ion-color-medium);
   font-size: 2rem;
   font-weight: bold;
-  //margin: 0.4rem 0 0.4rem 0;
+}
+
+.customDivider {
+  min-height: 0 !important;
+  margin-bottom: 8px;
 }
 
 .customPaddingLeft {

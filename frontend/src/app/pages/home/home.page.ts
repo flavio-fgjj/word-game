@@ -17,7 +17,7 @@ export class HomePage implements  OnInit, AfterViewInit {
 
   public guessedWordCount = 0;
 
-  public limitTry = 0;
+  public limitTry = 4;
   public actual = 0;
 
   public actualWordArray = 0;
@@ -60,7 +60,7 @@ export class HomePage implements  OnInit, AfterViewInit {
   ngOnInit() {
     this.wordArray = ['Flavio', 'Estela', 'Joao', 'Teo'];
     this.startSquare();
-    this.errorMessage = `Desculpe, suas chances acabaram! A palavra é ${this.word}.`;
+    // this.errorMessage = `Desculpe, suas chances acabaram! A palavra é ${this.word}.`;
   }
 
   ngAfterViewInit(): void {}
@@ -132,8 +132,6 @@ export class HomePage implements  OnInit, AfterViewInit {
     loading.dismiss();
   }
 
-  
-
   async startSquare() {
     this.word = this.wordArray[0];
 
@@ -158,7 +156,7 @@ export class HomePage implements  OnInit, AfterViewInit {
               <li>caso tenha</li>
             </ol>
           </li>
-          <li>'enter' para validar a tentativa</li>
+          <li>'ENTER' para validar a tentativa</li>
           <li>O sistema indicará: 
             <ol>
               <li>cor verde, a palavra existe e está na posição correta.</li>
@@ -183,11 +181,9 @@ export class HomePage implements  OnInit, AfterViewInit {
     const isCorrectPosition = letter === letterInThatPosition;
 
     if (isCorrectPosition) {
-      //return 'rgb(83, 141, 78)';
       return '#32cd32';
     }
 
-    //return 'rgb(181, 159, 59)';
     return '#ffff8d';
   }
 
@@ -205,6 +201,8 @@ export class HomePage implements  OnInit, AfterViewInit {
     const div = document.getElementById('errorMessage');
     div.classList.remove('show');
     div.classList.add('hide');
+    document.getElementById('errorMessageHr').classList.remove('show');
+    document.getElementById('errorMessageHr').classList.add('hide');
 
     if (currentWordArr && currentWordArr.length < this.word.length) {
       currentWordArr.push(letter);
@@ -213,6 +211,21 @@ export class HomePage implements  OnInit, AfterViewInit {
 
       this.availableSpace = this.availableSpace + 1;
       availableSpaceEl.textContent = letter;
+
+      switch  (this.actual) {
+        case 1:
+          document.getElementById(`${String(this.availableSpace - 1)}_try1`).textContent = letter;
+          break;
+        case 2:
+          document.getElementById(`${String(this.availableSpace - 1)}_try2`).textContent = letter;
+          break;
+        case 3:
+          document.getElementById(`${String(this.availableSpace - 1)}_try3`).textContent = letter;
+          break;        
+        case 4:
+          document.getElementById(`${String(this.availableSpace - 1)}_try4`).textContent = letter;
+          break;
+      }
     }
   }
 
@@ -224,12 +237,34 @@ export class HomePage implements  OnInit, AfterViewInit {
   handleDeleteLetter() {
     const currentWordArr = this.getCurrentWordArr();
     const removedLetter = currentWordArr.pop();
+    const div = document.getElementById('errorMessage');
+
+    div.classList.remove('show');
+    div.classList.add('hide');
+    document.getElementById('errorMessageHr').classList.remove('show');
+    document.getElementById('errorMessageHr').classList.add('hide');
 
     this.guessedWords[this.guessedWords.length - 1] = currentWordArr;
 
     const lastLetterEl = document.getElementById(String(this.availableSpace - 1));
 
     lastLetterEl.textContent = '';
+    
+    switch  (this.actual) {
+      case 1:
+        document.getElementById(`${String(this.availableSpace - 1)}_try1`).textContent = '';
+        break;
+      case 2:
+        document.getElementById(`${String(this.availableSpace - 1)}_try2`).textContent = '';
+        break;
+      case 3:
+        document.getElementById(`${String(this.availableSpace - 1)}_try3`).textContent = '';
+        break;        
+      case 4:
+        document.getElementById(`${String(this.availableSpace - 1)}_try4`).textContent = '';
+        break;
+    }
+
     this.availableSpace = this.availableSpace - 1;
   }
 
@@ -241,52 +276,19 @@ export class HomePage implements  OnInit, AfterViewInit {
       this.errorMessage = `A palavra deve ter ${(this.word.length).toString()} letras!`;
       div.classList.remove('hide');
       div.classList.add('show');
+      document.getElementById('errorMessageHr').classList.remove('hide');
+      document.getElementById('errorMessageHr').classList.add('show');
       return;
     }
 
-
     const currentWord = currentWordArr.join('');
-
-    // fetch(`https://wordsapiv1.p.rapidapi.com/words/${currentWord}`, {
-    //   method: 'GET',
-    //   headers: {},
-    // })
-    //   .then((res) => {
-    //     if (!res.ok) {
-    //       throw Error();
-    //     }
-
-    //     const firstLetterId = this.guessedWordCount * this.word.length + 1;
-    //     const interval = 200;
-    //     currentWordArr.forEach((letter, index) => {
-    //       setTimeout(() => {
-    //         const tileColor = this.getTileColor(letter, index);
-
-    //         const letterId = firstLetterId + index;
-    //         const letterEl = document.getElementById(letterId.toString());
-    //         letterEl.classList.add('animate__flipInX');
-    //         letterEl.style = `background-color:${tileColor};border-color:${tileColor}`;
-    //       }, interval * index);
-    //     });
-
-    //     this.guessedWordCount += 1;
-
-    //     if (currentWord === this.word) {
-    //       window.alert('Congratulations!');
-    //     }
-
-    //     if (this.guessedWords.length === 6) {
-    //       window.alert(`Sorry, you have no more guesses! The word is ${this.word}.`);
-    //     }
-
-    //     this.guessedWords.push([]);
-    //   })
-    //   .catch(() => {
-    //     window.alert('Word is not recognised!');
-    //   });
 
     const firstLetterId = this.guessedWordCount * this.word.length + 1;
     const interval = 200;
+
+    let letterE1_aux = document.getElementById('1');
+    let actualAux = this.actual;
+
     currentWordArr.forEach((letter, index) => {
       setTimeout(() => {
         const tileColor = this.getTileColor(letter, index);
@@ -295,20 +297,81 @@ export class HomePage implements  OnInit, AfterViewInit {
         const letterEl = document.getElementById(letterId.toString());
         letterEl.classList.add('animate__flipInX');
         letterEl.setAttribute('style', `background-color:${tileColor};border-color:${tileColor}`);
+
+        switch (actualAux) {
+          case 1:
+            letterE1_aux = document.getElementById(`${letterId.toString()}_try1`);
+            break;
+          case 2:
+            letterE1_aux = document.getElementById(`${letterId.toString()}_try2`);
+            break;
+          case 3:
+            letterE1_aux = document.getElementById(`${letterId.toString()}_try3`);
+            break;        
+          case 4:
+            letterE1_aux = document.getElementById(`${letterId.toString()}_try4`);
+            break;
+        }
+        letterE1_aux.setAttribute('style', `background-color:${tileColor};border-color:${tileColor}`);
       }, interval * index);
     });
 
     this.guessedWordCount += 1;
 
-    if (currentWord === this.word) {
-      this.errorMessage = 'Parabéns!';
+    switch (this.actual) {
+      case 1:
+        document.getElementById('board_try1').classList.add('showFlex');
+        document.getElementById('board_try1').classList.remove('hide');
+        break;
+      case 2:
+        document.getElementById('board_try2').classList.add('showFlex');
+        document.getElementById('board_try2').classList.remove('hide');
+        break;
+      case 3:
+        document.getElementById('board_try3').classList.add('showFlex');
+        document.getElementById('board_try3').classList.remove('hide');
+        break;        
+      case 4:
+        document.getElementById('board_try4').classList.add('showFlex');
+        document.getElementById('board_try4').classList.remove('hide');
+        break;
     }
 
-    if (this.guessedWords.length === 6) {
-      this.errorMessage = `Desculpe, suas chances acabaram! A palavra é ${this.word}.`;
+    if (currentWord.toString().toLowerCase().trim() === this.word.toString().toLowerCase().trim()) {
+      this.errorMessage = 'PARABÉNS!!!';
+      document.getElementById('errorMessage').setAttribute('style', 'background-color: #2dd36f !important;');
+      document.getElementById('errorMessage').classList.remove('hide');
+      document.getElementById('errorMessage').classList.add('show');
+      document.getElementById('errorMessageHr').classList.remove('hide');
+      document.getElementById('errorMessageHr').classList.add('show');
+
+      document.getElementById('board').classList.add('hide');
+    } else {
+      if(this.actual === this.limitTry) {
+        document.getElementById('board').classList.add('hide');
+        this.errorMessage = `Suas chances acabaram! A palavra é: ${this.word.toString().toUpperCase()}.`;
+        document.getElementById('errorMessage').classList.remove('hide');
+        document.getElementById('errorMessage').classList.add('show');
+        document.getElementById('errorMessageHr').classList.remove('hide');
+        document.getElementById('errorMessageHr').classList.add('show');
+      } else {
+        this.actual += 1;
+        this.guessedWords.push([]);
+        this.availableSpace = 1;
+        this.guessedWordCount = 0;
+      }
+  
+      currentWordArr.forEach((letter, index) => {
+        setTimeout(() => {
+          const letterId = firstLetterId + index;
+          const letterEl = document.getElementById(letterId.toString());
+          letterEl.classList.remove('animate__flipInX');
+          letterEl.removeAttribute('style');
+          letterEl.textContent = '';
+        }, interval * index);
+      });
     }
 
-    this.guessedWords.push([]);
   }
 
   typeSelected(event) {
