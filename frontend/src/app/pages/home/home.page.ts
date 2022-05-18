@@ -59,16 +59,13 @@ export class HomePage implements  OnInit, AfterViewInit {
 
   ngOnInit() {
     this.wordArray = ['Flavio', 'Estela', 'Joao', 'Teo'];
-    this.startSquqre();
+    this.startSquare();
+    this.errorMessage = `Desculpe, suas chances acabaram! A palavra é ${this.word}.`;
   }
 
   ngAfterViewInit(): void {}
 
-  async start() {
-    const loading = await this.loadingCtrl.create({ message: 'Buscando palavras...' });
-
-    loading.present();
-
+  async getRandonWords() {
     await this
       .service
       .getRandonWords(this.fs2)
@@ -76,40 +73,27 @@ export class HomePage implements  OnInit, AfterViewInit {
         this.wordArray = await res;
         this.wordArray = this.wordArray.filter(item => item.toString().length <= 8);
 
+        // if removing words with less than 8 letters and the total was less then four, complete until totally four
         if(this.wordArray.length < 4) {
           while (!this.readyToGo) {
-            const four = this.completeFour();
+            const four = await this.completeRandonArray();
             if(four) {
               this.readyToGo = true;
               break;
             }
           }
         }
-
-        await this.startSquqre();
-
-        await this.service
-        .getWordData(this.word)
-        .then(async info => {
-          let retInfoWord = await info['data'];
-          this.grammaticalClass = retInfoWord.grammatical_class;
-          this.meaning = `Significado: ${retInfoWord.meaning}`;
-          console.log(this.meaning, this.grammaticalClass);
-        })
       })
       .catch(err => console.log(err));
-
-    loading.dismiss();
   }
 
-  completeFour(): boolean {
+  async completeRandonArray() {
     let aux = [];
     this.service.getRandonWords(this.fs2).then(async (r: string[]) => {
       aux = await r;
       aux = aux.filter(itemAux => itemAux.toString().length <= 8);
 
       aux.forEach(x => {
-
         if(this.wordArray.length < 4) {
           this.wordArray.push(x.toString());
         }
@@ -119,7 +103,38 @@ export class HomePage implements  OnInit, AfterViewInit {
     return this.wordArray.length < 4 ? false : true;
   }
 
-  async startSquqre() {
+  async getWordData() {
+    await this.service
+      .getWordData(this.word)
+      .then(async info => {
+        let retInfoWord = await info['data'];
+        this.grammaticalClass = retInfoWord.grammatical_class;
+        this.meaning = `Significado: ${retInfoWord.meaning}`;
+        console.log(this.meaning, this.grammaticalClass);
+      })
+      .catch(err => console.log(err));
+  }
+
+  async start() {
+    const loading = await this.loadingCtrl.create({ message: 'Buscando palavras...' });
+    loading.present();
+
+    await this.getRandonWords();
+    console.log(this.wordArray);
+    if(this.wordArray.length === 4) {
+      await this.getWordData();
+    }
+
+    //TODO store data in localStorage
+
+    await this.startSquare();
+
+    loading.dismiss();
+  }
+
+  
+
+  async startSquare() {
     this.word = this.wordArray[0];
 
     this.alreadyStarted = true;
@@ -134,13 +149,23 @@ export class HomePage implements  OnInit, AfterViewInit {
   async handleInfoButtonClick() {
     const alert = await this.alertController.create({
       header: 'Sobre o jogo:',
-      message: `
-        - Você terá 4 tentativas para cada palavra. <br> 
-        - São 4 palavras ao total, a cada 6hs. <br>
-        - Você poderá solicitar ajuda (caso haja ajuda disponível)<br>
-        - Para validar a sua tentativa, aperte 'enter'<br>
-        - O sistema indicará, na cor verde, que a palavra existe e que está na posição correta.<br>
-        - O sistema indicará, na cor amarela, que a palavra existe mas que está na posição incorreta.`,
+      message: `<ul>
+          <li>4 tentativas para cada palavra.</li> 
+          <li>São 4 palavras ao total.</li>
+          <li>Palavras novas a cada 6hs.</li>
+          <li>É possível solicitar ajuda 
+            <ol>
+              <li>caso tenha</li>
+            </ol>
+          </li>
+          <li>'enter' para validar a tentativa</li>
+          <li>O sistema indicará: 
+            <ol>
+              <li>cor verde, a palavra existe e está na posição correta.</li>
+              <li>cor amarela, a palavra existe mas está na posição incorreta.</li>
+            </ol>
+          </li>
+        </ul>`,
       buttons: ['', 'Ok'],
     });
 
@@ -148,20 +173,22 @@ export class HomePage implements  OnInit, AfterViewInit {
   }
 
   getTileColor(letter, index) {
-    const isCorrectLetter = this.word.includes(letter);
-
+    const isCorrectLetter = this.word.toString().toLowerCase().trim().includes(letter);
+ 
     if (!isCorrectLetter) {
       return 'rgb(58, 58, 60)';
     }
 
-    const letterInThatPosition = this.word.charAt(index);
+    const letterInThatPosition = this.word.toString().toLowerCase().trim().charAt(index);
     const isCorrectPosition = letter === letterInThatPosition;
 
     if (isCorrectPosition) {
-      return 'rgb(83, 141, 78)';
+      //return 'rgb(83, 141, 78)';
+      return '#32cd32';
     }
 
-    return 'rgb(181, 159, 59)';
+    //return 'rgb(181, 159, 59)';
+    return '#ffff8d';
   }
 
   createSquares() {

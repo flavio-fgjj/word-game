@@ -6,7 +6,7 @@
       </ion-title>
     </ion-buttons>
     <ion-button slot="end" class="info-button" size="medium" (click)="handleInfoButtonClick()">
-      <ion-icon name="information-circle-outline" ></ion-icon>
+      <ion-icon name="information-circle-outline"></ion-icon>
     </ion-button>
   </ion-toolbar>
 </ion-header>
@@ -26,32 +26,39 @@
       </ion-item>
     </ion-item-group>
 
-    <div *ngIf="alreadyStarted" id="board-container">
+    <!-- <div *ngIf="alreadyStarted" id="board-container"> -->
+    <div id="board-container">
       <span class="process" *ngIf="alreadyStarted">tentativa {{actual}} de {{limitTry}}</span>
       <div id="board">
-        <div *ngFor="let div of wordSquares" class="square hide" id="{{div.id}}_try1">
+        <P>1</P>
+        <div *ngFor="let div of wordSquares" class="square " id="{{div.id}}_try1">
         </div>
       </div>
       <div id="board">
-        <div *ngFor="let div of wordSquares" class="square hide" id="{{div.id}}_try2">
+        <P>2</P>
+        <div *ngFor="let div of wordSquares" class="square " id="{{div.id}}_try2">
         </div>
       </div>
       <div id="board">
-        <div *ngFor="let div of wordSquares" class="square hide" id="{{div.id}}_try3">
+        <P>3</P>
+        <div *ngFor="let div of wordSquares" class="square " id="{{div.id}}_try3">
         </div>
       </div>
       <div id="board">
-        <div *ngFor="let div of wordSquares" class="square hide" id="{{div.id}}_try4">
+        <P>4</P>
+        <div *ngFor="let div of wordSquares" class="square " id="{{div.id}}_try4">
         </div>
       </div>
       <div id="board">
+        <P>&nbsp;&nbsp;</P>
         <div *ngFor="let div of wordSquares" class="square animate__animated" [id]="div.id">
         </div>
       </div>
     </div>
 
     <ion-label style="text-align: center;">
-      <h2 id="errorMessage" class="error-message hide"> {{ errorMessage }}</h2>
+      <!-- <h2 id="errorMessage" class="error-message hide"> {{ errorMessage }}</h2> -->
+      <h2 id="errorMessage" class="error-message"> {{ errorMessage }}</h2>
     </ion-label>
 
     <ion-label id="meaning" style="text-align: center;">

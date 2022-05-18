@@ -43,6 +43,7 @@
   // grid-gap: 5px;
   display: flex;
   justify-content: center;
+  align-items: center;
   text-align: center;
   padding: 10px;
   box-sizing: border-box;
@@ -54,15 +55,16 @@
 
 .square {
   border: 2px solid #111D12;
+  //border: 2px solid #D7C6AB;
   width: 40px;
   height: 40px;
   max-width: 40px;
   max-height: 40px;
   font-size: 30px;
   font-weight: bold;
-  color: lightslategrey;
+  //color: rgb(224, 175, 40);
+  color: orangered;
   text-transform: uppercase;
-
   display: flex;
   justify-content: center;
   align-items: center;
@@ -75,7 +77,7 @@
 }
 
 #keyboard-container {
-  position: absolute;
+  //position: absolute;
   text-align: center;
 
   height: 200px;
@@ -171,4 +173,13 @@
 
 .pageTitle {
   color: var(--ion-color-sucess) !important;
+}
+
+::ng-deep {
+  .alert-wrapper {
+    background-color: #D7C6AB;
+    --min-width: 350px;
+    --max-width: 350px;
+    --width: 350px;
+  }
 }
