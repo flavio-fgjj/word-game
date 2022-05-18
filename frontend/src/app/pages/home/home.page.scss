@@ -18,7 +18,7 @@
   font-size: 16px;
   line-height: 22px;
 
-  color: #8c8c8c;
+  color: rgb(245, 216, 138);
 
   margin: 0;
 }
@@ -102,8 +102,10 @@
   padding: 0;
   height: 58px;
   cursor: pointer;
-  background-color: #111D12;
-  color: rgb(215, 218, 220);
+  background-color: #D7C6AB;
+  //background-color: #111D12;
+  //color: rgb(215, 218, 220);
+  color: #111D12;
   flex-grow: 1;
   text-transform: uppercase;
   margin-right: 6px;
@@ -147,10 +149,11 @@
 
 .process {
   width: 100%;
-  color: rgb(58, 58, 60);
-  font-size: 1rem;
+  //color: rgb(245, 216, 138);
+  color: var(--ion-color-primary-shade);
+  font-size: 2rem;
   font-weight: bold;
-  margin: 0.4rem 0 0.4rem 0;
+  //margin: 0.4rem 0 0.4rem 0;
 }
 
 .customPaddingLeft {
@@ -158,10 +161,14 @@
 }
 
 .grammaticalClass {
-  color: rgb(58, 58, 60);
+  color: var(--ion-color-sucess);
 }
 
 .meaning {
   font-weight: bold;
-  color: rgb(58, 58, 60);
+  color: var(--ion-color-sucess);
+}
+
+.pageTitle {
+  color: var(--ion-color-sucess) !important;
 }

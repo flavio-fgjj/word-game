@@ -58,8 +58,8 @@ export class HomePage implements  OnInit, AfterViewInit {
     private alertController: AlertController) {}
 
   ngOnInit() {
-    // this.wordArray = ['Flavio', 'Estela', 'Joao', 'Teo'];
-    // this.startSquqre();
+    this.wordArray = ['Flavio', 'Estela', 'Joao', 'Teo'];
+    this.startSquqre();
   }
 
   ngAfterViewInit(): void {}
@@ -134,7 +134,13 @@ export class HomePage implements  OnInit, AfterViewInit {
   async handleInfoButtonClick() {
     const alert = await this.alertController.create({
       header: 'Sobre o jogo:',
-      message: 'Aqui vai Informações sobre o jogo...',
+      message: `
+        - Você terá 4 tentativas para cada palavra. <br> 
+        - São 4 palavras ao total, a cada 6hs. <br>
+        - Você poderá solicitar ajuda (caso haja ajuda disponível)<br>
+        - Para validar a sua tentativa, aperte 'enter'<br>
+        - O sistema indicará, na cor verde, que a palavra existe e que está na posição correta.<br>
+        - O sistema indicará, na cor amarela, que a palavra existe mas que está na posição incorreta.`,
       buttons: ['', 'Ok'],
     });
 
