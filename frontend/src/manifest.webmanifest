@@ -1,8 +1,8 @@
 {
-  "name": "word-game",
-  "short_name": "word-game",
-  "theme_color": "#822eb2",
-  "background_color": "#fff",
+  "name": "app",
+  "short_name": "app",
+  "theme_color": "#1976d2",
+  "background_color": "#fafafa",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",

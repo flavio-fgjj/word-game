@@ -58,9 +58,8 @@ export class HomePage implements  OnInit, AfterViewInit {
     private alertController: AlertController) {}
 
   ngOnInit() {
-    this.wordArray = ['Flavio', 'Estela', 'Joao', 'Teo'];
-    this.startSquare();
-    // this.errorMessage = `Desculpe, suas chances acabaram! A palavra é ${this.word}.`;
+    // this.wordArray = ['Flavio', 'Estela', 'Joao', 'Teo'];
+    // this.startSquare();
   }
 
   ngAfterViewInit(): void {}
@@ -72,19 +71,19 @@ export class HomePage implements  OnInit, AfterViewInit {
       .then(async (res: string[]) => {
         this.wordArray = await res;
         this.wordArray = this.wordArray.filter(item => item.toString().length <= 8);
-
-        // if removing words with less than 8 letters and the total was less then four, complete until totally four
-        if(this.wordArray.length < 4) {
-          while (!this.readyToGo) {
-            const four = await this.completeRandonArray();
-            if(four) {
-              this.readyToGo = true;
-              break;
-            }
-          }
-        }
       })
       .catch(err => console.log(err));
+
+    // if removing words with less than 8 letters and the total was less then four, complete until totally four
+    if(this.wordArray.length < 4) {
+      while (!this.readyToGo) {
+        const four = await this.completeRandonArray();
+        if(four) {
+          this.readyToGo = true;
+          break;
+        }
+      }
+    }
   }
 
   async completeRandonArray() {
@@ -104,15 +103,22 @@ export class HomePage implements  OnInit, AfterViewInit {
   }
 
   async getWordData() {
-    await this.service
-      .getWordData(this.word)
-      .then(async info => {
-        let retInfoWord = await info['data'];
-        this.grammaticalClass = retInfoWord.grammatical_class;
-        this.meaning = `Significado: ${retInfoWord.meaning}`;
-        console.log(this.meaning, this.grammaticalClass);
-      })
-      .catch(err => console.log(err));
+    this.word = this.wordArray[this.actualWordArray == null ? 0 : this.actualWordArray];
+
+    console.log(this.actualWordArray);
+    console.log(this.word);
+    
+    if(this.word != null) {
+      await this.service
+        .getWordData(this.word)
+        .then(async info => {
+          let retInfoWord = await info['data'];
+          this.grammaticalClass = retInfoWord.grammatical_class;
+          this.meaning = `Significado: ${retInfoWord.meaning}`;
+          console.log(this.meaning, this.grammaticalClass);
+        })
+        .catch(err => console.log(err));
+    }
   }
 
   async start() {

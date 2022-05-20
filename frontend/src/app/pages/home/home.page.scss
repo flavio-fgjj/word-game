@@ -176,12 +176,19 @@
 }
 
 .grammaticalClass {
-  color: var(--ion-color-sucess);
+  width: 100%;
+  color: var(  --ion-color-medium);
+  font-size: 2rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-top: 15px;
 }
 
 .meaning {
+  width: 100%;
+  color: var(  --ion-color-medium-tint);
+  font-size: 1.2rem;
   font-weight: bold;
-  color: var(--ion-color-sucess);
 }
 
 .pageTitle {

@@ -15,14 +15,14 @@
   
   <div id="container">
 
-    <ion-item-group style="display:inline-block" *ngIf="!alreadyStarted">
+    <ion-item-group style="display:inline-block;margin-top:5px;" *ngIf="!alreadyStarted">
       <ion-item>
         <ion-select class="ion-text-center" (ionChange)="typeSelected($event);" value="0" ok-text="Selecionar" cancel-text="Cancelar">
           <ion-select-option *ngFor="let t of arrayRandonSearch?.items" value="{{t.value}}">
             {{ t.text }}
           </ion-select-option>
         </ion-select>
-        <ion-button *ngIf="!alreadyStarted" color="dark" (click)="start()" class="ion-text-center" style="margin-left: 20px;">Começar</ion-button>
+        <ion-button *ngIf="!alreadyStarted" color="dark" (click)="start()" class="ion-text-center" style="margin-left: 20px;margin-top:5px;">Começar</ion-button>
       </ion-item>
     </ion-item-group>
 
@@ -64,8 +64,8 @@
     </div>
 
     <ion-label id="meaning" style="text-align: center;">
-      <h1 class="grammaticalClass"> {{ grammaticalClass }}</h1>
-      <h2 class="meaning">{{ meaning }}</h2>
+      <h1 class="grammaticalClass">&nbsp;&nbsp;{{ grammaticalClass }}</h1>
+      <h2 class="meaning">&nbsp;&nbsp;{{ meaning }}</h2>
     </ion-label>
 
   </div>
