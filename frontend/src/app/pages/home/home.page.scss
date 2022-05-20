@@ -124,10 +124,12 @@
 }
 
 .error-message {
-  background-color: #FF0000;
   color: #FFF;
   font-weight: bold;
   font-size: 2rem;
+
+  animation: bounceIn; // referring directly to the animation's @keyframe declaration
+  animation-duration: 2s;
 }
 
 .hide {
@@ -161,6 +163,7 @@
   color: var(  --ion-color-medium);
   font-size: 2rem;
   font-weight: bold;
+  padding-bottom: 8px;
 }
 
 .customDivider {

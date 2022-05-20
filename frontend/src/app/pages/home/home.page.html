@@ -28,7 +28,7 @@
 
     <!-- <div *ngIf="alreadyStarted" id="board-container"> -->
     <div id="board-container">
-      <span class="process" *ngIf="alreadyStarted">&nbsp;&nbsp;tentativa {{actual}} de {{limitTry}}</span>
+      <span class="process" *ngIf="alreadyStarted">&nbsp;&nbsp;TENTATIVA {{actual}} DE {{limitTry}}</span>
       <ion-item-divider class="customDivider"></ion-item-divider>
 
       <div id="board_try1" class="hide">
@@ -58,10 +58,10 @@
       </div>
     </div>
 
-    <ion-label style="text-align: center;">
+    <div id="divError" style="text-align: center;">
       <span id="errorMessage" class="error-message hide">{{ errorMessage }}</span>
       <ion-item-divider id="errorMessageHr" class="customDivider hide"></ion-item-divider>
-    </ion-label>
+    </div>
 
     <ion-label id="meaning" style="text-align: center;">
       <h1 class="grammaticalClass"> {{ grammaticalClass }}</h1>

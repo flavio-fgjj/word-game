@@ -297,7 +297,7 @@ export class HomePage implements  OnInit, AfterViewInit {
         const letterEl = document.getElementById(letterId.toString());
         letterEl.classList.add('animate__flipInX');
         letterEl.setAttribute('style', `background-color:${tileColor};border-color:${tileColor}`);
-console.log(letterEl)
+
         switch (actualAux) {
           case 1:
             letterE1_aux = document.getElementById(`${letterId.toString()}_try1`);
