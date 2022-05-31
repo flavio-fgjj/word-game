@@ -5,6 +5,13 @@
 /backend/log.txt
 /backend/npm-debug.log*
 
+/webScraping/node_modules
+/webScraping/.tmp
+/webScraping/.env
+/webScraping/*.log
+/webScraping/log.txt
+/webScraping/npm-debug.log*
+
 /frontend/.angular
 /frontend/.idea
 /frontend/.ionic
