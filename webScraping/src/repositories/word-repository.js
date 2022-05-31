@@ -11,7 +11,8 @@ let antonyms = []
 exports.get = async(_word) => {
   let word = cleaningWord(_word)
 
-  let url = `${process.env.WORD_URL}pesquisa.php?q=${word}`
+  //const url = `${process.env.WORD_URL}pesquisa.php?q=${word}`
+  const url = `${process.env.WORD_URL}${word}/`
 
   let search = await axios.get(url)
 
@@ -53,9 +54,17 @@ exports.get = async(_word) => {
   const _phrase = $('.frase span')
   const _phraseAuthor = $('.frase span em')
 
-  let phraseFont = _phraseFont[0].children[0].data
-  let phrase = _phrase[0].children[0].data
-  let phraseAuthor = _phraseAuthor[0].children[0].data
+  let phraseFont, phrase, phraseAuthor
+
+  try {
+    phraseFont = _phraseFont[0].children[0].data
+    phrase = _phrase[0].children[0].data
+    phraseAuthor = _phraseAuthor[0].children[0].data
+  } catch {
+    phraseFont = ''
+    phrase = ''
+    phraseAuthor = ''
+  }
   
   const _syn_ant = $('.sinonimos a')
 
