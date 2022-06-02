@@ -12,6 +12,13 @@
 /webScraping/log.txt
 /webScraping/npm-debug.log*
 
+/scheduledService/node_modules
+/scheduledService/.tmp
+/scheduledService/.env
+/scheduledService/*.log
+/scheduledService/log.txt
+/scheduledService/npm-debug.log*
+
 /frontend/.angular
 /frontend/.idea
 /frontend/.ionic

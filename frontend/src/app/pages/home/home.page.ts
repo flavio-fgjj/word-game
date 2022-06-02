@@ -34,14 +34,14 @@ export class HomePage implements  OnInit, AfterViewInit {
 
   public arrayRandonSearch = {
     items: [
-     { value: 0, text: 'Dicionario Completo' },
+     //{ value: 0, text: 'Dicionario Completo' },
      { value: 1, text: 'Dicionario para crianças' },
      { value: 2, text: 'Alimentos' },
-     { value: 3, text: 'Animais' },
-     { value: 4, text: 'Cores' },
+    //  { value: 3, text: 'Animais' },
+    //  { value: 4, text: 'Cores' },
      { value: 5, text: 'Corpo humano' },
      { value: 6, text: 'Educacao' },
-     { value: 7, text: 'Familia' },
+    //  { value: 7, text: 'Familia' },
      { value: 8, text: 'Figuras geometricas' },
      { value: 9, text: 'Midias de comunicacao' },
      { value: 12, text: 'Profissoes' },
