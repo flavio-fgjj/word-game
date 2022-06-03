@@ -5,12 +5,12 @@
 /service/log.txt
 /service/npm-debug.log*
 
-/backend/node_modules
-/backend/.tmp
-/backend/.env
-/backend/*.log
-/backend/log.txt
-/backend/npm-debug.log*
+/backend_v2/node_modules
+/backend_v2/.tmp
+/backend_v2/.env
+/backend_v2/*.log
+/backend_v2/log.txt
+/backend_v2/npm-debug.log*
 
 /webScraping/node_modules
 /webScraping/.tmp
