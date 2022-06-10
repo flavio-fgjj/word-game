@@ -42,13 +42,23 @@ route.post('/', async (req,res)  => {
         await wordDataController(randonWords[i])
           .then(x => {
             let jsonData = x.data.data
+            let syn = [], ant = []
+            
+            if(jsonData.synonyms.length > 0) {
+              syn = jsonData.synonyms.slice(0, 5)
+            }
+
+            if(jsonData.antonyms.length > 0) {
+              ant = jsonData.antonyms.slice(0, 5)
+            }
+
             let model = new Model({
               dictionary_type: dictionaryType,
               word: randonWords[i],
               grammatical_class: jsonData.grammatical_class, 
               meaning: jsonData.meaning,
-              synonyms: jsonData.synonyms.slice(0, 5), 
-              antonyms: jsonData.antonyms.slice(0, 5),
+              synonyms: syn, 
+              antonyms: ant,
               phrase: x.data.phrase, 
               date: today
             })
@@ -57,12 +67,10 @@ route.post('/', async (req,res)  => {
             model
               .save()
               .then((result) => {
-                //res.status(201).send({ output: "New word added", payload: result });
               })
               .catch((error) => {
                 hasError = true
                 err = error
-                //res.status(500).send({ output: `Error -> ${err}` })
               })
           })
           .catch(err => console.error(err))

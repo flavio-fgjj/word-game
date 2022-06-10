@@ -46,8 +46,18 @@ exports.get = async(_word) => {
       meaning = newMeaning[1].next.children[0].data
     }
   } else {
-    grammatical_class = _meaning[0].children[0].data
-    meaning = _meaning[1].children[0].data
+    try {
+      console.log(_meaning[1])
+      grammatical_class = _meaning[0].children[0].data
+      meaning = _meaning[1].children[0].data
+    } catch(err) {
+      console.log('palavra -> ', word)
+      console.error(err)
+      return {
+        "status": "NOK",
+        "data": { }
+      }
+    }
   }
 
   const _phraseFont = $('.fonte')

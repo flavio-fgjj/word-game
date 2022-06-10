@@ -38,7 +38,7 @@ exports.get = async(fs, fs2) => {
   for(let i = 0; i < foundedWords.length -1; i++) {
     if(foundedWords[i].children[0].data != undefined) {
       foundedWord = foundedWords[i].children[0].data.toString().trim().replace('\n','')
-      if (foundedWord.indexOf(' ') == -1 && foundedWord.toString().length <= 8) // only words without space and with less than 8 chars
+      if (foundedWord.indexOf(' ') == -1 && foundedWord.toString().length <= 8 && foundedWord.toString().toLowerCase().slice(-1) != 's') // only words without space and with less than 8 chars amd no plural
         foundedWordsArray.push(foundedWords[i].children[0].data.toString().trim().replace('\n',''))
     }
   }
