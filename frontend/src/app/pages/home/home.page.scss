@@ -203,3 +203,11 @@
     --width: 350px;
   }
 }
+
+.item-inner {
+  border-style: none !important;
+}
+
+.item-inner:host {
+  border-style: none !important;
+}

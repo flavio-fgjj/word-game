@@ -23,7 +23,7 @@ exports.get = async(_word) => {
   let grammatical_class
   let meaning
 
-  if(_meaning.length <= 0) {
+  if(_meaning == undefined || _meaning.length <= 0) {
     // trying again
     url = `${process.env.WORD_URL}${word}`
     search = await axios.get(url)
@@ -55,10 +55,14 @@ exports.get = async(_word) => {
   const _phraseAuthor = $('.frase span em')
 
   let phraseFont, phrase, phraseAuthor
-
+  phrase = ''
   try {
+    for(k = 0; k < _phrase[0].children.length; k++) {
+      phrase += _phrase[0].children[k].data != undefined ? _phrase[0].children[k].data : ''
+    }
+   // console.log(_phrase[0].children.length)
     phraseFont = _phraseFont[0].children[0].data
-    phrase = _phrase[0].children[0].data
+    //phrase = _phrase[0].children[0].data
     phraseAuthor = _phraseAuthor[0].children[0].data
   } catch {
     phraseFont = ''
