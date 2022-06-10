@@ -60,7 +60,6 @@ exports.get = async(_word) => {
     for(k = 0; k < _phrase[0].children.length; k++) {
       phrase += _phrase[0].children[k].data != undefined ? _phrase[0].children[k].data : ''
     }
-   // console.log(_phrase[0].children.length)
     phraseFont = _phraseFont[0].children[0].data
     //phrase = _phrase[0].children[0].data
     phraseAuthor = _phraseAuthor[0].children[0].data

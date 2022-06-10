@@ -34,10 +34,12 @@ exports.get = async(fs, fs2) => {
   const foundedWords = $('table tbody tr td > div')
 
   let foundedWordsArray = []
-
+  let foundedWord = ''
   for(let i = 0; i < foundedWords.length -1; i++) {
     if(foundedWords[i].children[0].data != undefined) {
-      foundedWordsArray.push(foundedWords[i].children[0].data.toString().trim().replace('\n',''))
+      foundedWord = foundedWords[i].children[0].data.toString().trim().replace('\n','')
+      if (foundedWord.indexOf(' ') == -1 && foundedWord.toString().length <= 8) // only words without space and with less than 8 chars
+        foundedWordsArray.push(foundedWords[i].children[0].data.toString().trim().replace('\n',''))
     }
   }
 
