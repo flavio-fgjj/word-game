@@ -34,7 +34,8 @@ exports.get = async(_word) => {
     if(_meaning.length <= 0) {
       return { 
         "status": "NOK",
-        "message": "Palavra invalida"
+        "message": "Palavra invalida",
+        "data": { }
       }
     } else {
       let newMeaning
@@ -47,7 +48,6 @@ exports.get = async(_word) => {
     }
   } else {
     try {
-      console.log(_meaning[1])
       grammatical_class = _meaning[0].children[0].data
       meaning = _meaning[1].children[0].data
     } catch(err) {
@@ -55,6 +55,7 @@ exports.get = async(_word) => {
       console.error(err)
       return {
         "status": "NOK",
+        "message": "Palavra invalida",
         "data": { }
       }
     }
@@ -71,7 +72,6 @@ exports.get = async(_word) => {
       phrase += _phrase[0].children[k].data != undefined ? _phrase[0].children[k].data : ''
     }
     phraseFont = _phraseFont[0].children[0].data
-    //phrase = _phrase[0].children[0].data
     phraseAuthor = _phraseAuthor[0].children[0].data
   } catch {
     phraseFont = ''

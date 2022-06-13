@@ -5,8 +5,17 @@
         Word Game
       </ion-title>
     </ion-buttons>
-    <ion-button slot="end" class="info-button" size="medium" (click)="handleInfoButtonClick()">
-      <ion-icon name="information-circle-outline"></ion-icon>
+    <ion-button *ngIf="alreadyStarted" slot="end" 
+      size="medium" 
+      (click)="handleMeaningButtonClick()"
+      data-toggle="tooltip" data-placement="bottom" title="Ajuda">
+      <ion-icon name="help-circle-outline"></ion-icon>
+    </ion-button>
+    <ion-button *ngIf="alreadyStarted" slot="end" color="warning" 
+      style="margin-left: 5px;margin-right:10px;" 
+      (click)="handleExtraHelpButtonClick()"
+      data-toggle="tooltip" data-placement="bottom" title="Ajuda extra">
+      <ion-icon name="add-circle-outline" style="margin-left: 8px;"></ion-icon><ion-icon name="help-circle-outline"></ion-icon>
     </ion-button>
   </ion-toolbar>
 </ion-header>
@@ -15,20 +24,14 @@
   
   <div id="container">
 
-    <ion-item-group style="display:inline-block;margin-top:5px;" *ngIf="!alreadyStarted">
+    <ion-item-group style="display:inline-block;margin-top:5px;border: none !important;" *ngIf="!alreadyStarted">
       <ion-item>
-        <!-- <ion-select class="ion-text-center" (ionChange)="typeSelected($event);" value="0" ok-text="Selecionar" cancel-text="Cancelar">
-          <ion-select-option *ngFor="let t of arrayRandonSearch?.items" value="{{t.value}}">
-            {{ t.text }}
-          </ion-select-option>
-        </ion-select> -->
-        <ion-button *ngIf="!alreadyStarted" color="dark" (click)="start()" class="ion-text-center" style="margin-left: 20px;margin-top:5px;">Começar</ion-button>
+        <ion-button *ngIf="!alreadyStarted" color="dark" (click)="start()" class="ion-text-center" style="margin-left: 20px;margin-top:5px;">Começar!</ion-button>
       </ion-item>
     </ion-item-group>
 
-    <!-- <div *ngIf="alreadyStarted" id="board-container"> -->
     <div id="board-container">
-      <span class="process" *ngIf="alreadyStarted">&nbsp;&nbsp;TENTATIVA {{actual}} DE {{limitTry}}</span>
+      <span class="process" *ngIf="alreadyStarted">TENTATIVA {{actual}} DE {{limitTry}}</span>
       <ion-item-divider class="customDivider"></ion-item-divider>
 
       <div id="board_try1" class="hide">
@@ -62,11 +65,6 @@
       <span id="errorMessage" class="error-message hide">{{ errorMessage }}</span>
       <ion-item-divider id="errorMessageHr" class="customDivider hide"></ion-item-divider>
     </div>
-
-    <ion-label id="meaning" style="text-align: center;">
-      <h1 class="grammaticalClass">&nbsp;&nbsp;{{ grammaticalClass }}</h1>
-      <h2 class="meaning">&nbsp;&nbsp;{{ meaning }}</h2>
-    </ion-label>
 
   </div>
   <div id="keyboard-container">
@@ -111,7 +109,19 @@
 </ion-content>
 
 <ion-footer collapse="fade">
-  <ion-toolbar>
-    <ion-title style="text-align: center">By Flavio</ion-title>
-  </ion-toolbar>
+  <!-- <ion-toolbar >
+    <ion-title style="float: left">By Flávio Alvarenga</ion-title>
+  </ion-toolbar> -->
+  <ion-toolbar >
+  <ion-grid>
+    <ion-row text-center>
+      <ion-col size="6" style="padding-top:15px;"><span>By Flávio Alvarenga</span></ion-col>
+      <ion-col size="6" style="text-align: right;">
+        <ion-button class="info-button" size="small" (click)="handleInfoButtonClick()">
+          <ion-icon name="information-circle-outline"></ion-icon>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-toolbar>
 </ion-footer>

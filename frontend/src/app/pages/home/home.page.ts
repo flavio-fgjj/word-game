@@ -1,5 +1,7 @@
 import { AfterViewInit, OnInit , Component } from '@angular/core';
 import { LoadingController, AlertController } from '@ionic/angular';
+import { isThisQuarter } from 'date-fns';
+import { Words } from 'src/app/models/Words';
 import { DataService } from 'src/app/services/data.service';
 
 @Component({
@@ -10,10 +12,11 @@ import { DataService } from 'src/app/services/data.service';
 export class HomePage implements  OnInit, AfterViewInit {
 
   public wordArray: string[];
+  public words: Array<Words>;
   public guessedWords = [[]];
   public availableSpace = 1;
 
-  public word: string = null;
+  public wordObj: Words = null;
 
   public guessedWordCount = 0;
 
@@ -29,8 +32,14 @@ export class HomePage implements  OnInit, AfterViewInit {
 
   public fs2 = '0';
 
+  public word: string = null;
   public meaning: string = null;
   public grammaticalClass: string = null;
+  public syn: string[] = [];
+  public ant: string[] = [];
+  public phrase: string = null;
+  public author: string = null;
+  public font: string = null;
 
   public arrayRandonSearch = {
     items: [
@@ -64,99 +73,122 @@ export class HomePage implements  OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {}
 
-  async getRandonWords() {
-    await this
+  async getWords() {
+    this.words = new Array<Words>();
+
+    this
       .service
-      .getRandonWords(this.fs2)
-      .then(async (res: string[]) => {
-        this.wordArray = await res;
-        this.wordArray = this.wordArray.filter(item => item.toString().length <= 8);
-      })
-      .catch(err => console.log(err));
-
-    // if removing words with less than 8 letters and the total was less then four, complete until totally four
-    if(this.wordArray.length < 4) {
-      while (!this.readyToGo) {
-        const four = await this.completeRandonArray();
-        if(four) {
-          this.readyToGo = true;
-          break;
+      .getWords()
+      .subscribe(async response => {
+        for(const item of await response.data.words) {
+          this.words.push(item);
         }
-      }
-    }
-  }
 
-  async completeRandonArray() {
-    let aux = [];
-    this.service.getRandonWords(this.fs2).then(async (r: string[]) => {
-      aux = await r;
-      aux = aux.filter(itemAux => itemAux.toString().length <= 8);
-
-      aux.forEach(x => {
-        if(this.wordArray.length < 4) {
-          this.wordArray.push(x.toString());
-        }
+        this.wordObj = this.words[0];
+        await this.startSquare();
       });
-    });
-
-    return this.wordArray.length < 4 ? false : true;
-  }
-
-  async getWordData() {
-    this.word = this.wordArray[this.actualWordArray == null ? 0 : this.actualWordArray];
-
-    console.log(this.actualWordArray);
-    console.log(this.word);
-    
-    if(this.word != null) {
-      await this.service
-        .getWordData(this.word)
-        .then(async info => {
-          let retInfoWord = await info['data'];
-          this.grammaticalClass = retInfoWord.grammatical_class;
-          this.meaning = `Significado: ${retInfoWord.meaning}`;
-          console.log(this.meaning, this.grammaticalClass);
-        })
-        .catch(err => console.log(err));
-    }
   }
 
   async start() {
     const loading = await this.loadingCtrl.create({ message: 'Buscando palavras...' });
+
     loading.present();
-
-    await this.getRandonWords();
-    console.log(this.wordArray);
-    if(this.wordArray.length === 4) {
-      await this.getWordData();
-    }
-
     //TODO store data in localStorage
 
-    await this.startSquare();
+    await this.getWords();
 
     loading.dismiss();
   }
 
   async startSquare() {
-    this.word = this.wordArray[0];
+    this.word = this.wordObj.word.toString().toLowerCase();
+    this.meaning = this.wordObj.meaning;
+    this.grammaticalClass = this.wordObj.grammatical_class;
+
+    this.syn = this.wordObj.synonyms;
+    this.ant = this.wordObj.antonyms;
+
+    this.author = this.wordObj.phrase.author;
+    this.phrase = this.wordObj.phrase.phrase;
+    this.font = this.wordObj.phrase.font;
 
     this.alreadyStarted = true;
 
     this.createSquares();
     this.keys = document.querySelectorAll('.keyboard-row button');
-    
+
     this.actual = 1;
-    this.limitTry = 4;
+    this.limitTry = 3;
+  }
+
+  async handleMeaningButtonClick() {
+    const alert = await this.alertController.create({
+      header: ``,
+      message: `
+        <h3 class="grammaticalClass" style="text-align: center;">${this.grammaticalClass}</h3>
+        <h4 class="meaning" style="text-align: center;">${this.meaning != null ? this.meaning : ''}</h4>
+      `,
+      buttons: ['', 'Ok'],
+    });
+
+    await alert.present();
+  }
+
+  async handleExtraHelpButtonClick() {
+    console.log(this.wordObj);
+    let html = `<ul>`;
+
+    let synAux = `<ol>`;
+    if(this.syn.length > 0) {
+      for(const s of this.syn) {
+        synAux += `<li>${s}</li>`;
+      }
+      synAux += `</ol>`;
+      html += `
+        <li>Sinônimos
+          ${synAux}
+        </li>
+      `;
+    }
+
+    let antAux = `<ol>`;
+    if(this.ant.length > 0) {
+      for(const s of this.ant) {
+        antAux += `<li>${s}</li>`;
+      }
+      antAux += `</ol>`;
+      html += `
+        <br><li>Antônimos
+          ${antAux}
+        </li>
+      `;
+    }
+
+    let phraseAux = `<hr><br>`;
+
+    if(this.phrase !== '') {
+      phraseAux += `Autor: ${this.author.toString().replace('- ', '')}<br><br>`;
+      phraseAux += `Frase: "${this.phrase.toString().trim()}"<br><br>`;
+      phraseAux += `${this.font}`;
+      html += phraseAux;
+    }
+
+    html += `<ul>`;
+    const alert = await this.alertController.create({
+      header: ``,
+      message: html !== '' ? html : `Não há ajuda extra para a palavra ${this.word}`,
+      buttons: ['', 'Ok'],
+    });
+
+    await alert.present();
   }
 
   async handleInfoButtonClick() {
     const alert = await this.alertController.create({
       header: 'Sobre o jogo:',
       message: `<ul>
-          <li>4 tentativas para cada palavra.</li> 
-          <li>São 4 palavras ao total.</li>
-          <li>Palavras novas a cada 6hs.</li>
+          <li>3 tentativas para cada palavra.</li> 
+          <li>São 10 palavras por dia.</li>
           <li>É possível solicitar ajuda 
             <ol>
               <li>caso tenha</li>
@@ -165,8 +197,8 @@ export class HomePage implements  OnInit, AfterViewInit {
           <li>'ENTER' para validar a tentativa</li>
           <li>O sistema indicará: 
             <ol>
-              <li>cor verde, a palavra existe e está na posição correta.</li>
-              <li>cor amarela, a palavra existe mas está na posição incorreta.</li>
+              <li>cor verde, a letra existe e está na posição correta.</li>
+              <li>cor amarela, a letra existe mas está na posição incorreta.</li>
             </ol>
           </li>
         </ul>`,
@@ -178,7 +210,7 @@ export class HomePage implements  OnInit, AfterViewInit {
 
   getTileColor(letter, index) {
     const isCorrectLetter = this.word.toString().toLowerCase().trim().includes(letter);
- 
+
     if (!isCorrectLetter) {
       return 'rgb(58, 58, 60)';
     }
@@ -227,7 +259,7 @@ export class HomePage implements  OnInit, AfterViewInit {
           break;
         case 3:
           document.getElementById(`${String(this.availableSpace - 1)}_try3`).textContent = letter;
-          break;        
+          break;
         case 4:
           document.getElementById(`${String(this.availableSpace - 1)}_try4`).textContent = letter;
           break;
@@ -255,7 +287,7 @@ export class HomePage implements  OnInit, AfterViewInit {
     const lastLetterEl = document.getElementById(String(this.availableSpace - 1));
 
     lastLetterEl.textContent = '';
-    
+
     switch  (this.actual) {
       case 1:
         document.getElementById(`${String(this.availableSpace - 1)}_try1`).textContent = '';
@@ -265,7 +297,7 @@ export class HomePage implements  OnInit, AfterViewInit {
         break;
       case 3:
         document.getElementById(`${String(this.availableSpace - 1)}_try3`).textContent = '';
-        break;        
+        break;
       case 4:
         document.getElementById(`${String(this.availableSpace - 1)}_try4`).textContent = '';
         break;
@@ -292,8 +324,9 @@ export class HomePage implements  OnInit, AfterViewInit {
     const firstLetterId = this.guessedWordCount * this.word.length + 1;
     const interval = 200;
 
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     let letterE1_aux = document.getElementById('1');
-    let actualAux = this.actual;
+    const actualAux = this.actual;
 
     currentWordArr.forEach((letter, index) => {
       setTimeout(() => {
@@ -313,7 +346,7 @@ export class HomePage implements  OnInit, AfterViewInit {
             break;
           case 3:
             letterE1_aux = document.getElementById(`${letterId.toString()}_try3`);
-            break;        
+            break;
           case 4:
             letterE1_aux = document.getElementById(`${letterId.toString()}_try4`);
             break;
@@ -337,7 +370,7 @@ export class HomePage implements  OnInit, AfterViewInit {
       case 3:
         document.getElementById('board_try3').classList.add('showFlex');
         document.getElementById('board_try3').classList.remove('hide');
-        break;        
+        break;
       case 4:
         document.getElementById('board_try4').classList.add('showFlex');
         document.getElementById('board_try4').classList.remove('hide');
@@ -367,7 +400,7 @@ export class HomePage implements  OnInit, AfterViewInit {
         this.availableSpace = 1;
         this.guessedWordCount = 0;
       }
-  
+
       currentWordArr.forEach((letter, index) => {
         setTimeout(() => {
           const letterId = firstLetterId + index;
@@ -378,7 +411,6 @@ export class HomePage implements  OnInit, AfterViewInit {
         }, interval * index);
       });
     }
-
   }
 
   typeSelected(event) {

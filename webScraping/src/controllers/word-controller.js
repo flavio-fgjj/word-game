@@ -7,7 +7,7 @@ exports.get = async(req, res, next) => {
     const data = await repository.get(req.params.word)
     res.status(200).send(data)
   } catch (err) {
-    console.log(err)
+    //console.log('Falha ao buscar palavra ', req.params.word)
     res.status(500).send({
       message: 'Falha ao buscar palavra'
     })

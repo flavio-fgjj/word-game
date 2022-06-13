@@ -150,7 +150,7 @@
 
 .info-button {
   --background: var(--ion-color-btn-info);
-  margin-right:20px;
+  //margin-right: 10px;
 }
 
 .footer {
@@ -178,7 +178,7 @@
 .grammaticalClass {
   width: 100%;
   color: var(  --ion-color-medium);
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: bold;
   text-transform: uppercase;
   margin-top: 15px;
@@ -187,7 +187,7 @@
 .meaning {
   width: 100%;
   color: var(  --ion-color-medium-tint);
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: bold;
 }
 
@@ -208,6 +208,10 @@
   border-style: none !important;
 }
 
-.item-inner:host {
-  border-style: none !important;
+ion-item {
+  --border-style: none !important;
+}
+
+ol {
+  list-style-type: none !important;
 }

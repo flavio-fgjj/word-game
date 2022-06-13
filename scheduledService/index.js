@@ -9,7 +9,7 @@ async function runJob() {
   console.log(`Service started at ${new Date()}`)
 
   if ((hour > 7 && hour < 23) && timesPerDay < 4) {
-    //TODO: check if service was already executed
+    //TODO: check if service was already executed (send email)
     await job()
       .then(r => {
         console.log(`Process number (${timesPerDay}) executed successfully at ${new Date()}`)
