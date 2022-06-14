@@ -7,16 +7,16 @@
     </ion-buttons>
     <ion-button *ngIf="alreadyStarted" slot="end" 
       size="medium" 
-      (click)="handleMeaningButtonClick()"
+      (click)="handleExtraHelpButtonClick()"
       data-toggle="tooltip" data-placement="bottom" title="Ajuda">
-      <ion-icon name="help-circle-outline"></ion-icon>
+      Ajuda <ion-icon name="help-circle-outline" style="margin-left:5px;margin-right:10px;"></ion-icon>
     </ion-button>
-    <ion-button *ngIf="alreadyStarted" slot="end" color="warning" 
+    <!-- <ion-button *ngIf="alreadyStarted" slot="end" color="warning" 
       style="margin-left: 5px;margin-right:10px;" 
       (click)="handleExtraHelpButtonClick()"
       data-toggle="tooltip" data-placement="bottom" title="Ajuda extra">
       <ion-icon name="add-circle-outline" style="margin-left: 8px;"></ion-icon><ion-icon name="help-circle-outline"></ion-icon>
-    </ion-button>
+    </ion-button> -->
   </ion-toolbar>
 </ion-header>
 
@@ -31,7 +31,8 @@
     </ion-item-group>
 
     <div id="board-container">
-      <span class="process" *ngIf="alreadyStarted">TENTATIVA {{actual}} DE {{limitTry}}</span>
+      <span class="process" *ngIf="alreadyStarted">{{grammaticalClass}} | {{actual}} de {{limitTry}}</span>
+      <span class="meaning" style="text-align: center;padding-top: -10px;">{{meaning}}</span>
       <ion-item-divider class="customDivider"></ion-item-divider>
 
       <div id="board_try1" class="hide">

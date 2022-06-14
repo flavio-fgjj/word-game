@@ -44,7 +44,9 @@ route.post('/', async (req,res)  => {
             if(x.data && x.data.status === 'OK') {
               let jsonData = x.data.data
               let syn = [], ant = []
-              
+
+              console.log(randonWords[i])
+              console.log(jsonData)
               if(jsonData.synonyms.length > 0) {
                 syn = jsonData.synonyms.slice(0, 5)
               }
