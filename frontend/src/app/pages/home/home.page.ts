@@ -103,7 +103,17 @@ export class HomePage implements  OnInit, AfterViewInit {
   async startSquare() {
     this.word = this.wordObj.word.toString().toLowerCase();
     this.meaning = this.wordObj.meaning;
-    this.grammaticalClass = this.wordObj.grammatical_class;
+
+    console.log(this.word);
+    // convert grammatical class in pascal case
+    this.grammaticalClass = '';
+    const g = this.wordObj.grammatical_class.split(' ');
+    g.forEach(x => {
+      const result = x;
+      const finalResult = result.charAt(0).toUpperCase() + result.slice(1);
+      this.grammaticalClass += finalResult + ' ';
+    });
+    this.grammaticalClass = this.grammaticalClass.toString().trim();
 
     this.syn = this.wordObj.synonyms;
     this.ant = this.wordObj.antonyms;
@@ -118,7 +128,7 @@ export class HomePage implements  OnInit, AfterViewInit {
     this.keys = document.querySelectorAll('.keyboard-row button');
 
     this.actual = 1;
-    this.limitTry = 3;
+    this.limitTry = 4;
   }
 
   async handleMeaningButtonClick() {
@@ -134,9 +144,37 @@ export class HomePage implements  OnInit, AfterViewInit {
     await alert.present();
   }
 
+  async handleLimitExceeded() {
+    const alert = await this.alertController.create({
+      header: 'Suas tentativas acabaram!',
+      cssClass:'alertLimitExceeded',
+      subHeader: 'A palavra é',
+      message: `${this.word}`,
+      buttons: ['OK']
+    });
+
+    console.log(document.getElementsByClassName('.alert-wrapper')[0]);
+    //$('ion-alert .alert-wrapper').classList.add('alertLimitExceeded')
+
+    await alert.present();
+  }
+
+  async handleSuccess() {
+    const alert = await this.alertController.create({
+      header: 'PARABÉNS!!!',
+      cssClass:'alertSuccess',
+      message: `Você acertou na ${this.actual}ª tentativa!`,
+      buttons: ['OK']
+    });
+
+    console.log(document.getElementsByClassName('.alert-wrapper')[0]);
+    //$('ion-alert .alert-wrapper').classList.add('alertLimitExceeded')
+
+    await alert.present();
+  }
+
   async handleExtraHelpButtonClick() {
-    console.log(this.wordObj);
-    let html = `<ul>`;
+    let html = ``;
 
     let synAux = `<ol>`;
     if(this.syn.length > 0) {
@@ -185,23 +223,40 @@ export class HomePage implements  OnInit, AfterViewInit {
 
   async handleInfoButtonClick() {
     const alert = await this.alertController.create({
-      header: 'Sobre o jogo:',
-      message: `<ul>
-          <li>3 tentativas para cada palavra.</li> 
-          <li>São 10 palavras por dia.</li>
-          <li>É possível solicitar ajuda 
-            <ol>
-              <li>caso tenha</li>
-            </ol>
-          </li>
-          <li>'ENTER' para validar a tentativa</li>
-          <li>O sistema indicará: 
-            <ol>
-              <li>cor verde, a letra existe e está na posição correta.</li>
-              <li>cor amarela, a letra existe mas está na posição incorreta.</li>
-            </ol>
-          </li>
-        </ul>`,
+      header: 'Informações & Regras',
+      cssClass:'alertInfo',
+      message: `
+        <ion-item>
+          <ion-avatar slot="end">
+            <img src="https://avatars.githubusercontent.com/u/9452793?v=4" />
+          </ion-avatar>
+          <ion-label>Por: <a href="https://github.com/flavio-fgjj" target="_blank">Flavio Alvarenga</a></ion-label>
+        </ion-item>
+        <ion-item>
+        <ion-icon slot="end" name="checkmark-done-outline"></ion-icon>
+        <ion-label>10 palavras por dia.</ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-icon slot="end" name="checkmark-done-outline"></ion-icon>
+          <ion-label>4 tentativas por palavra.</ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-icon slot="end" name="checkmark-done-outline"></ion-icon>
+          <ion-label>Ajuda extra.</ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-icon slot="end" name="checkmark-done-outline"></ion-icon>
+          <ion-label>'ENTER' para validar a tentativa</ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-icon slot="end" name="checkmark-done-outline"></ion-icon>
+          <ion-label>
+            O sistema indicará: <br>
+            - cor verde, a letra existe e está <br>na posição correta. <br>
+            - cor amarela, a letra existe mas<br>está na posição incorreta.
+          </ion-label>
+        </ion-item>
+        `,
       buttons: ['', 'Ok'],
     });
 
@@ -222,7 +277,8 @@ export class HomePage implements  OnInit, AfterViewInit {
       return '#32cd32';
     }
 
-    return '#ffff8d';
+    return '#EEAD2D';
+    //return '#ffff8d';
   }
 
   createSquares() {
@@ -250,7 +306,7 @@ export class HomePage implements  OnInit, AfterViewInit {
       this.availableSpace = this.availableSpace + 1;
       availableSpaceEl.textContent = letter;
 
-      switch  (this.actual) {
+      switch (this.actual) {
         case 1:
           document.getElementById(`${String(this.availableSpace - 1)}_try1`).textContent = letter;
           break;
@@ -307,6 +363,7 @@ export class HomePage implements  OnInit, AfterViewInit {
   }
 
   handleSubmitWord() {
+    //TODO: Validate word
     const currentWordArr = this.getCurrentWordArr();
 
     if (currentWordArr.length !== this.word.length) {
@@ -335,7 +392,7 @@ export class HomePage implements  OnInit, AfterViewInit {
         const letterId = firstLetterId + index;
         const letterEl = document.getElementById(letterId.toString());
         letterEl.classList.add('animate__flipInX');
-        letterEl.setAttribute('style', `background-color:${tileColor};border-color:${tileColor}`);
+        letterEl.setAttribute('style', `background-color:${tileColor};border-color:${tileColor};color:whitesmoke;`);
 
         switch (actualAux) {
           case 1:
@@ -352,7 +409,7 @@ export class HomePage implements  OnInit, AfterViewInit {
             break;
         }
         letterE1_aux.classList.add('animate__flipInX');
-        letterE1_aux.setAttribute('style', `background-color:${tileColor};border-color:${tileColor}`);
+        letterE1_aux.setAttribute('style', `background-color:${tileColor};border-color:${tileColor};color:whitesmoke;`);
       }, interval * index);
     });
 
@@ -378,24 +435,27 @@ export class HomePage implements  OnInit, AfterViewInit {
     }
 
     if (currentWord.toString().toLowerCase().trim() === this.word.toString().toLowerCase().trim()) {
-      this.errorMessage = 'PARABÉNS!!!';
-      document.getElementById('errorMessage').setAttribute('style', 'background-color: #2dd36f !important;');
-      document.getElementById('errorMessage').classList.remove('hide');
-      document.getElementById('errorMessage').classList.add('show');
-      document.getElementById('errorMessageHr').classList.remove('hide');
-      document.getElementById('errorMessageHr').classList.add('show');
+      this.handleSuccess();
+      // this.errorMessage = 'PARABÉNS!!!';
+      // document.getElementById('errorMessage').setAttribute('style', 'background-color: #2dd36f !important;');
+      // document.getElementById('errorMessage').classList.remove('hide');
+      // document.getElementById('errorMessage').classList.add('show');
+      // document.getElementById('errorMessageHr').classList.remove('hide');
+      // document.getElementById('errorMessageHr').classList.add('show');
 
-      document.getElementById('board').classList.add('hide');
+      //document.getElementById('board').classList.add('hide');
     } else {
-      if(this.actual === this.limitTry) {
-        document.getElementById('board').classList.add('hide');
-        this.errorMessage = `Suas chances acabaram! A palavra é: ${this.word.toString().toUpperCase()}.`;
-        document.getElementById('errorMessage').classList.remove('hide');
-        document.getElementById('errorMessage').classList.add('show');
-        document.getElementById('errorMessageHr').classList.remove('hide');
-        document.getElementById('errorMessageHr').classList.add('show');
+      this.actual = this.actual > 4 ? 4 : (this.actual + 1);
+      if(this.actual === (this.limitTry + 1)) {
+        this.handleLimitExceeded();
+        // document.getElementById('board').classList.add('hide');
+        // document.getElementById('errorMessage').setAttribute('style', 'background-color: #eb445a !important;');
+        // this.errorMessage = `Suas chances acabaram! A palavra é: ${this.word.toString().toUpperCase()}.`;
+        // document.getElementById('errorMessage').classList.remove('hide');
+        // document.getElementById('errorMessage').classList.add('show');
+        // document.getElementById('errorMessageHr').classList.remove('hide');
+        // document.getElementById('errorMessageHr').classList.add('show');
       } else {
-        this.actual += 1;
         this.guessedWords.push([]);
         this.availableSpace = 1;
         this.guessedWordCount = 0;

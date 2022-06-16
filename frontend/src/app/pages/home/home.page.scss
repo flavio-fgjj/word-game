@@ -34,7 +34,7 @@
   flex-wrap: wrap;
   flex-grow: 1;
   overflow: hidden;
-  padding-top: 10px;
+  //padding-top: 10px;
 }
 
 #board, #board_try1, #board_try2, #board_try3, #board_try4 {
@@ -62,8 +62,8 @@
   max-height: 40px;
   font-size: 30px;
   font-weight: bold;
-  //color: rgb(224, 175, 40);
-  color: orangered;
+  color: rgb(224, 175, 40);
+  //color: orangered;
   text-transform: uppercase;
   display: flex;
   justify-content: center;
@@ -80,7 +80,7 @@
   position: absolute;
   text-align: center;
 
-  height: 200px;
+  //height: 180px;
   margin-left: 10px;
   margin-right: 5px;
 
@@ -102,7 +102,7 @@
   font-weight: bold;
   border: 0;
   padding: 0;
-  height: 58px;
+  height: 38px;
   cursor: pointer;
   background-color: #D7C6AB;
   //background-color: #111D12;
@@ -126,7 +126,7 @@
 .error-message {
   color: #FFF;
   font-weight: bold;
-  font-size: 2rem;
+  font-size: 1rem;
 
   animation: bounceIn; // referring directly to the animation's @keyframe declaration
   animation-duration: 2s;
@@ -164,6 +164,7 @@
   font-size: 1.2rem;
   font-weight: bold;
   padding-bottom: 8px;
+  padding-top: 10px;
 }
 
 .customDivider {

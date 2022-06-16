@@ -5,18 +5,9 @@
         Word Game
       </ion-title>
     </ion-buttons>
-    <ion-button *ngIf="alreadyStarted" slot="end" 
-      size="medium" 
-      (click)="handleExtraHelpButtonClick()"
-      data-toggle="tooltip" data-placement="bottom" title="Ajuda">
-      Ajuda <ion-icon name="help-circle-outline" style="margin-left:5px;margin-right:10px;"></ion-icon>
+    <ion-button slot="end" style="margin-right:20px;" class="info-button" size="small" (click)="handleInfoButtonClick()">
+      <ion-icon name="information-circle-outline"></ion-icon>
     </ion-button>
-    <!-- <ion-button *ngIf="alreadyStarted" slot="end" color="warning" 
-      style="margin-left: 5px;margin-right:10px;" 
-      (click)="handleExtraHelpButtonClick()"
-      data-toggle="tooltip" data-placement="bottom" title="Ajuda extra">
-      <ion-icon name="add-circle-outline" style="margin-left: 8px;"></ion-icon><ion-icon name="help-circle-outline"></ion-icon>
-    </ion-button> -->
   </ion-toolbar>
 </ion-header>
 
@@ -26,14 +17,14 @@
 
     <ion-item-group style="display:inline-block;margin-top:5px;border: none !important;" *ngIf="!alreadyStarted">
       <ion-item>
-        <ion-button *ngIf="!alreadyStarted" color="dark" (click)="start()" class="ion-text-center" style="margin-left: 20px;margin-top:5px;">Começar!</ion-button>
+        <ion-button *ngIf="!alreadyStarted" color="warning" size="large" (click)="start()" class="ion-text-center" style="margin-left: 20px;margin-top:5px;">Começar!</ion-button>
       </ion-item>
     </ion-item-group>
 
     <div id="board-container">
-      <span class="process" *ngIf="alreadyStarted">{{grammaticalClass}} | {{actual}} de {{limitTry}}</span>
-      <span class="meaning" style="text-align: center;padding-top: -10px;">{{meaning}}</span>
-      <ion-item-divider class="customDivider"></ion-item-divider>
+      <span class="process" *ngIf="alreadyStarted">{{grammaticalClass}}</span>
+      <span class="meaning" style="text-align: center;margin: 0px 5px 5px 5px">{{meaning}}</span>
+      <!-- <ion-item-divider class="customDivider"></ion-item-divider> -->
 
       <div id="board_try1" class="hide">
         <P>1</P>
@@ -116,10 +107,13 @@
   <ion-toolbar >
   <ion-grid>
     <ion-row text-center>
-      <ion-col size="6" style="padding-top:15px;"><span>By Flávio Alvarenga</span></ion-col>
+      <ion-col size="6" style="padding-top:15px;"><span>Placar</span></ion-col>
       <ion-col size="6" style="text-align: right;">
-        <ion-button class="info-button" size="small" (click)="handleInfoButtonClick()">
-          <ion-icon name="information-circle-outline"></ion-icon>
+        <ion-button *ngIf="alreadyStarted"
+          size="small" 
+          (click)="handleExtraHelpButtonClick()"
+          data-toggle="tooltip" data-placement="bottom" title="Ajuda">
+          Ajuda Extra <ion-icon name="help-circle-outline" style="margin-left:5px;"></ion-icon>
         </ion-button>
       </ion-col>
     </ion-row>
