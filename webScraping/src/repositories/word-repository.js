@@ -32,6 +32,8 @@ exports.get = async(_word) => {
     _meaning = $('.significado')
 
     if(_meaning.length <= 0) {
+      synonyms = []
+      antonyms = []
       return { 
         "status": "NOK",
         "message": "Palavra invalida",
@@ -51,6 +53,8 @@ exports.get = async(_word) => {
       grammatical_class = _meaning[0].children[0].data
       meaning = _meaning[1].children[0].data
     } catch(err) {
+      synonyms = []
+      antonyms = []
       console.log('palavra -> ', word)
       console.error(err)
       return {
@@ -97,9 +101,12 @@ exports.get = async(_word) => {
       "author": phraseAuthor
     }
   }
+  
 }
 
 function getSynonyms(syn) {
+  antonyms = []
+  synonyms = []
   let isSynonym = false
   let isAntonym = false
  
