@@ -268,7 +268,6 @@ ion-list {
   text-align: center;
 }
 
-
 .alertLimitExceeded {
   --backdrop-opacity: 0.2 !important;
   //--background: linear-gradient(90deg, rgba(165, 255, 192, 1) 1%, rgba(0, 212, 255, 1) 100%) !important;
@@ -287,6 +286,17 @@ ion-list {
 }
 
 .alertLimitExceeded .alert-button {
+  border: 1px solid !important;
+  border-radius: 6px !important;
+}
+
+.alertHelp {
+  --backdrop-opacity: 0.2 !important;
+  //--background: linear-gradient(90deg, rgba(165, 255, 192, 1) 1%, rgba(0, 212, 255, 1) 100%) !important;
+  --background: linear-gradient(to bottom right, orange, lightyellow);
+}
+
+.alertHelp .alert-button {
   border: 1px solid !important;
   border-radius: 6px !important;
 }

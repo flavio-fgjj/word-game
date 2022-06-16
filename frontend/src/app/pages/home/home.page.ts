@@ -274,8 +274,9 @@ export class HomePage implements  OnInit, AfterViewInit {
     html += `<ul>`;
     const alert = await this.alertController.create({
       header: ``,
+      cssClass: 'alertHelp',
       message: html !== '' ? html : `Não há ajuda extra para a palavra ${this.word}`,
-      buttons: ['', 'Ok'],
+      buttons: ['Ok'],
     });
 
     await alert.present();
@@ -355,6 +356,10 @@ export class HomePage implements  OnInit, AfterViewInit {
     }
   }
 
+  typeSelected(event) {
+    this.fs2 = event.detail.value.toString();
+  }
+
   updateGuessedWords(letter) {
     const currentWordArr = this.getCurrentWordArr();
 
@@ -416,18 +421,18 @@ export class HomePage implements  OnInit, AfterViewInit {
       case 1:
         document.getElementById(`${String(this.availableSpace - 1)}_try1`).textContent = '';
         break;
-      case 2:
-        document.getElementById(`${String(this.availableSpace - 1)}_try2`).textContent = '';
+        case 2:
+          document.getElementById(`${String(this.availableSpace - 1)}_try2`).textContent = '';
         break;
-      case 3:
-        document.getElementById(`${String(this.availableSpace - 1)}_try3`).textContent = '';
-        break;
-      case 4:
-        document.getElementById(`${String(this.availableSpace - 1)}_try4`).textContent = '';
-        break;
-    }
-
-    this.availableSpace = this.availableSpace - 1;
+        case 3:
+          document.getElementById(`${String(this.availableSpace - 1)}_try3`).textContent = '';
+          break;
+          case 4:
+            document.getElementById(`${String(this.availableSpace - 1)}_try4`).textContent = '';
+            break;
+          }
+          
+          this.availableSpace = this.availableSpace - 1;
   }
 
   handleSubmitWord() {
@@ -539,7 +544,4 @@ export class HomePage implements  OnInit, AfterViewInit {
     }
   }
 
-  typeSelected(event) {
-    this.fs2 = event.detail.value.toString();
-  }
 }
