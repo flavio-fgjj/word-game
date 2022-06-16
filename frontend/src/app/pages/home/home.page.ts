@@ -1,8 +1,9 @@
 import { AfterViewInit, OnInit , Component } from '@angular/core';
 import { LoadingController, AlertController } from '@ionic/angular';
-import { isThisQuarter } from 'date-fns';
 import { Words } from 'src/app/models/Words';
+import { WordsStorage } from 'src/app/models/WordsStorage';
 import { DataService } from 'src/app/services/data.service';
+import { SecurityUtil } from 'src/app/utils/security.utils';
 
 @Component({
   selector: 'app-home',
@@ -13,6 +14,7 @@ export class HomePage implements  OnInit, AfterViewInit {
 
   public wordArray: string[];
   public words: Array<Words>;
+  public wordsStorage: WordsStorage;
   public guessedWords = [[]];
   public availableSpace = 1;
 
@@ -61,14 +63,35 @@ export class HomePage implements  OnInit, AfterViewInit {
   public alreadyStarted = false;
   public readyToGo = false;
 
+  public totalSuccess = 0;
+  public totalErrors = 0;
+  public actualWord = 0;
+
   constructor(
     private loadingCtrl: LoadingController,
     private service: DataService,
     private alertController: AlertController) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     // this.wordArray = ['Flavio', 'Estela', 'Joao', 'Teo'];
     // this.startSquare();
+    const loading = await this.loadingCtrl.create({ message: 'Iniciando...' });
+    loading.present();
+
+    this.wordsStorage = SecurityUtil.get();
+    if(this.wordsStorage) {
+      const storageDate = new Date(this.wordsStorage.date);
+      const today = new Date();
+      if(storageDate.getDate() === today.getDate()
+        && storageDate.getMonth() === today.getMonth()
+        && storageDate.getFullYear() === today.getFullYear()) {
+        this.startFromStorage();
+      } else {
+        SecurityUtil.clear();
+      }
+    }
+
+    loading.dismiss();
   }
 
   ngAfterViewInit(): void {}
@@ -80,20 +103,34 @@ export class HomePage implements  OnInit, AfterViewInit {
       .service
       .getWords()
       .subscribe(async response => {
-        for(const item of await response.data.words) {
-          this.words.push(item);
-        }
+        this.words = response.data.words;
 
-        this.wordObj = this.words[0];
-        await this.startSquare();
+        this.wordsStorage = new WordsStorage();
+        this.wordsStorage.date = new Date();
+        this.wordsStorage.actual = 1;
+        this.wordsStorage.success = 0;
+        this.wordsStorage.errors = 0;
+        this.wordsStorage.words = this.words;
+        SecurityUtil.set(this.wordsStorage);
+
+        await this.startFromStorage();
       });
   }
 
+  async startFromStorage() {
+    this.wordsStorage = new WordsStorage();
+    this.wordsStorage = SecurityUtil.get();
+
+    this.words = this.wordsStorage.words;
+    this.totalSuccess = this.wordsStorage.success;
+    this.totalErrors = this.wordsStorage.errors;
+
+    this.wordObj = this.wordsStorage.words[this.wordsStorage.actual - 1];
+    await this.startSquare();
+  }
   async start() {
     const loading = await this.loadingCtrl.create({ message: 'Buscando palavras...' });
-
     loading.present();
-    //TODO store data in localStorage
 
     await this.getWords();
 
@@ -104,7 +141,6 @@ export class HomePage implements  OnInit, AfterViewInit {
     this.word = this.wordObj.word.toString().toLowerCase();
     this.meaning = this.wordObj.meaning;
 
-    console.log(this.word);
     // convert grammatical class in pascal case
     this.grammaticalClass = '';
     const g = this.wordObj.grammatical_class.split(' ');
@@ -131,6 +167,7 @@ export class HomePage implements  OnInit, AfterViewInit {
     this.limitTry = 4;
   }
 
+  // alerts handles
   async handleMeaningButtonClick() {
     const alert = await this.alertController.create({
       header: ``,
@@ -153,8 +190,22 @@ export class HomePage implements  OnInit, AfterViewInit {
       buttons: ['OK']
     });
 
-    console.log(document.getElementsByClassName('.alert-wrapper')[0]);
-    //$('ion-alert .alert-wrapper').classList.add('alertLimitExceeded')
+    await alert.present();
+    await alert.onDidDismiss().then(() => {
+      setTimeout(() => {
+        window.location.reload();
+      }, 300);
+    });
+  }
+
+  async handleInvalidLength() {
+    const alert = await this.alertController.create({
+      header: `A palavra deve ter`,
+      cssClass:'alertLimitExceeded',
+      subHeader: `${this.word.length} letras`,
+      message: ``,
+      buttons: ['OK']
+    });
 
     await alert.present();
   }
@@ -164,13 +215,18 @@ export class HomePage implements  OnInit, AfterViewInit {
       header: 'PARABÉNS!!!',
       cssClass:'alertSuccess',
       message: `Você acertou na ${this.actual}ª tentativa!`,
-      buttons: ['OK']
+      buttons: [
+        {
+          text: 'OK',
+        }
+      ],
     });
-
-    console.log(document.getElementsByClassName('.alert-wrapper')[0]);
-    //$('ion-alert .alert-wrapper').classList.add('alertLimitExceeded')
-
     await alert.present();
+    await alert.onDidDismiss().then(() => {
+      setTimeout(() => {
+        window.location.reload();
+      }, 300);
+    });
   }
 
   async handleExtraHelpButtonClick() {
@@ -230,7 +286,11 @@ export class HomePage implements  OnInit, AfterViewInit {
           <ion-avatar slot="end">
             <img src="https://avatars.githubusercontent.com/u/9452793?v=4" />
           </ion-avatar>
-          <ion-label>Por: <a href="https://github.com/flavio-fgjj" target="_blank">Flavio Alvarenga</a></ion-label>
+          <ion-label>Por: 
+            <a href="https://github.com/flavio-fgjj" 
+              target="_blank" 
+              rel="noopener noreferrer">Flavio Alvarenga</a>
+          </ion-label>
         </ion-item>
         <ion-item>
         <ion-icon slot="end" name="checkmark-done-outline"></ion-icon>
@@ -262,7 +322,9 @@ export class HomePage implements  OnInit, AfterViewInit {
 
     await alert.present();
   }
+  // alerts handles end
 
+  // functions
   getTileColor(letter, index) {
     const isCorrectLetter = this.word.toString().toLowerCase().trim().includes(letter);
 
@@ -327,7 +389,9 @@ export class HomePage implements  OnInit, AfterViewInit {
     const numberOfGuessedWords = this.guessedWords.length;
     return this.guessedWords[numberOfGuessedWords - 1];
   }
+  // functions end
 
+  // keyboard handles
   handleDeleteLetter() {
     const currentWordArr = this.getCurrentWordArr();
     const removedLetter = currentWordArr.pop();
@@ -367,12 +431,7 @@ export class HomePage implements  OnInit, AfterViewInit {
     const currentWordArr = this.getCurrentWordArr();
 
     if (currentWordArr.length !== this.word.length) {
-      const div = document.getElementById('errorMessage');
-      this.errorMessage = `A palavra deve ter ${(this.word.length).toString()} letras!`;
-      div.classList.remove('hide');
-      div.classList.add('show');
-      document.getElementById('errorMessageHr').classList.remove('hide');
-      document.getElementById('errorMessageHr').classList.add('show');
+      this.handleInvalidLength();
       return;
     }
 
@@ -381,9 +440,8 @@ export class HomePage implements  OnInit, AfterViewInit {
     const firstLetterId = this.guessedWordCount * this.word.length + 1;
     const interval = 200;
 
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    let letterE1_aux = document.getElementById('1');
-    const actualAux = this.actual;
+    // let letterE1Aux = document.getElementById('1');
+    let letterE1Aux;
 
     currentWordArr.forEach((letter, index) => {
       setTimeout(() => {
@@ -394,22 +452,22 @@ export class HomePage implements  OnInit, AfterViewInit {
         letterEl.classList.add('animate__flipInX');
         letterEl.setAttribute('style', `background-color:${tileColor};border-color:${tileColor};color:whitesmoke;`);
 
-        switch (actualAux) {
+        switch (this.actual) {
           case 1:
-            letterE1_aux = document.getElementById(`${letterId.toString()}_try1`);
+            letterE1Aux = document.getElementById(`${letterId.toString()}_try1`);
             break;
           case 2:
-            letterE1_aux = document.getElementById(`${letterId.toString()}_try2`);
+            letterE1Aux = document.getElementById(`${letterId.toString()}_try2`);
             break;
           case 3:
-            letterE1_aux = document.getElementById(`${letterId.toString()}_try3`);
+            letterE1Aux = document.getElementById(`${letterId.toString()}_try3`);
             break;
           case 4:
-            letterE1_aux = document.getElementById(`${letterId.toString()}_try4`);
+            letterE1Aux = document.getElementById(`${letterId.toString()}_try4`);
             break;
         }
-        letterE1_aux.classList.add('animate__flipInX');
-        letterE1_aux.setAttribute('style', `background-color:${tileColor};border-color:${tileColor};color:whitesmoke;`);
+        letterE1Aux.classList.add('animate__flipInX');
+        letterE1Aux.setAttribute('style', `background-color:${tileColor};border-color:${tileColor};color:whitesmoke;`);
       }, interval * index);
     });
 
@@ -435,26 +493,32 @@ export class HomePage implements  OnInit, AfterViewInit {
     }
 
     if (currentWord.toString().toLowerCase().trim() === this.word.toString().toLowerCase().trim()) {
-      this.handleSuccess();
-      // this.errorMessage = 'PARABÉNS!!!';
-      // document.getElementById('errorMessage').setAttribute('style', 'background-color: #2dd36f !important;');
-      // document.getElementById('errorMessage').classList.remove('hide');
-      // document.getElementById('errorMessage').classList.add('show');
-      // document.getElementById('errorMessageHr').classList.remove('hide');
-      // document.getElementById('errorMessageHr').classList.add('show');
+      this.totalSuccess += 1;
 
-      //document.getElementById('board').classList.add('hide');
+      this.wordsStorage = SecurityUtil.get();
+      this.wordsStorage.actual += 1;
+      this.wordsStorage.success += 1;
+      SecurityUtil.clear();
+      SecurityUtil.set(this.wordsStorage);
+
+      this.handleSuccess();
+
+      //this.startFromStorage();
     } else {
       this.actual = this.actual > 4 ? 4 : (this.actual + 1);
       if(this.actual === (this.limitTry + 1)) {
         this.handleLimitExceeded();
-        // document.getElementById('board').classList.add('hide');
-        // document.getElementById('errorMessage').setAttribute('style', 'background-color: #eb445a !important;');
-        // this.errorMessage = `Suas chances acabaram! A palavra é: ${this.word.toString().toUpperCase()}.`;
-        // document.getElementById('errorMessage').classList.remove('hide');
-        // document.getElementById('errorMessage').classList.add('show');
-        // document.getElementById('errorMessageHr').classList.remove('hide');
-        // document.getElementById('errorMessageHr').classList.add('show');
+        this.totalErrors += 1;
+        // update data in storage
+        this.wordsStorage = SecurityUtil.get();
+        this.wordsStorage.actual += 1;
+        this.wordsStorage.errors += 1;
+        SecurityUtil.clear();
+        SecurityUtil.set(this.wordsStorage);
+        //this.startFromStorage();
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
       } else {
         this.guessedWords.push([]);
         this.availableSpace = 1;

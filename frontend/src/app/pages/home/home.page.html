@@ -101,13 +101,14 @@
 </ion-content>
 
 <ion-footer collapse="fade">
-  <!-- <ion-toolbar >
-    <ion-title style="float: left">By Flávio Alvarenga</ion-title>
-  </ion-toolbar> -->
   <ion-toolbar >
   <ion-grid>
     <ion-row text-center>
-      <ion-col size="6" style="padding-top:15px;"><span>Placar</span></ion-col>
+      <ion-col size="6" style="padding-top: 10px;">
+        <ion-badge color="primary">{{ totalSuccess }}</ion-badge>
+        <ion-badge color="danger" style="margin-left:5px;">{{ totalErrors }}</ion-badge>
+        <ion-icon name="share-social-outline" style="margin-left:10px;cursor: pointer;"></ion-icon>
+      </ion-col>
       <ion-col size="6" style="text-align: right;">
         <ion-button *ngIf="alreadyStarted"
           size="small" 
