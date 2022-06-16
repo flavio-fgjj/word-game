@@ -187,7 +187,11 @@ export class HomePage implements  OnInit, AfterViewInit {
       cssClass:'alertLimitExceeded',
       subHeader: 'A palavra é',
       message: `${this.word}`,
-      buttons: ['OK']
+      buttons: [
+        {
+          text: 'OK',
+        }
+      ]
     });
 
     await alert.present();
@@ -507,18 +511,16 @@ export class HomePage implements  OnInit, AfterViewInit {
     } else {
       this.actual = this.actual > 4 ? 4 : (this.actual + 1);
       if(this.actual === (this.limitTry + 1)) {
-        this.handleLimitExceeded();
         this.totalErrors += 1;
-        // update data in storage
+
         this.wordsStorage = SecurityUtil.get();
         this.wordsStorage.actual += 1;
         this.wordsStorage.errors += 1;
         SecurityUtil.clear();
         SecurityUtil.set(this.wordsStorage);
+
+        this.handleLimitExceeded();
         //this.startFromStorage();
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
       } else {
         this.guessedWords.push([]);
         this.availableSpace = 1;
