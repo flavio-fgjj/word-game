@@ -1,0 +1,30 @@
+{
+  "sqltools.connections": [
+    {
+      "mysqlOptions": {
+        "authProtocol": "default"
+      },
+      "previewLimit": 50,
+      "server": "azimuth.rocketbit.com.br",
+      "port": 5501,
+      "driver": "MariaDB",
+      "database": "words",
+      "username": "root",
+      "password": "Mudar@1q2w3e",
+      "name": "Words"
+    },
+    {
+      "mysqlOptions": {
+        "authProtocol": "default"
+      },
+      "previewLimit": 50,
+      "server": "azimuth.rocketbit.com.br",
+      "port": 5501,
+      "driver": "MySQL",
+      "name": "WordValidation",
+      "database": "WordValidation",
+      "username": "root",
+      "password": "Mudar@123"
+    }
+  ]
+}

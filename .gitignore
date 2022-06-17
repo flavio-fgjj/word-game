@@ -1,3 +1,10 @@
+/wordValidationAPI/node_modules
+/wordValidationAPI/.tmp
+/swordValidationAPI/.env
+/wordValidationAPI/*.log
+/swordValidationAPI/log.txt
+/wordValidationAPI/npm-debug.log*
+
 /service/node_modules
 /service/.tmp
 /service/.env

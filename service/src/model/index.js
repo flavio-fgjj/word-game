@@ -12,7 +12,8 @@ const schema = new mongoose.Schema({
     phrase: { type: String },
     author: { type: String }
   },
-  date: {type: Date, defaul: Date.now() }
+  date: {type: Date, defaul: Date.now() }, 
+  isWordVaild: Boolean
 })
 
 module.exports = mongoose.model('Words', schema)
