@@ -6,7 +6,7 @@ const wordResolver = {
       let query, result
       let ret = [Word]
       let now = new Date()
-      //now.setDate(now.getDate() - 1)
+      now.setDate(now.getDate() - 1)
       const startToday = new Date(now.getFullYear(),now.getMonth(),now.getDate(),1,0,0)
       const endToday = new Date(now.getFullYear(),now.getMonth(),now.getDate()+1,0,59,59)
       // Dicionario para criancas (1)

@@ -207,11 +207,11 @@ export class HomePage implements  OnInit, AfterViewInit {
     });
   }
 
-  async handleInvalidLength() {
+  async handleWrongMsg(h, msg) {
     const alert = await this.alertController.create({
-      header: `A palavra deve ter`,
+      header: `${h}`,
       cssClass:'alertLimitExceeded',
-      subHeader: `${this.word.length} letras`,
+      subHeader: `${msg}`,
       message: ``,
       buttons: ['OK']
     });
@@ -304,15 +304,20 @@ export class HomePage implements  OnInit, AfterViewInit {
         </ion-item>
         <ion-item>
         <ion-icon slot="end" name="checkmark-done-outline"></ion-icon>
-        <ion-label>10 palavras por dia.</ion-label>
+        <ion-label>15 palavras por dia.</ion-label>
         </ion-item>
         <ion-item>
           <ion-icon slot="end" name="checkmark-done-outline"></ion-icon>
-          <ion-label>4 tentativas por palavra.</ion-label>
+          <ion-label>5 tentativas por palavra.</ion-label>
         </ion-item>
         <ion-item>
           <ion-icon slot="end" name="checkmark-done-outline"></ion-icon>
-          <ion-label>Ajuda extra.</ion-label>
+          <ion-label>Ajuda extra:<br>
+            - Significado<br>
+            - Sinônimos<br>
+            - Antônimos<br>
+            - Uso na frase
+          </ion-label>
         </ion-item>
         <ion-item>
           <ion-icon slot="end" name="checkmark-done-outline"></ion-icon>
@@ -333,6 +338,25 @@ export class HomePage implements  OnInit, AfterViewInit {
     await alert.present();
   }
   // alerts handles end
+
+  // modals
+  // async openModal(opts = {}) {
+  //   const modal = await modalController.create({
+  //     component: 'modal-content',
+  //     ...opts,
+  //   });
+  //   modal.present();
+
+  //   currentModal = modal;
+  // }
+
+  // openSheetModal() {
+  //   this.openModal({
+  //     breakpoints: [0, 0.2, 0.5, 1],
+  //     initialBreakpoint: 0.2,
+  //   });
+  // }
+  // modals end
 
   // functions
   getTileColor(letter, index) {
@@ -444,20 +468,24 @@ export class HomePage implements  OnInit, AfterViewInit {
     const currentWordArr = this.getCurrentWordArr();
 
     if (currentWordArr.length !== this.word.length) {
-      this.handleInvalidLength();
+      console.log('tamanho');
+      this.handleWrongMsg('A palavra deve ter', `${this.word.length} letras`);
       return;
     }
 
+    const currentWord = currentWordArr.join('');
     //TODO: Validate word
+
     this
       .service
-      .wordValidation(this.word)
+      .wordValidation(currentWord)
       .subscribe(async response => {
-        const isWordValid = await response.data;
-        console.log(isWordValid);
+        const isWordValid = await response.status;
+        if (isWordValid === 'NOK') {
+          this.handleWrongMsg('Erro!', 'Palavra inválida!');
+          return;
+        }
       });
-
-    const currentWord = currentWordArr.join('');
 
     const firstLetterId = this.guessedWordCount * this.word.length + 1;
     const interval = 200;
@@ -523,6 +551,7 @@ export class HomePage implements  OnInit, AfterViewInit {
       SecurityUtil.clear();
       SecurityUtil.set(this.wordsStorage);
 
+      console.log('sucesso');
       this.handleSuccess();
 
       //this.startFromStorage();
@@ -537,6 +566,7 @@ export class HomePage implements  OnInit, AfterViewInit {
         SecurityUtil.clear();
         SecurityUtil.set(this.wordsStorage);
 
+        console.log('errou');
         this.handleLimitExceeded();
         //this.startFromStorage();
       } else {
