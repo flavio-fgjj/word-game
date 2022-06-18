@@ -85,7 +85,7 @@ export class HomePage implements  OnInit, AfterViewInit {
       if(storageDate.getDate() === today.getDate()
         && storageDate.getMonth() === today.getMonth()
         && storageDate.getFullYear() === today.getFullYear()) {
-        this.startFromStorage();
+          this.startFromStorage();
       } else {
         SecurityUtil.clear();
       }
@@ -105,6 +105,8 @@ export class HomePage implements  OnInit, AfterViewInit {
       .subscribe(async response => {
         this.words = response.data.words;
 
+        this.words = this.words.filter(x => x.word !== null);
+
         this.wordsStorage = new WordsStorage();
         this.wordsStorage.date = new Date();
         this.wordsStorage.actual = 1;
@@ -122,10 +124,13 @@ export class HomePage implements  OnInit, AfterViewInit {
     this.wordsStorage = SecurityUtil.get();
 
     this.words = this.wordsStorage.words;
+
+    this.words = this.words.filter(x => x.word !== null);
+
     this.totalSuccess = this.wordsStorage.success;
     this.totalErrors = this.wordsStorage.errors;
 
-    this.wordObj = this.wordsStorage.words[this.wordsStorage.actual - 1];
+    this.wordObj = this.words[this.wordsStorage.actual - 1];
     await this.startSquare();
   }
   async start() {
@@ -436,13 +441,21 @@ export class HomePage implements  OnInit, AfterViewInit {
   }
 
   handleSubmitWord() {
-    //TODO: Validate word
     const currentWordArr = this.getCurrentWordArr();
 
     if (currentWordArr.length !== this.word.length) {
       this.handleInvalidLength();
       return;
     }
+
+    //TODO: Validate word
+    this
+      .service
+      .wordValidation(this.word)
+      .subscribe(async response => {
+        const isWordValid = await response.data;
+        console.log(isWordValid);
+      });
 
     const currentWord = currentWordArr.join('');
 

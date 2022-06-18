@@ -6,7 +6,7 @@ const wordResolver = {
       let query, result
       let ret = [Word]
       let now = new Date()
-      now.setDate(now.getDate() - 1)
+      //now.setDate(now.getDate() - 1)
       const startToday = new Date(now.getFullYear(),now.getMonth(),now.getDate(),1,0,0)
       const endToday = new Date(now.getFullYear(),now.getMonth(),now.getDate()+1,0,59,59)
       // Dicionario para criancas (1)
@@ -19,8 +19,12 @@ const wordResolver = {
       result = await Word.find(query)
 
       if (result) {
-        ret.push(result.sort(() => Math.random() - Math.random()).slice(0, 1))
+        //ret.push(result.sort(() => Math.random() - Math.random()).slice(0, 1))
+        result.sort(() => Math.random() - Math.random()).slice(0, 1).forEach(x => {
+          ret.push(x)
+        })
       }
+      result = null
 
       // Alimentos (2)
       query = { $and: [ 
@@ -32,8 +36,12 @@ const wordResolver = {
       result = await Word.find(query)
 
       if (result) {
-        ret.push(result.sort(() => Math.random() - Math.random()).slice(0, 2))
+        //ret.push(result.sort(() => Math.random() - Math.random()).slice(0, 2))
+        result.sort(() => Math.random() - Math.random()).slice(0, 2).forEach(x => {
+          ret.push(x)
+        })
       }
+      result = null
 
       // Corpo humano (2)
       query = { $and: [ 
@@ -45,8 +53,12 @@ const wordResolver = {
       result = await Word.find(query)
 
       if (result) {
-        ret.push(result.sort(() => Math.random() - Math.random()).slice(0, 2))
+        //ret.push(result.sort(() => Math.random() - Math.random()).slice(0, 2))
+        result.sort(() => Math.random() - Math.random()).slice(0, 2).forEach(x => {
+          ret.push(x)
+        })
       }
+      result = null
 
       // Educacao (2)
       query = { $and: [ 
@@ -58,8 +70,12 @@ const wordResolver = {
       result = await Word.find(query)
 
       if (result) {
-        ret.push(result.sort(() => Math.random() - Math.random()).slice(0, 2))
+        //ret.push(result.sort(() => Math.random() - Math.random()).slice(0, 2))
+        result.sort(() => Math.random() - Math.random()).slice(0, 2).forEach(x => {
+          ret.push(x)
+        })
       }
+      result = null
 
       // Figuras geometricas (2)
       query = { $and: [ 
@@ -71,8 +87,11 @@ const wordResolver = {
       result = await Word.find(query)
 
       if (result) {
-        ret.push(result.sort(() => Math.random() - Math.random()).slice(0, 2))
+        result.sort(() => Math.random() - Math.random()).slice(0, 2).forEach(x => {
+          ret.push(x)
+        })
       }
+      result = null
 
       // Midias de comunicacao (2)
       query = { $and: [ 
@@ -84,7 +103,9 @@ const wordResolver = {
       result = await Word.find(query)
 
       if (result) {
-        ret.push(result.sort(() => Math.random() - Math.random()).slice(0, 2))
+        result.sort(() => Math.random() - Math.random()).slice(0, 2).forEach(x => {
+          ret.push(x)
+        })
       }
 
       // Profissoes (2)
@@ -97,8 +118,11 @@ const wordResolver = {
       result = await Word.find(query)
 
       if (result) {
-        ret.push(result.sort(() => Math.random() - Math.random()).slice(0, 2))
+        result.sort(() => Math.random() - Math.random()).slice(0, 2).forEach(x => {
+          ret.push(x)
+        })
       }
+      result = null
 
       // Transporte (2)
       query = { $and: [ 
@@ -110,7 +134,9 @@ const wordResolver = {
       result = await Word.find(query)
 
       if (result) {
-        ret.push(result.sort(() => Math.random() - Math.random()).slice(0, 2))
+        result.sort(() => Math.random() - Math.random()).slice(0, 2).forEach(x => {
+          ret.push(x)
+        })
       }
 
       return ret

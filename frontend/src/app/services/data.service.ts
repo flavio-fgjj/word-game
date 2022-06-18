@@ -9,6 +9,7 @@ import { Observable } from 'rxjs';
 export class DataService {
 
   public baseUrl = environment.apiEndpoint;
+  public validationUrl = environment.validationEndpoint;
 
   // public headers = {
   //   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -56,6 +57,12 @@ export class DataService {
       `${this.baseUrl}`,
       JSON.stringify({ query: this.query }),
       this.httpOptions
+    );
+  }
+
+  wordValidation(word: string): Observable<any> {
+    return this.http.get(
+      `${this.validationUrl}/${word}`
     );
   }
 }

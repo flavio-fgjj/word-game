@@ -75,7 +75,8 @@ async function getMeaning(word, dictionaryType) {
         synonyms: syn, 
         antonyms: ant,
         phrase: x.data.phrase, 
-        date: today
+        date: today, 
+        isWordValid: false
       })
 
       jsonData = null
