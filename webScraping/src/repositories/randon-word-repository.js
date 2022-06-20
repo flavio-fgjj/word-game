@@ -30,7 +30,6 @@ exports.get = async(fs, fs2) => {
   const url = `${process.env.RANDON_URL}palavras-aleatorias.php?fs=${fs}&fs2=${fs2}&Submit=Nova+palavra`
   const search = await axios.get(url)
 
-  console.log('fs ', fs, ' || fs2 ', fs2)
   const $ = cheerio.load(search.data)
   const foundedWords = $('table tbody tr td > div')
 
@@ -40,7 +39,7 @@ exports.get = async(fs, fs2) => {
     if(foundedWords[i].children[0].data != undefined) {
       foundedWord = foundedWords[i].children[0].data.toString().trim().replace('\n','')
       if (foundedWord.indexOf(' ') == -1 && foundedWord.toString().length <= 8 && foundedWord.toString().toLowerCase().slice(-1) != 's') // only words without space and with less than 8 chars amd no plural
-        foundedWordsArray.push(foundedWords[i].children[0].data.toString().trim().replace('\n',''))
+        foundedWordsArray.push(foundedWord)
     }
   }
 

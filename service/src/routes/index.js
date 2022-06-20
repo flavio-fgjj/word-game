@@ -13,29 +13,29 @@ route.post('/', async (req,res)  => {
   let err = ''
 
   const arrayDictionaryType = {
-    //'Dicionario Completo': 0, 
-    'Dicionario para criancas': 1, 
-    'Alimentos': 2, 
+    'Dicionario Completo': 0, 
+    //'Dicionario para criancas': 1, 
+    //'Alimentos': 2, 
     //'Animais': 3,
     //'Cores': 4,
-    'Corpo humano': 5,
-    'Educacao': 6,
+    //'Corpo humano': 5,
+    //'Educacao': 6,
     //'Familia': 7,
-    'Figuras geometricas': 8,
-    'Midias de comunicacao': 9,
+    //'Figuras geometricas': 8,
+    //'Midias de comunicacao': 9,
     //'Numeros': 10,
     //'Numeros de 0 a 9': 11,
-    'Profissoes': 12,
-    'Transporte': 13,
+    //'Profissoes': 12,
+    //'Transporte': 13,
   }
 
   for (let dictionaryType in arrayDictionaryType) {
     await randonWordsController(arrayDictionaryType[dictionaryType].toString())
-    .then(r => {
-      randonWords = r.data
+    .then(async r => {
+      randonWords = await r.data
     })
     .catch(err => console.error(err))
-
+    
     if (randonWords != null) {
       for(let i = 0; i < randonWords.length; i++) {
         await getMeaning(randonWords[i], dictionaryType)
@@ -54,9 +54,11 @@ route.post('/', async (req,res)  => {
 async function getMeaning(word, dictionaryType) {
   let today = new Date()
   await wordDataController(word)
-  .then(x => {
-    if(x.data && x.data.status === 'OK') {
-      let jsonData = x.data.data
+  .then(async x => {
+    let wordData = await x.data
+
+    if(wordData && wordData.status === 'OK') {
+      let jsonData = wordData.data
       let syn = [], ant = []
 
       if(jsonData.synonyms.length > 0) {
@@ -74,7 +76,7 @@ async function getMeaning(word, dictionaryType) {
         meaning: jsonData.meaning,
         synonyms: syn, 
         antonyms: ant,
-        phrase: x.data.phrase, 
+        phrase: wordData.phrase, 
         date: today, 
         isWordValid: false
       })
@@ -83,7 +85,6 @@ async function getMeaning(word, dictionaryType) {
       syn = []
       ant = []
 
-        
       // saving at mongodb
       model
         .save()

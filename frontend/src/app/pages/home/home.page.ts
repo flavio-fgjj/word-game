@@ -1,5 +1,7 @@
 import { AfterViewInit, OnInit , Component } from '@angular/core';
 import { LoadingController, AlertController } from '@ionic/angular';
+import { modalController } from '@ionic/core';
+
 import { Words } from 'src/app/models/Words';
 import { WordsStorage } from 'src/app/models/WordsStorage';
 import { DataService } from 'src/app/services/data.service';
@@ -43,29 +45,18 @@ export class HomePage implements  OnInit, AfterViewInit {
   public author: string = null;
   public font: string = null;
 
-  public arrayRandonSearch = {
-    items: [
-     //{ value: 0, text: 'Dicionario Completo' },
-     { value: 1, text: 'Dicionario para crianças' },
-     { value: 2, text: 'Alimentos' },
-    //  { value: 3, text: 'Animais' },
-    //  { value: 4, text: 'Cores' },
-     { value: 5, text: 'Corpo humano' },
-     { value: 6, text: 'Educacao' },
-    //  { value: 7, text: 'Familia' },
-     { value: 8, text: 'Figuras geometricas' },
-     { value: 9, text: 'Midias de comunicacao' },
-     { value: 12, text: 'Profissoes' },
-     { value: 13, text: 'Transporte' }
-    ]
-  };
-
+  public errorPage = false;
   public alreadyStarted = false;
   public readyToGo = false;
 
   public totalSuccess = 0;
   public totalErrors = 0;
   public actualWord = 0;
+  public score = 5;
+
+  public meaningSeen = false;
+  public synSeen = false;
+  public phraseSeen = false;
 
   constructor(
     private loadingCtrl: LoadingController,
@@ -82,11 +73,12 @@ export class HomePage implements  OnInit, AfterViewInit {
     if(this.wordsStorage) {
       const storageDate = new Date(this.wordsStorage.date);
       const today = new Date();
-      if(storageDate.getDate() === today.getDate()
+      if((storageDate.getDate() === today.getDate()
         && storageDate.getMonth() === today.getMonth()
-        && storageDate.getFullYear() === today.getFullYear()) {
+        && storageDate.getFullYear() === today.getFullYear()) && this.wordsStorage.words.length > 0) {
           this.startFromStorage();
       } else {
+
         SecurityUtil.clear();
       }
     }
@@ -105,17 +97,21 @@ export class HomePage implements  OnInit, AfterViewInit {
       .subscribe(async response => {
         this.words = response.data.words;
 
-        this.words = this.words.filter(x => x.word !== null);
+        this.words = this.words.filter(x => x.word !== null).slice(0, 15);
 
-        this.wordsStorage = new WordsStorage();
-        this.wordsStorage.date = new Date();
-        this.wordsStorage.actual = 1;
-        this.wordsStorage.success = 0;
-        this.wordsStorage.errors = 0;
-        this.wordsStorage.words = this.words;
-        SecurityUtil.set(this.wordsStorage);
+        if (this.words.length === 0) {
+          this.errorPage = true;
+        } else {
+          this.wordsStorage = new WordsStorage();
+          this.wordsStorage.date = new Date();
+          this.wordsStorage.actual = 1;
+          this.wordsStorage.success = 0;
+          this.wordsStorage.errors = 0;
+          this.wordsStorage.words = this.words;
+          SecurityUtil.set(this.wordsStorage);
 
-        await this.startFromStorage();
+          await this.startFromStorage();
+        }
       });
   }
 
@@ -169,7 +165,7 @@ export class HomePage implements  OnInit, AfterViewInit {
     this.keys = document.querySelectorAll('.keyboard-row button');
 
     this.actual = 1;
-    this.limitTry = 4;
+    this.limitTry = 5;
   }
 
   // alerts handles
@@ -237,126 +233,7 @@ export class HomePage implements  OnInit, AfterViewInit {
       }, 300);
     });
   }
-
-  async handleExtraHelpButtonClick() {
-    let html = ``;
-
-    let synAux = `<ol>`;
-    if(this.syn.length > 0) {
-      for(const s of this.syn) {
-        synAux += `<li>${s}</li>`;
-      }
-      synAux += `</ol>`;
-      html += `
-        <li>Sinônimos
-          ${synAux}
-        </li>
-      `;
-    }
-
-    let antAux = `<ol>`;
-    if(this.ant.length > 0) {
-      for(const s of this.ant) {
-        antAux += `<li>${s}</li>`;
-      }
-      antAux += `</ol>`;
-      html += `
-        <br><li>Antônimos
-          ${antAux}
-        </li>
-      `;
-    }
-
-    let phraseAux = `<hr><br>`;
-
-    if(this.phrase !== '') {
-      phraseAux += `Autor: ${this.author.toString().replace('- ', '')}<br><br>`;
-      phraseAux += `Frase: "${this.phrase.toString().trim()}"<br><br>`;
-      phraseAux += `${this.font}`;
-      html += phraseAux;
-    }
-
-    html += `<ul>`;
-    const alert = await this.alertController.create({
-      header: ``,
-      cssClass: 'alertHelp',
-      message: html !== '' ? html : `Não há ajuda extra para a palavra ${this.word}`,
-      buttons: ['Ok'],
-    });
-
-    await alert.present();
-  }
-
-  async handleInfoButtonClick() {
-    const alert = await this.alertController.create({
-      header: 'Informações & Regras',
-      cssClass:'alertInfo',
-      message: `
-        <ion-item>
-          <ion-avatar slot="end">
-            <img src="https://avatars.githubusercontent.com/u/9452793?v=4" />
-          </ion-avatar>
-          <ion-label>Por: 
-            <a href="https://github.com/flavio-fgjj" 
-              target="_blank" 
-              rel="noopener noreferrer">Flavio Alvarenga</a>
-          </ion-label>
-        </ion-item>
-        <ion-item>
-        <ion-icon slot="end" name="checkmark-done-outline"></ion-icon>
-        <ion-label>15 palavras por dia.</ion-label>
-        </ion-item>
-        <ion-item>
-          <ion-icon slot="end" name="checkmark-done-outline"></ion-icon>
-          <ion-label>5 tentativas por palavra.</ion-label>
-        </ion-item>
-        <ion-item>
-          <ion-icon slot="end" name="checkmark-done-outline"></ion-icon>
-          <ion-label>Ajuda extra:<br>
-            - Significado<br>
-            - Sinônimos<br>
-            - Antônimos<br>
-            - Uso na frase
-          </ion-label>
-        </ion-item>
-        <ion-item>
-          <ion-icon slot="end" name="checkmark-done-outline"></ion-icon>
-          <ion-label>'ENTER' para validar a tentativa</ion-label>
-        </ion-item>
-        <ion-item>
-          <ion-icon slot="end" name="checkmark-done-outline"></ion-icon>
-          <ion-label>
-            O sistema indicará: <br>
-            - cor verde, a letra existe e está <br>na posição correta. <br>
-            - cor amarela, a letra existe mas<br>está na posição incorreta.
-          </ion-label>
-        </ion-item>
-        `,
-      buttons: ['', 'Ok'],
-    });
-
-    await alert.present();
-  }
   // alerts handles end
-
-  // modals
-  // async openModal(opts = {}) {
-  //   const modal = await modalController.create({
-  //     component: 'modal-content',
-  //     ...opts,
-  //   });
-  //   modal.present();
-
-  //   currentModal = modal;
-  // }
-
-  // openSheetModal() {
-  //   this.openModal({
-  //     breakpoints: [0, 0.2, 0.5, 1],
-  //     initialBreakpoint: 0.2,
-  //   });
-  // }
-  // modals end
 
   // functions
   getTileColor(letter, index) {
@@ -392,19 +269,20 @@ export class HomePage implements  OnInit, AfterViewInit {
   updateGuessedWords(letter) {
     const currentWordArr = this.getCurrentWordArr();
 
-    const div = document.getElementById('errorMessage');
-    div.classList.remove('show');
-    div.classList.add('hide');
-    document.getElementById('errorMessageHr').classList.remove('show');
-    document.getElementById('errorMessageHr').classList.add('hide');
+    // const div = document.getElementById('errorMessage');
+    // div.classList.remove('show');
+    // div.classList.add('hide');
+    // document.getElementById('errorMessageHr').classList.remove('show');
+    // document.getElementById('errorMessageHr').classList.add('hide');
 
     if (currentWordArr && currentWordArr.length < this.word.length) {
       currentWordArr.push(letter);
 
-      const availableSpaceEl = document.getElementById(String(this.availableSpace));
+      // console.log(this.availableSpace);
+      // const availableSpaceEl = document.getElementById(String(this.availableSpace));
 
       this.availableSpace = this.availableSpace + 1;
-      availableSpaceEl.textContent = letter;
+      //availableSpaceEl.textContent = letter;
 
       switch (this.actual) {
         case 1:
@@ -419,6 +297,9 @@ export class HomePage implements  OnInit, AfterViewInit {
         case 4:
           document.getElementById(`${String(this.availableSpace - 1)}_try4`).textContent = letter;
           break;
+        case 5:
+          document.getElementById(`${String(this.availableSpace - 1)}_try5`).textContent = letter;
+          break;
       }
     }
   }
@@ -427,48 +308,69 @@ export class HomePage implements  OnInit, AfterViewInit {
     const numberOfGuessedWords = this.guessedWords.length;
     return this.guessedWords[numberOfGuessedWords - 1];
   }
+
+  closeModal() {
+    modalController.dismiss();
+  }
+
+  fnMeaningSeen() {
+    this.score -= 1;
+    this.meaningSeen = true;
+  }
+
+  fnSynSeen() {
+    this.score -= 1.5;
+    this.synSeen = true;
+  }
+
+  fnPhraseSeen() {
+    this.score -= 2;
+    this.phraseSeen = true;
+  }
   // functions end
 
   // keyboard handles
   handleDeleteLetter() {
     const currentWordArr = this.getCurrentWordArr();
     const removedLetter = currentWordArr.pop();
-    const div = document.getElementById('errorMessage');
+    // const div = document.getElementById('errorMessage');
 
-    div.classList.remove('show');
-    div.classList.add('hide');
-    document.getElementById('errorMessageHr').classList.remove('show');
-    document.getElementById('errorMessageHr').classList.add('hide');
+    // div.classList.remove('show');
+    // div.classList.add('hide');
+    // document.getElementById('errorMessageHr').classList.remove('show');
+    // document.getElementById('errorMessageHr').classList.add('hide');
 
     this.guessedWords[this.guessedWords.length - 1] = currentWordArr;
 
-    const lastLetterEl = document.getElementById(String(this.availableSpace - 1));
+    // const lastLetterEl = document.getElementById(String(this.availableSpace - 1));
 
-    lastLetterEl.textContent = '';
+    // lastLetterEl.textContent = '';
 
     switch  (this.actual) {
       case 1:
         document.getElementById(`${String(this.availableSpace - 1)}_try1`).textContent = '';
         break;
-        case 2:
-          document.getElementById(`${String(this.availableSpace - 1)}_try2`).textContent = '';
+      case 2:
+        document.getElementById(`${String(this.availableSpace - 1)}_try2`).textContent = '';
         break;
-        case 3:
-          document.getElementById(`${String(this.availableSpace - 1)}_try3`).textContent = '';
-          break;
-          case 4:
-            document.getElementById(`${String(this.availableSpace - 1)}_try4`).textContent = '';
-            break;
-          }
-          
-          this.availableSpace = this.availableSpace - 1;
+      case 3:
+        document.getElementById(`${String(this.availableSpace - 1)}_try3`).textContent = '';
+        break;
+      case 4:
+        document.getElementById(`${String(this.availableSpace - 1)}_try4`).textContent = '';
+        break;
+      case 5:
+        document.getElementById(`${String(this.availableSpace - 1)}_try5`).textContent = '';
+        break;
+    }
+
+    this.availableSpace = this.availableSpace - 1;
   }
 
   handleSubmitWord() {
     const currentWordArr = this.getCurrentWordArr();
 
     if (currentWordArr.length !== this.word.length) {
-      console.log('tamanho');
       this.handleWrongMsg('A palavra deve ter', `${this.word.length} letras`);
       return;
     }
@@ -498,49 +400,64 @@ export class HomePage implements  OnInit, AfterViewInit {
         const tileColor = this.getTileColor(letter, index);
 
         const letterId = firstLetterId + index;
-        const letterEl = document.getElementById(letterId.toString());
-        letterEl.classList.add('animate__flipInX');
-        letterEl.setAttribute('style', `background-color:${tileColor};border-color:${tileColor};color:whitesmoke;`);
+        // const letterEl = document.getElementById(letterId.toString());
+        // letterEl.classList.add('animate__flipInX');
+        // letterEl.setAttribute('style', `background-color:${tileColor};border-color:${tileColor};color:whitesmoke;`);
 
-        switch (this.actual) {
-          case 1:
-            letterE1Aux = document.getElementById(`${letterId.toString()}_try1`);
-            break;
-          case 2:
-            letterE1Aux = document.getElementById(`${letterId.toString()}_try2`);
-            break;
-          case 3:
-            letterE1Aux = document.getElementById(`${letterId.toString()}_try3`);
-            break;
-          case 4:
-            letterE1Aux = document.getElementById(`${letterId.toString()}_try4`);
-            break;
-        }
+        letterE1Aux = document.getElementById(`${letterId.toString()}_try${(this.actual - 1)}`);
         letterE1Aux.classList.add('animate__flipInX');
         letterE1Aux.setAttribute('style', `background-color:${tileColor};border-color:${tileColor};color:whitesmoke;`);
+
+        // switch (this.actual - 1) {
+        //   case 1:
+        //     letterE1Aux = document.getElementById(`${letterId.toString()}_try1`);
+        //     letterE1Aux.classList.add('animate__flipInX');
+        //     letterE1Aux.setAttribute('style', `background-color:${tileColor};border-color:${tileColor};color:whitesmoke;`);
+        //     break;
+        //   case 2:
+        //     letterE1Aux = document.getElementById(`${letterId.toString()}_try2`);
+        //     break;
+        //   case 3:
+        //     letterE1Aux = document.getElementById(`${letterId.toString()}_try3`);
+        //     break;
+        //   case 4:
+        //     letterE1Aux = document.getElementById(`${letterId.toString()}_try4`);
+        //     break;
+        //   case 5:
+        //     letterE1Aux = document.getElementById(`${letterId.toString()}_try5`);
+        //     break;
+        // }
+        // letterE1Aux.classList.add('animate__flipInX');
+        // letterE1Aux.setAttribute('style', `background-color:${tileColor};border-color:${tileColor};color:whitesmoke;`);
       }, interval * index);
     });
 
     this.guessedWordCount += 1;
 
-    switch (this.actual) {
-      case 1:
-        document.getElementById('board_try1').classList.add('showFlex');
-        document.getElementById('board_try1').classList.remove('hide');
-        break;
-      case 2:
-        document.getElementById('board_try2').classList.add('showFlex');
-        document.getElementById('board_try2').classList.remove('hide');
-        break;
-      case 3:
-        document.getElementById('board_try3').classList.add('showFlex');
-        document.getElementById('board_try3').classList.remove('hide');
-        break;
-      case 4:
-        document.getElementById('board_try4').classList.add('showFlex');
-        document.getElementById('board_try4').classList.remove('hide');
-        break;
-    }
+    document.getElementById(`board_try${this.actual}`).classList.add('showFlex');
+    document.getElementById(`board_try${this.actual}`).classList.remove('hide');
+    // switch (this.actual) {
+    //   case 1:
+    //     document.getElementById('board_try1').classList.add('showFlex');
+    //     document.getElementById('board_try1').classList.remove('hide');
+    //     break;
+    //   case 2:
+    //     document.getElementById('board_try2').classList.add('showFlex');
+    //     document.getElementById('board_try2').classList.remove('hide');
+    //     break;
+    //   case 3:
+    //     document.getElementById('board_try3').classList.add('showFlex');
+    //     document.getElementById('board_try3').classList.remove('hide');
+    //     break;
+    //   case 4:
+    //     document.getElementById('board_try4').classList.add('showFlex');
+    //     document.getElementById('board_try4').classList.remove('hide');
+    //     break;
+    //   case 5:
+    //     document.getElementById('board_try5').classList.add('showFlex');
+    //     document.getElementById('board_try5').classList.remove('hide');
+    //     break;
+    // }
 
     if (currentWord.toString().toLowerCase().trim() === this.word.toString().toLowerCase().trim()) {
       this.totalSuccess += 1;
@@ -552,11 +469,10 @@ export class HomePage implements  OnInit, AfterViewInit {
       SecurityUtil.set(this.wordsStorage);
 
       this.handleSuccess();
-
-      //this.startFromStorage();
+      return;
     } else {
-      this.actual = this.actual > 4 ? 4 : (this.actual + 1);
-      if(this.actual === (this.limitTry + 1)) {
+      console.log('atual', this.actual, 'limite', this.limitTry);
+      if(this.actual === this.limitTry) {
         this.totalErrors += 1;
 
         this.wordsStorage = SecurityUtil.get();
@@ -565,9 +481,8 @@ export class HomePage implements  OnInit, AfterViewInit {
         SecurityUtil.clear();
         SecurityUtil.set(this.wordsStorage);
 
-        console.log('errou');
         this.handleLimitExceeded();
-        //this.startFromStorage();
+        return;
       } else {
         this.guessedWords.push([]);
         this.availableSpace = 1;
@@ -577,12 +492,16 @@ export class HomePage implements  OnInit, AfterViewInit {
       currentWordArr.forEach((letter, index) => {
         setTimeout(() => {
           const letterId = firstLetterId + index;
-          const letterEl = document.getElementById(letterId.toString());
+          const letterEl = document.getElementById(`${letterId.toString()}_try${(this.actual)}`);
           letterEl.classList.remove('animate__flipInX');
           letterEl.removeAttribute('style');
           letterEl.textContent = '';
         }, interval * index);
       });
+
+      this.actual++;
+      document.getElementById(`board_try${this.actual}`).classList.add('showFlex');
+      document.getElementById(`board_try${this.actual}`).classList.remove('hide');
     }
   }
 

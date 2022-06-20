@@ -68,7 +68,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-left: 10px;
+  margin-left: 5px;
 
   border-radius: 40px;
 
@@ -81,8 +81,8 @@
   text-align: center;
 
   //height: 180px;
-  margin-left: 10px;
-  margin-right: 5px;
+  // margin-left: 10px;
+  // margin-right: 5px;
 
   left: 0;
   right: 0;
@@ -215,4 +215,10 @@ ion-item {
 
 ol {
   list-style-type: none !important;
+}
+
+.pageError {
+  font-size: 1.5rem;
+  font-weight: bold;
+  padding-top: 15px;
 }

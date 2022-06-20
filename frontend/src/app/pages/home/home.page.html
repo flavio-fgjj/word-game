@@ -5,69 +5,170 @@
         Word Game
       </ion-title>
     </ion-buttons>
-    <ion-button slot="start" class="info-button" size="small" (click)="handleInfoButtonClick()">
-      <ion-icon name="information-circle-outline"></ion-icon>
-    </ion-button>
-
+    <app-modal-info></app-modal-info>
     <ion-item-group slot="end" style="border: none !important;">
       <ion-item *ngIf="alreadyStarted">
         <ion-badge color="primary">{{ totalSuccess }}</ion-badge>
-        <span style="margin-left: 5px; padding-bottom: 10px;">x</span>
+        <span style="margin-left: 5px;">x</span>
         <ion-badge color="danger" style="margin-left:5px;">{{ totalErrors }}</ion-badge>
       </ion-item>
       <ion-item *ngIf="!alreadyStarted">
-        <ion-button style="text-align: center;" *ngIf="!alreadyStarted" color="warning" size="medium" (click)="start()" class="ion-text-center">Começar!</ion-button>
+        <ion-chip outline color="secondary" (click)="start()">
+          <ion-icon name="play-outline" style="padding-right: 10px;"></ion-icon>
+        </ion-chip>
       </ion-item>
     </ion-item-group>
-
    
   </ion-toolbar>
 </ion-header>
 
 <ion-content  padding>
-  
+  <ion-modal trigger="triggerHelp"
+    [breakpoints]="[0.1, 0.6, 1]"
+    [initialBreakpoint]="1"
+    [backdropDismiss]="true"
+  >
+    <ng-template>
+      <ion-header translucent>
+        <ion-toolbar>
+          <ion-title slot="start">Ajuda extra</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeModal()"><ion-icon name="close-circle-outline"></ion-icon></ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content>
+        <ion-accordion-group>
+          <ion-accordion>
+            <ion-item slot="header">
+              <ion-label>Significado</ion-label>
+            </ion-item>
+            <ion-list slot="content">
+              <ion-item>
+                <ion-card>
+                  <ion-card-header>
+                    <ion-card-subtitle>{{grammaticalClass}}</ion-card-subtitle>
+                    <ion-card-title *ngIf="!meaningSeen">
+                      <ion-chip outline color="secondary" (click)="fnMeaningSeen()">
+                        <ion-icon name="eye-outline" style="padding-right: 10px;"></ion-icon>
+                      </ion-chip>
+                    </ion-card-title>
+                  </ion-card-header>
+
+                  <ion-card-content *ngIf="meaningSeen" style="text-align: center">
+                    {{meaning}}
+                  </ion-card-content>
+                </ion-card>
+              </ion-item>
+            </ion-list>
+          </ion-accordion>
+
+          <ion-accordion>
+            <ion-item slot="header">
+              <ion-label>Sinônimos/Antônimos</ion-label>
+            </ion-item>
+            <ion-list slot="content">
+              <ion-item>
+                <ion-card>
+                  <ion-card-header>
+                    <ion-card-title *ngIf="!synSeen">
+                      <ion-chip outline color="secondary" (click)="fnSynSeen()">
+                        <ion-icon name="eye-outline" style="padding-right: 10px;"></ion-icon>
+                      </ion-chip>
+                    </ion-card-title>
+                  </ion-card-header>
+                  <ion-card-content *ngIf="synSeen">
+                    <ul>
+                      <li>Sinônimos</li>
+                      <ol *ngFor="let s of syn">
+                        {{s}}
+                      </ol>
+                      <li>Antônimos</li>
+                      <ol *ngFor="let s of ant">
+                        {{s}}
+                      </ol>
+                    </ul>
+                  </ion-card-content>
+                </ion-card>
+              </ion-item>
+            </ion-list>
+          </ion-accordion>
+
+          <ion-accordion>
+            <ion-item slot="header">
+              <ion-label>Uso na frase</ion-label>
+            </ion-item>
+            <ion-list slot="content">
+              <ion-item>
+                <ion-card>
+                  <ion-card-header>
+                    <ion-card-title *ngIf="!phraseSeen">
+                      <ion-chip outline color="secondary" (click)="fnPhraseSeen()">
+                        <ion-icon name="eye-outline" style="padding-right: 10px;"></ion-icon>
+                      </ion-chip>
+                    </ion-card-title>
+                  </ion-card-header>
+                  <ion-card-content *ngIf="phraseSeen">
+                    {{font}}<br><br>
+                    <p style="text-align:center;">{{phrase}}</p><br>
+                    {{author}}
+                  </ion-card-content>
+                </ion-card>
+              </ion-item>
+            </ion-list>
+          </ion-accordion>
+        </ion-accordion-group>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
   <div id="container">
-
-    
-
     <div id="board-container">
       <!-- <span class="process" *ngIf="alreadyStarted">{{grammaticalClass}}</span> -->
       <!-- <span class="meaning" style="text-align: center;margin: 0px 5px 5px 5px">{{meaning}}</span> -->
       <!-- <ion-item-divider class="customDivider"></ion-item-divider> -->
-
-      <div id="board_try1" class="hide">
-        <P>1</P>
+      <div class="pageError" *ngIf="errorPage">
+        <ion-icon name="warning-outline" color="danger"></ion-icon><br>
+        <ion-label color="danger">Estamos enfrentando problemas! <br><br>Favor tentar mais tarde! <br><br>Desculpe o transtorno!</ion-label>
+      </div>
+      <div id="board_try1">
+        <!-- <P>1</P> -->
         <div *ngFor="let div of wordSquares" class="square animate__animated" id="{{div.id}}_try1">
         </div>
       </div>
       <div id="board_try2" class="hide">
-        <P>2</P>
+        <!-- <P>2</P> -->
         <div *ngFor="let div of wordSquares" class="square animate__animated" id="{{div.id}}_try2">
         </div>
       </div>
       <div id="board_try3" class="hide">
-        <P>3</P>
+        <!-- <P>3</P> -->
         <div *ngFor="let div of wordSquares" class="square animate__animated" id="{{div.id}}_try3">
         </div>
       </div>
       <div id="board_try4" class="hide">
-        <P>4</P>
+        <!-- <P>4</P> -->
         <div *ngFor="let div of wordSquares" class="square animate__animated" id="{{div.id}}_try4">
         </div>
       </div>
-      <div id="board">
+      <div id="board_try5" class="hide">
+        <!-- <P>5</P> -->
+        <div *ngFor="let div of wordSquares" class="square animate__animated" id="{{div.id}}_try5">
+        </div>
+      </div>
+      <!-- <div id="board">
         <P>&nbsp;&nbsp;</P>
         <div *ngFor="let div of wordSquares" class="square animate__animated" [id]="div.id">
         </div>
-      </div>
+      </div> -->
     </div>
 
-    <div id="divError" style="text-align: center;">
+    <!-- <div id="divError" style="text-align: center;">
       <span id="errorMessage" class="error-message hide">{{ errorMessage }}</span>
       <ion-item-divider id="errorMessageHr" class="customDivider hide"></ion-item-divider>
-    </div>
-
+    </div> -->
   </div>
+
   <div id="keyboard-container">
     <div class="keyboard-row">
       <button data-key="q" (click)="updateGuessedWords('q')">q</button>
@@ -110,29 +211,29 @@
 </ion-content>
 
 <ion-footer collapse="fade">
-  <ion-toolbar >
-  <ion-grid>
-    <ion-row text-center>
-      <ion-col size="5">
-        
-        <ion-chip outline color="secondary">
-          <ion-icon name="trophy-outline"></ion-icon>
-          <ion-label>PONTOS</ion-label>
-          <ion-badge color="light" style="margin-left: 10px;">5000</ion-badge>
-        </ion-chip>
-      </ion-col>
-      <ion-col size="1">
-        <ion-icon name="share-social-outline" style="margin-left:20px;margin-top:12px;cursor: pointer;"></ion-icon>
-      </ion-col>
-      <ion-col size="6" style="display: inline-block; text-align: right;">
-        <ion-button *ngIf="alreadyStarted"
-          size="small" 
-          (click)="handleExtraHelpButtonClick()"
-          data-toggle="tooltip" data-placement="bottom" title="Ajuda">
-          Ajuda <ion-icon name="help-circle-outline" style="margin-left:5px;"></ion-icon>
-        </ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-</ion-toolbar>
+  <ion-toolbar>
+    <ion-grid>
+      <ion-row text-center>
+        <ion-col size="12">
+          <ion-chip outline color="secondary">
+            <ion-icon name="trophy-outline"></ion-icon>
+            <ion-badge color="light" style="margin-left: 10px;">{{score}}</ion-badge>
+            <ion-badge color="success" style="margin-left: 10px;">10</ion-badge>
+          </ion-chip>
+          <ion-chip outline color="secondary">
+            <ion-icon name="share-social-outline" style="padding-right: 15px;"></ion-icon>
+          </ion-chip>
+          
+          <ion-chip id="triggerHelp" outline color="secondary" style="float: right" data-toggle="tooltip" data-placement="bottom" title="Ajuda">
+            AJUDA
+            <ion-icon name="help-circle-outline" style="margin-left:5px;"></ion-icon>
+          </ion-chip>
+          <!-- <ion-chip outline color="secondary" (click)="handleExtraHelpButtonClick()" style="float: right" data-toggle="tooltip" data-placement="bottom" title="Ajuda">
+            AJUDA
+            <ion-icon name="help-circle-outline" style="margin-left:5px;"></ion-icon>
+          </ion-chip> -->
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-toolbar>
 </ion-footer>
