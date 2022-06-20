@@ -22,7 +22,7 @@ export class HomePage implements  OnInit, AfterViewInit {
 
   public guessedWordCount = 0;
 
-  public limitTry = 4;
+  public limitTry = 5;
   public actual = 0;
 
   public actualWordArray = 0;
@@ -551,7 +551,6 @@ export class HomePage implements  OnInit, AfterViewInit {
       SecurityUtil.clear();
       SecurityUtil.set(this.wordsStorage);
 
-      console.log('sucesso');
       this.handleSuccess();
 
       //this.startFromStorage();

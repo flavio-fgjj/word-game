@@ -1,13 +1,26 @@
-<ion-header [translucent]="true">
+<ion-header >
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-title size="large" class="pageTitle">
+      <ion-title size="medium" class="pageTitle">
         Word Game
       </ion-title>
     </ion-buttons>
-    <ion-button slot="end" style="margin-right:20px;" class="info-button" size="small" (click)="handleInfoButtonClick()">
+    <ion-button slot="start" class="info-button" size="small" (click)="handleInfoButtonClick()">
       <ion-icon name="information-circle-outline"></ion-icon>
     </ion-button>
+
+    <ion-item-group slot="end" style="border: none !important;">
+      <ion-item *ngIf="alreadyStarted">
+        <ion-badge color="primary">{{ totalSuccess }}</ion-badge>
+        <span style="margin-left: 5px; padding-bottom: 10px;">x</span>
+        <ion-badge color="danger" style="margin-left:5px;">{{ totalErrors }}</ion-badge>
+      </ion-item>
+      <ion-item *ngIf="!alreadyStarted">
+        <ion-button style="text-align: center;" *ngIf="!alreadyStarted" color="warning" size="medium" (click)="start()" class="ion-text-center">Começar!</ion-button>
+      </ion-item>
+    </ion-item-group>
+
+   
   </ion-toolbar>
 </ion-header>
 
@@ -15,14 +28,10 @@
   
   <div id="container">
 
-    <ion-item-group style="display:inline-block;margin-top:5px;border: none !important;" *ngIf="!alreadyStarted">
-      <ion-item>
-        <ion-button *ngIf="!alreadyStarted" color="warning" size="large" (click)="start()" class="ion-text-center" style="margin-left: 20px;margin-top:5px;">Começar!</ion-button>
-      </ion-item>
-    </ion-item-group>
+    
 
     <div id="board-container">
-      <span class="process" *ngIf="alreadyStarted">{{grammaticalClass}}</span>
+      <!-- <span class="process" *ngIf="alreadyStarted">{{grammaticalClass}}</span> -->
       <!-- <span class="meaning" style="text-align: center;margin: 0px 5px 5px 5px">{{meaning}}</span> -->
       <!-- <ion-item-divider class="customDivider"></ion-item-divider> -->
 
@@ -104,17 +113,23 @@
   <ion-toolbar >
   <ion-grid>
     <ion-row text-center>
-      <ion-col size="6" style="padding-top: 10px;">
-        <ion-badge color="primary">{{ totalSuccess }}</ion-badge>
-        <ion-badge color="danger" style="margin-left:5px;">{{ totalErrors }}</ion-badge>
-        <ion-icon name="share-social-outline" style="margin-left:10px;cursor: pointer;"></ion-icon>
+      <ion-col size="5">
+        
+        <ion-chip outline color="secondary">
+          <ion-icon name="trophy-outline"></ion-icon>
+          <ion-label>PONTOS</ion-label>
+          <ion-badge color="light" style="margin-left: 10px;">5000</ion-badge>
+        </ion-chip>
       </ion-col>
-      <ion-col size="6" style="text-align: right;">
+      <ion-col size="1">
+        <ion-icon name="share-social-outline" style="margin-left:20px;margin-top:12px;cursor: pointer;"></ion-icon>
+      </ion-col>
+      <ion-col size="6" style="display: inline-block; text-align: right;">
         <ion-button *ngIf="alreadyStarted"
           size="small" 
           (click)="handleExtraHelpButtonClick()"
           data-toggle="tooltip" data-placement="bottom" title="Ajuda">
-          Ajuda Extra <ion-icon name="help-circle-outline" style="margin-left:5px;"></ion-icon>
+          Ajuda <ion-icon name="help-circle-outline" style="margin-left:5px;"></ion-icon>
         </ion-button>
       </ion-col>
     </ion-row>
