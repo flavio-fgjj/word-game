@@ -277,36 +277,6 @@ export class HomePage implements  OnInit, AfterViewInit {
     this.fs2 = event.detail.value.toString();
   }
 
-  updateGuessedWords(event) {
-    const letter = event.target.innerText;
-
-    const currentWordArr = this.getCurrentWordArr();
-
-    if (currentWordArr && currentWordArr.length < this.word.length) {
-      currentWordArr.push(letter);
-
-      this.availableSpace = this.availableSpace + 1;
-
-      switch (this.actual) {
-        case 1:
-          document.getElementById(`${String(this.availableSpace - 1)}_try1`).textContent = letter;
-          break;
-        case 2:
-          document.getElementById(`${String(this.availableSpace - 1)}_try2`).textContent = letter;
-          break;
-        case 3:
-          document.getElementById(`${String(this.availableSpace - 1)}_try3`).textContent = letter;
-          break;
-        case 4:
-          document.getElementById(`${String(this.availableSpace - 1)}_try4`).textContent = letter;
-          break;
-        case 5:
-          document.getElementById(`${String(this.availableSpace - 1)}_try5`).textContent = letter;
-          break;
-      }
-    }
-  }
-
   getCurrentWordArr() {
     const numberOfGuessedWords = this.guessedWords.length;
     return this.guessedWords[numberOfGuessedWords - 1];
@@ -333,31 +303,28 @@ export class HomePage implements  OnInit, AfterViewInit {
   // functions end
 
   // keyboard handles
+  updateGuessedWords(event) {
+    const letter = event.target.innerText;
+    const currentWordArr = this.getCurrentWordArr();
+
+    if (currentWordArr && currentWordArr.length < this.word.length) {
+      currentWordArr.push(letter);
+
+      this.availableSpace = this.availableSpace + 1;
+
+      document.getElementById(`${String(this.availableSpace - 1)}_try${this.actual}`).textContent = letter;
+    }
+  }
+
   handleDeleteLetter() {
     const currentWordArr = this.getCurrentWordArr();
-    //const removedLetter = currentWordArr.pop();
-
-    this.guessedWords[this.guessedWords.length - 1] = currentWordArr;
-
-    switch  (this.actual) {
-      case 1:
-        document.getElementById(`${String(this.availableSpace - 1)}_try1`).textContent = '';
-        break;
-      case 2:
-        document.getElementById(`${String(this.availableSpace - 1)}_try2`).textContent = '';
-        break;
-      case 3:
-        document.getElementById(`${String(this.availableSpace - 1)}_try3`).textContent = '';
-        break;
-      case 4:
-        document.getElementById(`${String(this.availableSpace - 1)}_try4`).textContent = '';
-        break;
-      case 5:
-        document.getElementById(`${String(this.availableSpace - 1)}_try5`).textContent = '';
-        break;
+    // const removedLetter = currentWordArr.pop();
+    if(currentWordArr.length > 0) {
+      currentWordArr.pop();
+      this.guessedWords[this.guessedWords.length - 1] = currentWordArr;
+      document.getElementById(`${String(this.availableSpace - 1)}_try${this.actual}`).textContent = '';
+      this.availableSpace = this.availableSpace - 1;
     }
-
-    this.availableSpace = this.availableSpace - 1;
   }
 
   async handleSubmitWord() {
@@ -388,7 +355,6 @@ export class HomePage implements  OnInit, AfterViewInit {
 
     let letterE1Aux;
 
-    console.log(currentWordArr);
     currentWordArr.forEach((letter, index) => {
       setTimeout(() => {
         const tileColor = this.getTileColor(letter.toString().toLowerCase().trim(), index);
@@ -418,7 +384,6 @@ export class HomePage implements  OnInit, AfterViewInit {
       this.handleSuccess();
       return;
     } else {
-      console.log('atual', this.actual, 'limite', this.limitTry);
       if(this.actual === this.limitTry) {
         this.totalErrors += 1;
 
