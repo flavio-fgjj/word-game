@@ -117,6 +117,7 @@ export class HomePage implements  OnInit, AfterViewInit {
           this.wordsStorage.actual = 1;
           this.wordsStorage.success = 0;
           this.wordsStorage.errors = 0;
+          this.wordsStorage.score = 0;
           this.wordsStorage.words = this.words;
           SecurityUtil.set(this.wordsStorage);
 
@@ -129,12 +130,16 @@ export class HomePage implements  OnInit, AfterViewInit {
     this.wordsStorage = new WordsStorage();
     this.wordsStorage = SecurityUtil.get();
 
+    console.log(this.wordsStorage);
     this.words = this.wordsStorage.words;
 
     this.words = this.words.filter(x => x.word !== null);
 
     this.totalSuccess = this.wordsStorage.success;
     this.totalErrors = this.wordsStorage.errors;
+
+    this.totalScore = this.wordsStorage.score;
+    this.score = 5;
 
     this.wordObj = this.words[this.wordsStorage.actual - 1];
     await this.startSquare();
@@ -378,6 +383,7 @@ export class HomePage implements  OnInit, AfterViewInit {
       this.wordsStorage = SecurityUtil.get();
       this.wordsStorage.actual += 1;
       this.wordsStorage.success += 1;
+      this.wordsStorage.score += this.score;
       SecurityUtil.clear();
       SecurityUtil.set(this.wordsStorage);
 
