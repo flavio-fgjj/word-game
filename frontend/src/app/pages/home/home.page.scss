@@ -34,7 +34,7 @@
   flex-wrap: wrap;
   flex-grow: 1;
   overflow: hidden;
-  //padding-top: 10px;
+  padding-top: 10px;
 }
 
 #board, #board_try1, #board_try2, #board_try3, #board_try4 {
@@ -45,7 +45,7 @@
   justify-content: center;
   align-items: center;
   text-align: center;
-  padding: 10px;
+  //padding: 10px;
   box-sizing: border-box;
 
   width: 100%;
@@ -81,7 +81,7 @@
   text-align: center;
 
   //height: 180px;
-  // margin-left: 10px;
+  margin-left: 5px;
   // margin-right: 5px;
 
   left: 0;

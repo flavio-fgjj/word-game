@@ -14,6 +14,10 @@ import { SecurityUtil } from 'src/app/utils/security.utils';
 })
 export class HomePage implements  OnInit, AfterViewInit {
 
+  public keyboardFirstRow = ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'];
+  public keyboardSecondRow = ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'];
+  public keyboardThirdRow = ['z', 'x', 'c', 'v', 'b', 'n', 'm'];
+
   public wordArray: string[];
   public words: Array<Words>;
   public wordsStorage: WordsStorage;
@@ -24,6 +28,7 @@ export class HomePage implements  OnInit, AfterViewInit {
 
   public guessedWordCount = 0;
 
+  public limitTryArray: string[] = [];
   public limitTry = 5;
   public actual = 0;
 
@@ -53,6 +58,7 @@ export class HomePage implements  OnInit, AfterViewInit {
   public totalErrors = 0;
   public actualWord = 0;
   public score = 5;
+  public totalScore = 5;
 
   public meaningSeen = false;
   public synSeen = false;
@@ -66,6 +72,10 @@ export class HomePage implements  OnInit, AfterViewInit {
   async ngOnInit() {
     // this.wordArray = ['Flavio', 'Estela', 'Joao', 'Teo'];
     // this.startSquare();
+    for (let j = 1; j <= this.limitTry; j++) {
+      this.limitTryArray.push(j.toString());
+    }
+
     const loading = await this.loadingCtrl.create({ message: 'Iniciando...' });
     loading.present();
 
@@ -266,7 +276,9 @@ export class HomePage implements  OnInit, AfterViewInit {
     this.fs2 = event.detail.value.toString();
   }
 
-  updateGuessedWords(letter) {
+  updateGuessedWords(event) {
+    const letter = event.target.innerText;
+
     const currentWordArr = this.getCurrentWordArr();
 
     // const div = document.getElementById('errorMessage');
@@ -327,6 +339,7 @@ export class HomePage implements  OnInit, AfterViewInit {
     this.score -= 2;
     this.phraseSeen = true;
   }
+
   // functions end
 
   // keyboard handles
@@ -367,7 +380,7 @@ export class HomePage implements  OnInit, AfterViewInit {
     this.availableSpace = this.availableSpace - 1;
   }
 
-  handleSubmitWord() {
+  async handleSubmitWord() {
     const currentWordArr = this.getCurrentWordArr();
 
     if (currentWordArr.length !== this.word.length) {
@@ -378,16 +391,23 @@ export class HomePage implements  OnInit, AfterViewInit {
     const currentWord = currentWordArr.join('');
     //TODO: Validate word
 
+    let wordValidated = false;
     this
       .service
       .wordValidation(currentWord)
       .subscribe(async response => {
-        const isWordValid = await response.status;
-        if (isWordValid === 'NOK') {
+        const isWordValid = await response;
+        console.log(isWordValid);
+        wordValidated = true;
+        if (isWordValid.status === 'NOK') {
           this.handleWrongMsg('Erro!', 'Palavra inválida!');
           return;
         }
       });
+
+    while(!wordValidated) {
+      console.error('...');
+    }
 
     const firstLetterId = this.guessedWordCount * this.word.length + 1;
     const interval = 200;
