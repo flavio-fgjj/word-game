@@ -46,7 +46,7 @@ export class HomePage implements  OnInit, AfterViewInit {
   public grammaticalClass: string = null;
   public syn: string[] = [];
   public ant: string[] = [];
-  public phrase: string = null;
+  public phrase: string[] = [];
   public author: string = null;
   public font: string = null;
 
@@ -139,6 +139,7 @@ export class HomePage implements  OnInit, AfterViewInit {
     this.wordObj = this.words[this.wordsStorage.actual - 1];
     await this.startSquare();
   }
+
   async start() {
     const loading = await this.loadingCtrl.create({ message: 'Buscando palavras...' });
     loading.present();
@@ -166,7 +167,7 @@ export class HomePage implements  OnInit, AfterViewInit {
     this.ant = this.wordObj.antonyms;
 
     this.author = this.wordObj.phrase.author;
-    this.phrase = this.wordObj.phrase.phrase;
+    this.phrase = this.wordObj.phrase.phrase.toString().split('/');
     this.font = this.wordObj.phrase.font;
 
     this.alreadyStarted = true;
@@ -281,20 +282,10 @@ export class HomePage implements  OnInit, AfterViewInit {
 
     const currentWordArr = this.getCurrentWordArr();
 
-    // const div = document.getElementById('errorMessage');
-    // div.classList.remove('show');
-    // div.classList.add('hide');
-    // document.getElementById('errorMessageHr').classList.remove('show');
-    // document.getElementById('errorMessageHr').classList.add('hide');
-
     if (currentWordArr && currentWordArr.length < this.word.length) {
       currentWordArr.push(letter);
 
-      // console.log(this.availableSpace);
-      // const availableSpaceEl = document.getElementById(String(this.availableSpace));
-
       this.availableSpace = this.availableSpace + 1;
-      //availableSpaceEl.textContent = letter;
 
       switch (this.actual) {
         case 1:
@@ -339,25 +330,14 @@ export class HomePage implements  OnInit, AfterViewInit {
     this.score -= 2;
     this.phraseSeen = true;
   }
-
   // functions end
 
   // keyboard handles
   handleDeleteLetter() {
     const currentWordArr = this.getCurrentWordArr();
-    const removedLetter = currentWordArr.pop();
-    // const div = document.getElementById('errorMessage');
-
-    // div.classList.remove('show');
-    // div.classList.add('hide');
-    // document.getElementById('errorMessageHr').classList.remove('show');
-    // document.getElementById('errorMessageHr').classList.add('hide');
+    //const removedLetter = currentWordArr.pop();
 
     this.guessedWords[this.guessedWords.length - 1] = currentWordArr;
-
-    // const lastLetterEl = document.getElementById(String(this.availableSpace - 1));
-
-    // lastLetterEl.textContent = '';
 
     switch  (this.actual) {
       case 1:
@@ -391,64 +371,33 @@ export class HomePage implements  OnInit, AfterViewInit {
     const currentWord = currentWordArr.join('');
     //TODO: Validate word
 
-    let wordValidated = false;
-    this
-      .service
-      .wordValidation(currentWord)
-      .subscribe(async response => {
-        const isWordValid = await response;
-        console.log(isWordValid);
-        wordValidated = true;
-        if (isWordValid.status === 'NOK') {
-          this.handleWrongMsg('Erro!', 'Palavra inválida!');
-          return;
-        }
-      });
-
-    while(!wordValidated) {
-      console.error('...');
-    }
+    // this
+    //   .service
+    //   .wordValidation(currentWord)
+    //   .subscribe(async response => {
+    //     const isWordValid = await response;
+    //     console.log(isWordValid);
+    //     if (isWordValid.status === 'NOK') {
+    //       this.handleWrongMsg('Erro!', 'Palavra inválida!');
+    //       return;
+    //     }
+    //   });
 
     const firstLetterId = this.guessedWordCount * this.word.length + 1;
     const interval = 200;
 
-    // let letterE1Aux = document.getElementById('1');
     let letterE1Aux;
 
+    console.log(currentWordArr);
     currentWordArr.forEach((letter, index) => {
       setTimeout(() => {
-        const tileColor = this.getTileColor(letter, index);
-
+        const tileColor = this.getTileColor(letter.toString().toLowerCase().trim(), index);
         const letterId = firstLetterId + index;
-        // const letterEl = document.getElementById(letterId.toString());
-        // letterEl.classList.add('animate__flipInX');
-        // letterEl.setAttribute('style', `background-color:${tileColor};border-color:${tileColor};color:whitesmoke;`);
 
         letterE1Aux = document.getElementById(`${letterId.toString()}_try${(this.actual - 1)}`);
         letterE1Aux.classList.add('animate__flipInX');
         letterE1Aux.setAttribute('style', `background-color:${tileColor};border-color:${tileColor};color:whitesmoke;`);
 
-        // switch (this.actual - 1) {
-        //   case 1:
-        //     letterE1Aux = document.getElementById(`${letterId.toString()}_try1`);
-        //     letterE1Aux.classList.add('animate__flipInX');
-        //     letterE1Aux.setAttribute('style', `background-color:${tileColor};border-color:${tileColor};color:whitesmoke;`);
-        //     break;
-        //   case 2:
-        //     letterE1Aux = document.getElementById(`${letterId.toString()}_try2`);
-        //     break;
-        //   case 3:
-        //     letterE1Aux = document.getElementById(`${letterId.toString()}_try3`);
-        //     break;
-        //   case 4:
-        //     letterE1Aux = document.getElementById(`${letterId.toString()}_try4`);
-        //     break;
-        //   case 5:
-        //     letterE1Aux = document.getElementById(`${letterId.toString()}_try5`);
-        //     break;
-        // }
-        // letterE1Aux.classList.add('animate__flipInX');
-        // letterE1Aux.setAttribute('style', `background-color:${tileColor};border-color:${tileColor};color:whitesmoke;`);
       }, interval * index);
     });
 
@@ -456,28 +405,6 @@ export class HomePage implements  OnInit, AfterViewInit {
 
     document.getElementById(`board_try${this.actual}`).classList.add('showFlex');
     document.getElementById(`board_try${this.actual}`).classList.remove('hide');
-    // switch (this.actual) {
-    //   case 1:
-    //     document.getElementById('board_try1').classList.add('showFlex');
-    //     document.getElementById('board_try1').classList.remove('hide');
-    //     break;
-    //   case 2:
-    //     document.getElementById('board_try2').classList.add('showFlex');
-    //     document.getElementById('board_try2').classList.remove('hide');
-    //     break;
-    //   case 3:
-    //     document.getElementById('board_try3').classList.add('showFlex');
-    //     document.getElementById('board_try3').classList.remove('hide');
-    //     break;
-    //   case 4:
-    //     document.getElementById('board_try4').classList.add('showFlex');
-    //     document.getElementById('board_try4').classList.remove('hide');
-    //     break;
-    //   case 5:
-    //     document.getElementById('board_try5').classList.add('showFlex');
-    //     document.getElementById('board_try5').classList.remove('hide');
-    //     break;
-    // }
 
     if (currentWord.toString().toLowerCase().trim() === this.word.toString().toLowerCase().trim()) {
       this.totalSuccess += 1;

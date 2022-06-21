@@ -113,7 +113,7 @@
                   </ion-card-header>
                   <ion-card-content *ngIf="phraseSeen">
                     {{font}}<br><br>
-                    <p style="text-align:center;">{{phrase}}</p><br>
+                    <p style="text-align:center;" *ngFor="let p of phrase">{{p}}</p><br>
                     {{author}}
                   </ion-card-content>
                 </ion-card>
@@ -131,41 +131,12 @@
         <ion-icon name="warning-outline" color="danger"></ion-icon><br>
         <ion-label color="danger">Estamos enfrentando problemas! <br><br>Favor tentar mais tarde! <br><br>Desculpe o transtorno!</ion-label>
       </div>
-      <!-- <div *ngFor="let num of [].constructor(limitTry)" id="board_try{{num}}" class="{{num > 1 ?? 'hide'}}">
-        <P>{{num}}</P>
-        <div *ngFor="let div of wordSquares" class="square animate__animated" id="{{num}}_try{{num}}">
-        </div>
-      </div> -->
+
       <div *ngFor="let num of limitTryArray; let index = index" id="board_try{{num}}" [class.hide]="index > 0">
         <P>{{num}}</P>
         <div *ngFor="let div of wordSquares" class="square animate__animated" id="{{div.id}}_try{{num}}">
         </div>
       </div>
-      <!-- <div id="board_try1">
-        <P>1</P>
-        <div *ngFor="let div of wordSquares" class="square animate__animated" id="{{div.id}}_try1">
-        </div>
-      </div>
-      <div id="board_try2" class="hide">
-        <P>2</P>
-        <div *ngFor="let div of wordSquares" class="square animate__animated" id="{{div.id}}_try2">
-        </div>
-      </div>
-      <div id="board_try3" class="hide">
-        <P>3</P>
-        <div *ngFor="let div of wordSquares" class="square animate__animated" id="{{div.id}}_try3">
-        </div>
-      </div>
-      <div id="board_try4" class="hide">
-        <P>4</P>
-        <div *ngFor="let div of wordSquares" class="square animate__animated" id="{{div.id}}_try4">
-        </div>
-      </div>
-      <div id="board_try5" class="hide">
-        <P>5</P>
-        <div *ngFor="let div of wordSquares" class="square animate__animated" id="{{div.id}}_try5">
-        </div>
-      </div> -->
     </div>
   </div>
 
