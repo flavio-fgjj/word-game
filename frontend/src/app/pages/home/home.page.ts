@@ -31,7 +31,7 @@ export class HomePage implements  OnInit, AfterViewInit {
   public limitTryArray: string[] = [];
   public limitTry = 5;
   public actual = 0;
-
+  public statusTry = '';
   public actualWordArray = 0;
 
   public wordSquares = [];
@@ -107,7 +107,7 @@ export class HomePage implements  OnInit, AfterViewInit {
       .subscribe(async response => {
         this.words = response.data.words;
 
-        this.words = this.words.filter(x => x.word !== null).slice(0, 10);
+        this.words = this.words.filter(x => x.word !== null).slice(0, 7);
 
         if (this.words.length === 0) {
           this.errorPage = true;
@@ -130,7 +130,6 @@ export class HomePage implements  OnInit, AfterViewInit {
     this.wordsStorage = new WordsStorage();
     this.wordsStorage = SecurityUtil.get();
 
-    console.log(this.wordsStorage);
     this.words = this.wordsStorage.words;
 
     this.words = this.words.filter(x => x.word !== null);
@@ -140,6 +139,7 @@ export class HomePage implements  OnInit, AfterViewInit {
 
     this.totalScore = this.wordsStorage.score;
     this.score = 5;
+    this.statusTry = '';
 
     this.wordObj = this.words[this.wordsStorage.actual - 1];
     await this.startSquare();
@@ -182,6 +182,7 @@ export class HomePage implements  OnInit, AfterViewInit {
 
     this.actual = 1;
     this.limitTry = 5;
+    this.statusTry = '';
   }
 
   // alerts handles
@@ -338,6 +339,29 @@ export class HomePage implements  OnInit, AfterViewInit {
     }
   }
 
+  async wordValidation(word): Promise<boolean> {
+    let ret = true;
+    class ValidWordOutput {
+      status: string;
+      message: string;
+    };
+
+    await this
+      .service
+      .wordValidation(word)
+      .then((value: ValidWordOutput) => {
+        if (value.status === 'NOK') {
+          ret = false;
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        ret = false;
+      });
+
+    return ret;
+  }
+
   async handleSubmitWord() {
     const currentWordArr = this.getCurrentWordArr();
 
@@ -346,20 +370,20 @@ export class HomePage implements  OnInit, AfterViewInit {
       return;
     }
 
-    const currentWord = currentWordArr.join('');
-    //TODO: Validate word
+    const loading = await this.loadingCtrl.create({ message: 'Validando...' });
+    loading.present();
 
-    this
-      .service
-      .wordValidation(currentWord)
-      .subscribe(async response => {
-        const isWordValid = await response;
-        console.log(isWordValid);
-        if (isWordValid.status === 'NOK') {
-          this.handleWrongMsg('Erro!', 'Palavra inválida!');
-          return;
-        }
-      });
+    const currentWord = currentWordArr.join('');
+
+    const isWordValid = await this.wordValidation(currentWord);
+
+    if(!isWordValid) {
+      this.handleWrongMsg('Erro!', 'Palavra inválida!');
+      loading.dismiss();
+      return;
+    }
+
+    loading.dismiss();
 
     const firstLetterId = this.guessedWordCount * this.word.length + 1;
     const interval = 200;
@@ -371,7 +395,11 @@ export class HomePage implements  OnInit, AfterViewInit {
         const tileColor = this.getTileColor(letter.toString().toLowerCase().trim(), index);
         const letterId = firstLetterId + index;
 
-        letterE1Aux = document.getElementById(`${letterId.toString()}_try${(this.actual - 1)}`);
+        if (this.statusTry === 'success' || this.statusTry === 'fail') {
+          letterE1Aux = document.getElementById(`${letterId.toString()}_try${(this.actual)}`);
+        } else {
+          letterE1Aux = document.getElementById(`${letterId.toString()}_try${(this.actual - 1)}`);
+        }
         letterE1Aux.classList.add('animate__flipInX');
         letterE1Aux.setAttribute('style', `background-color:${tileColor};border-color:${tileColor};color:whitesmoke;`);
 
@@ -380,10 +408,8 @@ export class HomePage implements  OnInit, AfterViewInit {
 
     this.guessedWordCount += 1;
 
-    document.getElementById(`board_try${this.actual}`).classList.add('showFlex');
-    document.getElementById(`board_try${this.actual}`).classList.remove('hide');
-
     if (currentWord.toString().toLowerCase().trim() === this.word.toString().toLowerCase().trim()) {
+      this.statusTry = 'success';
       this.totalSuccess += 1;
 
       this.wordsStorage = SecurityUtil.get();
@@ -397,6 +423,7 @@ export class HomePage implements  OnInit, AfterViewInit {
       return;
     } else {
       if(this.actual === this.limitTry) {
+        this.statusTry = 'fail';
         this.totalErrors += 1;
 
         this.wordsStorage = SecurityUtil.get();
@@ -408,6 +435,7 @@ export class HomePage implements  OnInit, AfterViewInit {
         this.handleLimitExceeded();
         return;
       } else {
+        this.statusTry = '';
         this.guessedWords.push([]);
         this.availableSpace = 1;
         this.guessedWordCount = 0;
@@ -424,8 +452,6 @@ export class HomePage implements  OnInit, AfterViewInit {
       });
 
       this.actual++;
-      document.getElementById(`board_try${this.actual}`).classList.add('showFlex');
-      document.getElementById(`board_try${this.actual}`).classList.remove('hide');
     }
   }
 
