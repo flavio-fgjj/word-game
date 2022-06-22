@@ -132,8 +132,9 @@
         <ion-label color="danger">Estamos enfrentando problemas! <br><br>Favor tentar mais tarde! <br><br>Desculpe o transtorno!</ion-label>
       </div>
 
-      <div *ngFor="let num of limitTryArray; let index = index" id="board_try{{num}}" [class.hide]="index > 0">
-        <P>{{num}}</P>
+      <!-- <div *ngFor="let num of limitTryArray; let index = index" id="board_try{{num}}" [class.hide]="index > 0"> -->
+      <div *ngFor="let num of limitTryArray; let index = index" id="board_try{{num}}">
+        <!-- <P>{{num}}</P> -->
         <div *ngFor="let div of wordSquares" class="square animate__animated" id="{{div.id}}_try{{num}}">
         </div>
       </div>
@@ -166,8 +167,8 @@
           <ion-chip outline color="secondary">
             <ion-icon name="trophy-outline"></ion-icon>
             PONTOS
-            <ion-badge color="light" style="margin-left: 10px;">{{score}}</ion-badge>
-            <ion-badge color="dark" style="margin-left: 10px;">{{totalScore}}</ion-badge>
+            <ion-badge color="secondary" style="margin-left: 10px;">{{score}}</ion-badge>
+            <ion-badge color="success" style="margin-left: 10px;">{{totalScore}}</ion-badge>
           </ion-chip>
 
           <ion-chip id="triggerHelp" outline color="secondary" style="float: right" data-toggle="tooltip" data-placement="bottom" title="Ajuda">

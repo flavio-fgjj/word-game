@@ -57,8 +57,8 @@ export class HomePage implements  OnInit, AfterViewInit {
   public totalSuccess = 0;
   public totalErrors = 0;
   public actualWord = 0;
-  public score = 5;
-  public totalScore = 5;
+  public score = 0;
+  public totalScore = 0;
 
   public meaningSeen = false;
   public synSeen = false;
@@ -107,7 +107,7 @@ export class HomePage implements  OnInit, AfterViewInit {
       .subscribe(async response => {
         this.words = response.data.words;
 
-        this.words = this.words.filter(x => x.word !== null).slice(0, 15);
+        this.words = this.words.filter(x => x.word !== null).slice(0, 10);
 
         if (this.words.length === 0) {
           this.errorPage = true;
@@ -278,9 +278,9 @@ export class HomePage implements  OnInit, AfterViewInit {
     }
   }
 
-  typeSelected(event) {
-    this.fs2 = event.detail.value.toString();
-  }
+  // typeSelected(event) {
+  //   this.fs2 = event.detail.value.toString();
+  // }
 
   getCurrentWordArr() {
     const numberOfGuessedWords = this.guessedWords.length;
@@ -292,18 +292,24 @@ export class HomePage implements  OnInit, AfterViewInit {
   }
 
   fnMeaningSeen() {
-    this.score -= 1;
-    this.meaningSeen = true;
+    if(this.alreadyStarted) {
+      this.score -= 1;
+      this.meaningSeen = true;
+    }
   }
 
   fnSynSeen() {
-    this.score -= 1.5;
-    this.synSeen = true;
+    if(this.alreadyStarted) {
+      this.score -= 1.5;
+      this.synSeen = true;
+    }
   }
 
   fnPhraseSeen() {
-    this.score -= 2;
-    this.phraseSeen = true;
+    if(this.alreadyStarted) {
+      this.score -= 2;
+      this.phraseSeen = true;
+    }
   }
   // functions end
 
@@ -343,17 +349,17 @@ export class HomePage implements  OnInit, AfterViewInit {
     const currentWord = currentWordArr.join('');
     //TODO: Validate word
 
-    // this
-    //   .service
-    //   .wordValidation(currentWord)
-    //   .subscribe(async response => {
-    //     const isWordValid = await response;
-    //     console.log(isWordValid);
-    //     if (isWordValid.status === 'NOK') {
-    //       this.handleWrongMsg('Erro!', 'Palavra inválida!');
-    //       return;
-    //     }
-    //   });
+    this
+      .service
+      .wordValidation(currentWord)
+      .subscribe(async response => {
+        const isWordValid = await response;
+        console.log(isWordValid);
+        if (isWordValid.status === 'NOK') {
+          this.handleWrongMsg('Erro!', 'Palavra inválida!');
+          return;
+        }
+      });
 
     const firstLetterId = this.guessedWordCount * this.word.length + 1;
     const interval = 200;

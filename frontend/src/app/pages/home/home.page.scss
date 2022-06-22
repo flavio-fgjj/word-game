@@ -35,6 +35,10 @@
   flex-grow: 1;
   overflow: hidden;
   padding-top: 10px;
+
+  div {
+    display: inline-flex !important;
+  }
 }
 
 #board, #board_try1, #board_try2, #board_try3, #board_try4 {
@@ -221,4 +225,8 @@ ol {
   font-size: 1.5rem;
   font-weight: bold;
   padding-top: 15px;
+}
+
+ion-card {
+  width: 100% !important;
 }
