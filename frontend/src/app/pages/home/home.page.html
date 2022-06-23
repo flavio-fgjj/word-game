@@ -7,12 +7,12 @@
     </ion-buttons>
     <app-modal-info></app-modal-info>
     <ion-item-group slot="end" style="border: none !important;">
-      <ion-item *ngIf="alreadyStarted">
+      <ion-item *ngIf="alreadyStarted" style="margin-right:20px;">
         <ion-badge color="primary">{{ totalSuccess }}</ion-badge>
         <span style="margin-left: 5px;">x</span>
         <ion-badge color="danger" style="margin-left:5px;">{{ totalErrors }}</ion-badge>
 
-          <ion-icon name="share-social-outline" style="padding-left: 5px;padding-top:2px;cursor: pointer;"></ion-icon>
+          <ion-icon name="share-social-outline" style="padding-left: 5px;padding-top:2px;cursor: pointer;" (click)="showShareOptions()"></ion-icon>
 
       </ion-item>
       <ion-item *ngIf="!alreadyStarted">
@@ -126,9 +126,8 @@
   </ion-modal>
 
   <div id="container" style="padding-right:8px;">
-    <button (click)="showShareOptions()">Share</button>
     <div id="board-container">
-      <div class="pageError" *ngIf="errorPage">
+      <div class="pageError" *ngIf="errorPage && !alreadyStarted">
         <ion-icon name="warning-outline" color="danger"></ion-icon><br>
         <ion-label color="danger">Estamos enfrentando problemas! <br><br>Favor tentar mais tarde! <br><br>Desculpe o transtorno!</ion-label>
       </div>
@@ -172,7 +171,7 @@
             <ion-badge color="success" style="margin-left: 10px;">{{totalScore}}</ion-badge>
           </ion-chip>
 
-          <ion-chip id="triggerHelp" outline color="secondary" style="float: right" data-toggle="tooltip" data-placement="bottom" title="Ajuda">
+          <ion-chip id="triggerHelp" outline color="secondary" style="float: right; margin-right:20px;" data-toggle="tooltip" data-placement="bottom" title="Ajuda">
             AJUDA
             <ion-icon name="help-circle-outline" style="margin-left:5px;"></ion-icon>
           </ion-chip>

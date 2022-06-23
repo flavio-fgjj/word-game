@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { ModalController, Platform } from '@ionic/angular';
 import { SocialSharing } from '@ionic-native/social-sharing/ngx';
 import { environment } from 'src/environments/environment';
+import { WordsStorage } from 'src/app/models/WordsStorage';
+import { SecurityUtil } from 'src/app/utils/security.utils';
 
 @Component({
   selector: 'app-social-share',
@@ -13,18 +15,24 @@ export class SocialShareComponent implements OnInit {
   public sharingList = environment.socialShareOption;
   loader: any = null;
   // eslint-disable-next-line max-len
-  sharingText = 'You can download our app from playstore or use this link to download the app. And you can share awesome coupons with your loved once, Thank you';
-  emailSubject = 'Download Apps';
+  sharingText = 'Seu desempenho:';
+  emailSubject = 'Word game';
   recipent = ['recipient@example.org'];
   sharingImage = ['https://store.enappd.com/wp-content/uploads/2019/03/700x700_2-1-280x280.jpg'];
   sharingUrl = 'https://store.enappd.com';
 
+  public wordsStorage: WordsStorage;
+
   constructor(
     private modal: ModalController,
     private socialSharing: SocialSharing,
+    public platform: Platform
   ) { }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.wordsStorage = SecurityUtil.get();
+    console.log(this.wordsStorage);
+  }
 
   closeModal() {
     this.modal.dismiss();

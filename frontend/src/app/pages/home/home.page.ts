@@ -85,8 +85,6 @@ export class HomePage implements  OnInit {
       this.isMobilePlatform = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(item);
     }
 
-    console.log(this.isMobilePlatform);
-
     for (let j = 1; j <= this.limitTry; j++) {
       this.limitTryArray.push(j.toString());
     }
@@ -95,18 +93,19 @@ export class HomePage implements  OnInit {
     loading.present();
 
     this.wordsStorage = SecurityUtil.get();
-    if(this.wordsStorage) {
-      const storageDate = new Date(this.wordsStorage.date);
-      const today = new Date();
-      if((storageDate.getDate() === today.getDate()
-        && storageDate.getMonth() === today.getMonth()
-        && storageDate.getFullYear() === today.getFullYear()) && this.wordsStorage.words.length > 0) {
-          this.startFromStorage();
-      } else {
+    // if(this.wordsStorage) {
+    //   const storageDate = new Date(this.wordsStorage.date);
+    //   const today = new Date();
+    //   if((storageDate.getDate() === today.getDate()
+    //     && storageDate.getMonth() === today.getMonth()
+    //     && storageDate.getFullYear() === today.getFullYear()) && this.wordsStorage.words.length > 0) {
+    //       this.startFromStorage();
+    //   } else {
 
-        SecurityUtil.clear();
-      }
-    }
+    //     SecurityUtil.clear();
+    //   }
+    // }
+    this.startFromStorage();
 
     loading.dismiss();
   }
