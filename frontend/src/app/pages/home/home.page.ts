@@ -1,5 +1,5 @@
 import { AfterViewInit, OnInit , Component } from '@angular/core';
-import { LoadingController, AlertController } from '@ionic/angular';
+import { LoadingController, AlertController, ModalController, Platform } from '@ionic/angular';
 import { modalController } from '@ionic/core';
 
 import { Words } from 'src/app/models/Words';
@@ -7,12 +7,15 @@ import { WordsStorage } from 'src/app/models/WordsStorage';
 import { DataService } from 'src/app/services/data.service';
 import { SecurityUtil } from 'src/app/utils/security.utils';
 
+import { SocialShareComponent } from 'src/app/components/social-share/social-share.component';
+
+
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage implements  OnInit, AfterViewInit {
+export class HomePage implements  OnInit {
 
   public keyboardFirstRow = ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'];
   public keyboardSecondRow = ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'];
@@ -64,14 +67,26 @@ export class HomePage implements  OnInit, AfterViewInit {
   public synSeen = false;
   public phraseSeen = false;
 
+  public isMobilePlatform = false;
+
   constructor(
     private loadingCtrl: LoadingController,
     private service: DataService,
-    private alertController: AlertController) {}
+    private alertController: AlertController,
+    public modalCtrl: ModalController,
+    public platform: Platform) {}
 
   async ngOnInit() {
     // this.wordArray = ['Flavio', 'Estela', 'Joao', 'Teo'];
     // this.startSquare();
+
+    // check if platform is mobile
+    for (const item of this.platform.platforms()) {
+      this.isMobilePlatform = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(item);
+    }
+
+    console.log(this.isMobilePlatform);
+
     for (let j = 1; j <= this.limitTry; j++) {
       this.limitTryArray.push(j.toString());
     }
@@ -96,7 +111,22 @@ export class HomePage implements  OnInit, AfterViewInit {
     loading.dismiss();
   }
 
-  ngAfterViewInit(): void {}
+  // isMobilePlatform(plat): boolean {
+  //   for(let i = 0; i < plat.length; i++) {
+  //     console.log(plat[i]);
+  //   }
+  //   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(plat);
+  //   return !isMobile;
+  // }
+
+  async showShareOptions() {
+    const modal = await this.modalCtrl.create({
+      component: SocialShareComponent,
+      cssClass: 'backTransparent',
+      backdropDismiss: true
+    });
+    return modal.present();
+  }
 
   async getWords() {
     this.words = new Array<Words>();
