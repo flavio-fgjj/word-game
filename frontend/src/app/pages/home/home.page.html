@@ -133,7 +133,7 @@
       </div>
 
       <!-- <div *ngFor="let num of limitTryArray; let index = index" id="board_try{{num}}" [class.hide]="index > 0"> -->
-      <div *ngFor="let num of limitTryArray; let index = index" id="board_try{{num}}">
+      <div *ngFor="let num of limitAttemptsArray; let index = index" id="board_try{{num}}">
         <!-- <P>{{num}}</P> -->
         <div *ngFor="let div of wordSquares" class="square animate__animated" id="{{div.id}}_try{{num}}">
         </div>
@@ -143,16 +143,16 @@
 
   <div id="keyboard-container">
     <div class="keyboard-row" >
-      <button *ngFor="let first of keyboardFirstRow" (click)="updateGuessedWords($event)">{{first}}</button>
+      <button *ngFor="let first of keyboardFirstRow" id="{{first}}" (click)="updateGuessedWords($event)">{{first}}</button>
     </div>
     <div class="keyboard-row">
       <div class="spacer-half"></div>
-      <button *ngFor="let second of keyboardSecondRow" (click)="updateGuessedWords($event)">{{second}}</button>
+      <button *ngFor="let second of keyboardSecondRow" id="{{second}}" (click)="updateGuessedWords($event)">{{second}}</button>
       <div class="spacer-half"></div>
     </div>
     <div class="keyboard-row">
       <button data-key="enter" class="wide-button" (click)="handleSubmitWord()">Enter</button>
-      <button *ngFor="let third of keyboardThirdRow" (click)="updateGuessedWords($event)">{{third}}</button>
+      <button *ngFor="let third of keyboardThirdRow" id="{{third}}" (click)="updateGuessedWords($event)">{{third}}</button>
       <button data-key="del" class="wide-button" (click)="handleDeleteLetter()">Del</button>
     </div>
   </div>

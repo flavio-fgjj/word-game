@@ -31,10 +31,10 @@ export class HomePage implements  OnInit {
 
   public guessedWordCount = 0;
 
-  public limitTryArray: string[] = [];
-  public limitTry = 5;
+  public limitAttemptsArray: string[] = [];
+  public limitAttempts = 5;
   public actual = 0;
-  public statusTry = '';
+  public statusAttempt = '';
   public actualWordArray = 0;
 
   public wordSquares = [];
@@ -62,6 +62,7 @@ export class HomePage implements  OnInit {
   public actualWord = 0;
   public score = 0;
   public totalScore = 0;
+  public attempts = 0;
 
   public meaningSeen = false;
   public synSeen = false;
@@ -85,8 +86,8 @@ export class HomePage implements  OnInit {
       this.isMobilePlatform = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(item);
     }
 
-    for (let j = 1; j <= this.limitTry; j++) {
-      this.limitTryArray.push(j.toString());
+    for (let j = 1; j <= this.limitAttempts; j++) {
+      this.limitAttemptsArray.push(j.toString());
     }
 
     const loading = await this.loadingCtrl.create({ message: 'Iniciando...' });
@@ -110,18 +111,10 @@ export class HomePage implements  OnInit {
     loading.dismiss();
   }
 
-  // isMobilePlatform(plat): boolean {
-  //   for(let i = 0; i < plat.length; i++) {
-  //     console.log(plat[i]);
-  //   }
-  //   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(plat);
-  //   return !isMobile;
-  // }
-
   async showShareOptions() {
     const modal = await this.modalCtrl.create({
       component: SocialShareComponent,
-      cssClass: 'backTransparent',
+      cssClass: 'custom-modal',
       backdropDismiss: true
     });
     return modal.present();
@@ -147,6 +140,7 @@ export class HomePage implements  OnInit {
           this.wordsStorage.success = 0;
           this.wordsStorage.errors = 0;
           this.wordsStorage.score = 0;
+          this.wordsStorage.attempts = 0;
           this.wordsStorage.words = this.words;
           SecurityUtil.set(this.wordsStorage);
 
@@ -168,7 +162,7 @@ export class HomePage implements  OnInit {
 
     this.totalScore = this.wordsStorage.score;
     this.score = 5;
-    this.statusTry = '';
+    this.statusAttempt = '';
 
     this.wordObj = this.words[this.wordsStorage.actual - 1];
     await this.startSquare();
@@ -210,8 +204,8 @@ export class HomePage implements  OnInit {
     this.keys = document.querySelectorAll('.keyboard-row button');
 
     this.actual = 1;
-    this.limitTry = 5;
-    this.statusTry = '';
+    this.limitAttempts = 5;
+    this.statusAttempt = '';
   }
 
   // alerts handles
@@ -424,12 +418,15 @@ export class HomePage implements  OnInit {
         const tileColor = this.getTileColor(letter.toString().toLowerCase().trim(), index);
         const letterId = firstLetterId + index;
 
-        if (this.statusTry === 'success' || this.statusTry === 'fail') {
+        if (this.statusAttempt === 'success' || this.statusAttempt === 'fail') {
           letterE1Aux = document.getElementById(`${letterId.toString()}_try${(this.actual)}`);
         } else {
           letterE1Aux = document.getElementById(`${letterId.toString()}_try${(this.actual - 1)}`);
         }
         letterE1Aux.classList.add('animate__flipInX');
+        if (tileColor === 'rgb(58, 58, 60)') {
+          document.getElementById(`${letter.toString().toLowerCase().trim()}`).setAttribute('style', 'opacity: 0.33;');
+        }
         letterE1Aux.setAttribute('style', `background-color:${tileColor};border-color:${tileColor};color:whitesmoke;`);
 
       }, interval * index);
@@ -438,12 +435,13 @@ export class HomePage implements  OnInit {
     this.guessedWordCount += 1;
 
     if (currentWord.toString().toLowerCase().trim() === this.word.toString().toLowerCase().trim()) {
-      this.statusTry = 'success';
+      this.statusAttempt = 'success';
       this.totalSuccess += 1;
 
       this.wordsStorage = SecurityUtil.get();
       this.wordsStorage.actual += 1;
       this.wordsStorage.success += 1;
+      this.wordsStorage.attempts += this.attempts;
       this.wordsStorage.score += this.score;
       SecurityUtil.clear();
       SecurityUtil.set(this.wordsStorage);
@@ -451,20 +449,22 @@ export class HomePage implements  OnInit {
       this.handleSuccess();
       return;
     } else {
-      if(this.actual === this.limitTry) {
-        this.statusTry = 'fail';
+      if(this.actual === this.limitAttempts) {
+        this.statusAttempt = 'fail';
         this.totalErrors += 1;
 
         this.wordsStorage = SecurityUtil.get();
         this.wordsStorage.actual += 1;
         this.wordsStorage.errors += 1;
+        this.wordsStorage.attempts += this.attempts;
+
         SecurityUtil.clear();
         SecurityUtil.set(this.wordsStorage);
 
         this.handleLimitExceeded();
         return;
       } else {
-        this.statusTry = '';
+        this.statusAttempt = '';
         this.guessedWords.push([]);
         this.availableSpace = 1;
         this.guessedWordCount = 0;

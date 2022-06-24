@@ -6,5 +6,6 @@ export class WordsStorage {
   success: number;
   errors: number;
   score: number;
+  attempts: number;
   words: Array<Words>;
 }

@@ -1,26 +1,46 @@
 
 <div padding class="mainContent">
   <div no-margin margin-top class="feedbackCard">
-    <h2>Desepenho</h2>
-    <div class="clipboard">
-      <b>{{wordsStorage.score}}</b>
-      <p>PONTOS</p>
-      <b>{{wordsStorage.success}}</b>
-      <p>ACERTOS</p>
-      <b>{{wordsStorage.errors}}</b>
-      <p>ERROS</p>
-      <b>{{wordsStorage.success + wordsStorage.errors}}</b>
-      <p>TOTAL</p>
+    <div id="clipboard">
+      <div class="custom-border">
+        <h2>PERFORMANCE</h2>
+        <p>{{emailSubject}}</p>
+        <a href="https://tigatae.com.br" style="text-decoration: none">https://tigatae.com.br</a>
+        <ion-item-divider style="margin-top:20px;"></ion-item-divider>
+        <div class="performance">
+          <b>{{wordsStorage.score}}</b>
+          <p>PONTOS</p>
+          <ion-label><ion-icon name="ellipse" color="secondary" style="padding: 5px; margin-bottom: 2px;"></ion-icon></ion-label>
+          <b>{{wordsStorage.success}}</b>
+          <p>ACERTOS</p>
+          <ion-label><ion-icon name="ellipse" color="success" style="padding: 5px; margin-bottom: 2px;"></ion-icon></ion-label>
+          <b>{{wordsStorage.errors}}</b>
+          <p>ERROS</p>
+          <ion-label><ion-icon name="ellipse" color="danger" style="padding: 5px; margin-bottom: 2px;"></ion-icon></ion-label>
+          <b>{{wordsStorage.success + wordsStorage.errors}}</b>
+          <p>TOTAL</p>
+          <ion-label><ion-icon name="ellipse" color="primary" style="padding: 5px; margin-bottom: 2px;"></ion-icon></ion-label>
+        </div>
+        <div class="average">
+          <b>{{average}}</b>
+          <p>MÉDIA DE TENTATIVAS</p>
+          <ion-label><ion-icon name="ellipse" color="warning" style="padding: 5px; margin-bottom: 2px;"></ion-icon></ion-label>
+        </div>
+        <ion-item-divider></ion-item-divider>
+        <br><br>
+      </div>
     </div>
     <div class="footer">
-      <div class="logoList">
-        <div *ngFor="let item of sharingList">
-          <ion-img class="socialLogo" [src]="item['logo']" style="width: 50px; height: 50px;"></ion-img>
-        </div>
-      </div>    
-      <ion-button class="btn" (click)="closeModal()" fill="clear">
-        Fechar
-      </ion-button>
+      <div *ngFor="let item of sharingList" class="logoList">
+        <ion-img class="socialLogo" [src]="item['logo']" style="width: 50px; height: 50px;"></ion-img>
+      </div>
     </div>
+    <ion-button class="btn" (click)="copyText()">
+      Compartilhe
+    </ion-button>
+    <br>
+    <ion-button class="btn" (click)="closeModal()" fill="clear">
+      Fechar
+    </ion-button>
   </div>
 </div>
