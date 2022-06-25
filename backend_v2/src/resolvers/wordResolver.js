@@ -6,7 +6,8 @@ const wordResolver = {
       let query, result
       let ret = [Word]
       let now = new Date()
-      now.setDate(now.getDate())
+      //now.setDate(now.getDate())
+      now.setDate(now.getDate() - 2)
       const startToday = new Date(now.getFullYear(),now.getMonth(),now.getDate(),1,0,0)
       const endToday = new Date(now.getFullYear(),now.getMonth(),now.getDate()+1,0,59,59)
      

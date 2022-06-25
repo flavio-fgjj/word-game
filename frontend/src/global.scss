@@ -39,3 +39,33 @@ ion-footer{
   //--ion-background-color: #111D12; 
   //--ion-background-color:#D7C6AB;
 }
+
+.custom-modal {
+  --backdrop-opacity: 1;
+  //backdrop-filter: blur(3px);
+
+  // ion-backdrop {
+  //   --backdrop-opacity: 0.33;
+  // }
+
+  &::part(backdrop) {
+      background: #000;
+      --backdrop-opacity: 0.33;
+  }
+
+  &::part(handle) {
+      background: var(--ion-color-primary);
+      // width: 150px;
+      // height: 6px;
+  }
+
+  &::part(content) {
+      border-radius: 20px; // Here the border radius
+      box-shadow: 0px 0px 20px 5px rgb(0 0 0 / 32%);
+      background-color: beige;
+  }
+}
+
+ion-item-divider {
+  min-height: 0px !important;
+}

@@ -60,9 +60,14 @@ export class DataService {
     );
   }
 
-  wordValidation(word: string): Observable<any> {
-    return this.http.get(
+  // wordValidation(word: string): Observable<any> {
+  //   return this.http.get(
+  //     `${this.validationUrl}/${word}`
+  //   );
+  // }
+  async wordValidation(word: string) {
+    return await this.http.get(
       `${this.validationUrl}/${word}`
-    );
+    ).toPromise();
   }
 }
