@@ -94,18 +94,17 @@ export class HomePage implements  OnInit {
     loading.present();
 
     this.wordsStorage = SecurityUtil.get();
-    // if(this.wordsStorage) {
-    //   const storageDate = new Date(this.wordsStorage.date);
-    //   const today = new Date();
-    //   if((storageDate.getDate() === today.getDate()
-    //     && storageDate.getMonth() === today.getMonth()
-    //     && storageDate.getFullYear() === today.getFullYear()) && this.wordsStorage.words.length > 0) {
-    //       this.startFromStorage();
-    //   } else {
-
-    //     SecurityUtil.clear();
-    //   }
-    // }
+    if(this.wordsStorage) {
+      const storageDate = new Date(this.wordsStorage.date);
+      const today = new Date();
+      if((storageDate.getDate() === today.getDate()
+        && storageDate.getMonth() === today.getMonth()
+        && storageDate.getFullYear() === today.getFullYear()) && this.wordsStorage.words.length > 0) {
+          this.startFromStorage();
+      } else {
+        SecurityUtil.clear();
+      }
+    }
     this.startFromStorage();
 
     loading.dismiss();
@@ -153,23 +152,30 @@ export class HomePage implements  OnInit {
     this.wordsStorage = new WordsStorage();
     this.wordsStorage = SecurityUtil.get();
 
-    this.words = this.wordsStorage.words;
-
-    this.words = this.words.filter(x => x.word !== null);
-
-    this.totalSuccess = this.wordsStorage.success;
-    this.totalErrors = this.wordsStorage.errors;
-
-    this.totalScore = this.wordsStorage.score;
-    this.score = 5;
-    this.statusAttempt = '';
-
-    this.wordObj = this.words[this.wordsStorage.actual - 1];
-    await this.startSquare();
+    if (this.wordsStorage) {
+      this.words = this.wordsStorage.words;
+  
+      this.words = this.words.filter(x => x.word !== null);
+  
+      this.totalSuccess = this.wordsStorage.success;
+      this.totalErrors = this.wordsStorage.errors;
+  
+      this.totalScore = this.wordsStorage.score;
+      this.score = 5;
+      this.statusAttempt = '';
+  
+      this.wordObj = null;
+      this.word = '';
+      this.meaning = '';
+      this.wordObj = this.words[this.wordsStorage.actual - 1];
+      await this.startSquare();
+    } else {
+      this.start();
+    }
   }
 
   async start() {
-    const loading = await this.loadingCtrl.create({ message: 'Buscando palavras...' });
+    const loading = await this.loadingCtrl.create({ message: 'Buscando as palavras do dia...' });
     loading.present();
 
     await this.getWords();
@@ -258,8 +264,10 @@ export class HomePage implements  OnInit {
   async handleSuccess() {
     const alert = await this.alertController.create({
       header: 'PARABÉNS!!!',
+      subHeader: `Você acertou na ${this.actual}ª tentativa!`,
       cssClass:'alertSuccess',
-      message: `Você acertou na ${this.actual}ª tentativa!`,
+      message: `Uso na frase: ${this.author}: ${this.phrase}`,
+
       buttons: [
         {
           text: 'OK',
@@ -295,6 +303,7 @@ export class HomePage implements  OnInit {
   }
 
   createSquares() {
+    this.wordSquares = []
     for (let index = 0; index < this.word.length; index++) {
       this.wordSquares.push({
         id: (index + 1).toString(),
@@ -393,7 +402,7 @@ export class HomePage implements  OnInit {
       return;
     }
 
-    const loading = await this.loadingCtrl.create({ message: 'Validando...' });
+    const loading = await this.loadingCtrl.create({ message: 'Validando a palavra digitada...' });
     loading.present();
 
     const currentWord = currentWordArr.join('');

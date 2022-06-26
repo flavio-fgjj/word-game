@@ -5,6 +5,7 @@ import { environment } from 'src/environments/environment';
 import { WordsStorage } from 'src/app/models/WordsStorage';
 import { SecurityUtil } from 'src/app/utils/security.utils';
 import html2canvas from 'html2canvas';
+import * as ClipboardJS from 'clipboard';
 
 @Component({
   selector: 'app-social-share',
@@ -37,6 +38,17 @@ export class SocialShareComponent implements OnInit {
     console.log(this.wordsStorage);
     this.average = this.wordsStorage.attempts > 0 ? (this.wordsStorage.attempts / 7).toFixed(2) : 0;
   }
+
+  copyToClip(str) {
+    function listener(e) {
+      e.clipboardData.setData("text/html", str);
+      e.clipboardData.setData("text/plain", str);
+      e.preventDefault();
+    }
+    document.addEventListener("copy", listener);
+    document.execCommand("copy");
+    document.removeEventListener("copy", listener);
+  };
 
   async copyText() {
     const src = document.getElementById('clipboard');

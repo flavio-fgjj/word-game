@@ -6,8 +6,8 @@ const wordResolver = {
       let query, result
       let ret = [Word]
       let now = new Date()
-      //now.setDate(now.getDate())
-      now.setDate(now.getDate() - 2)
+      now.setDate(now.getDate())
+      //now.setDate(now.getDate() - 2)
       const startToday = new Date(now.getFullYear(),now.getMonth(),now.getDate(),1,0,0)
       const endToday = new Date(now.getFullYear(),now.getMonth(),now.getDate()+1,0,59,59)
      
@@ -23,7 +23,9 @@ const wordResolver = {
       if (result) {
         //ret.push(result.sort(() => Math.random() - Math.random()).slice(0, 2))
         result.sort(() => Math.random() - Math.random()).slice(0, 50).forEach(x => {
-          ret.push(x)
+          if(x.word.length >= 3 && x.word.length <= 7) {
+            ret.push(x)
+          }
         })
       }
 

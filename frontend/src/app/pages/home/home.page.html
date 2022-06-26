@@ -7,7 +7,7 @@
     </ion-buttons>
     <app-modal-info></app-modal-info>
     <ion-item-group slot="end" style="border: none !important;">
-      <ion-item *ngIf="alreadyStarted" style="margin-right:20px;">
+      <ion-item *ngIf="alreadyStarted" style="margin-right:5px;">
         <ion-badge color="primary">{{ totalSuccess }}</ion-badge>
         <span style="margin-left: 5px;">x</span>
         <ion-badge color="danger" style="margin-left:5px;">{{ totalErrors }}</ion-badge>
@@ -97,7 +97,7 @@
             </ion-list>
           </ion-accordion>
 
-          <ion-accordion>
+          <!-- <ion-accordion>
             <ion-item slot="header">
               <ion-label>Uso na frase</ion-label>
             </ion-item>
@@ -119,7 +119,7 @@
                 </ion-card>
               </ion-item>
             </ion-list>
-          </ion-accordion>
+          </ion-accordion> -->
         </ion-accordion-group>
       </ion-content>
     </ng-template>
@@ -171,7 +171,7 @@
             <ion-badge color="success" style="margin-left: 10px;">{{totalScore}}</ion-badge>
           </ion-chip>
 
-          <ion-chip id="triggerHelp" outline color="secondary" style="float: right; margin-right:20px;" data-toggle="tooltip" data-placement="bottom" title="Ajuda">
+          <ion-chip id="triggerHelp" outline color="secondary" style="float: right; margin-right:5px;" data-toggle="tooltip" data-placement="bottom" title="Ajuda">
             AJUDA
             <ion-icon name="help-circle-outline" style="margin-left:5px;"></ion-icon>
           </ion-chip>
