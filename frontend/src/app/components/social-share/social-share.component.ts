@@ -50,6 +50,26 @@ export class SocialShareComponent implements OnInit {
     document.removeEventListener("copy", listener);
   };
 
+  async cc() {
+    const shareData = {
+      title: 'MDN',
+      text: `Joguei o tigatae.com hoje, e: 
+Acertei ${this.wordsStorage.success} ✅
+Errei ${this.wordsStorage.errors} ❌
+Ttalizando ${this.wordsStorage.score} pontos!!! 💪`,
+      url: 'https://developer.mozilla.org',
+    }
+
+    try {
+      //await navigator.clipboard.(shareData);
+      await navigator.clipboard.writeText(shareData.text);
+    } catch(err) {
+      console.log('Error: ' + err);
+    }
+
+    
+  }
+
   async copyText() {
     const src = document.getElementById('clipboard');
     html2canvas(src).then((canvas) => {
