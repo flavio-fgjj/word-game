@@ -5,7 +5,7 @@ import { environment } from 'src/environments/environment';
 import { WordsStorage } from 'src/app/models/WordsStorage';
 import { SecurityUtil } from 'src/app/utils/security.utils';
 import html2canvas from 'html2canvas';
-import * as ClipboardJS from 'clipboard';
+// import * as ClipboardJS from 'clipboard';
 
 @Component({
   selector: 'app-social-share',
@@ -16,12 +16,11 @@ export class SocialShareComponent implements OnInit {
 
   public sharingList = environment.socialShareOption;
   loader: any = null;
-  // eslint-disable-next-line max-len
-  sharingText = 'Seu desempenho:';
-  emailSubject = 'Word game';
-  recipent = ['recipient@example.org'];
-  sharingImage = ['https://store.enappd.com/wp-content/uploads/2019/03/700x700_2-1-280x280.jpg'];
-  sharingUrl = 'https://store.enappd.com';
+  sharingText = ``;
+  // emailSubject = 'Word game';
+  // recipent = ['recipient@example.org'];
+  // sharingImage = ['https://store.enappd.com/wp-content/uploads/2019/03/700x700_2-1-280x280.jpg'];
+  // sharingUrl = 'https://store.enappd.com';
 
   public wordsStorage: WordsStorage;
   public average;
@@ -35,57 +34,37 @@ export class SocialShareComponent implements OnInit {
 
   ngOnInit() {
     this.wordsStorage = SecurityUtil.get();
-    console.log(this.wordsStorage);
-    this.average = this.wordsStorage.attempts > 0 ? (this.wordsStorage.attempts / 7).toFixed(2) : 0;
+    this.average =
+    this.wordsStorage.attempts > 0 ?
+    (this.wordsStorage.attempts / (this.wordsStorage.success + this.wordsStorage.errors)).toFixed(2) :
+    0;
   }
 
-  copyToClip(str) {
-    function listener(e) {
-      e.clipboardData.setData("text/html", str);
-      e.clipboardData.setData("text/plain", str);
-      e.preventDefault();
-    }
-    document.addEventListener("copy", listener);
-    document.execCommand("copy");
-    document.removeEventListener("copy", listener);
-  };
-
-  async cc() {
-    const shareData = {
-      title: 'MDN',
-      text: `Joguei o tigatae.com hoje, e: 
-Acertei ${this.wordsStorage.success} ✅
-Errei ${this.wordsStorage.errors} ❌
-Ttalizando ${this.wordsStorage.score} pontos!!! 💪`,
-      url: 'https://developer.mozilla.org',
-    }
+  async copyToClipboard() {
+    this.sharingText = `Meu desempenho no tigatae.com hoje: 
+✅ --> ${this.wordsStorage.success}
+❌ --> ${this.wordsStorage.errors}
+Totalizando ${this.wordsStorage.score} pontos 💪
+e ${this.average} tentativas em média!!! 🔥
+`;
 
     try {
       //await navigator.clipboard.(shareData);
-      await navigator.clipboard.writeText(shareData.text);
+      await navigator.clipboard.writeText(this.sharingText);
+      await this.presentToast();
     } catch(err) {
       console.log('Error: ' + err);
+      await this.presentWrongToast();
     }
-
-    
   }
 
-  async copyText() {
+  async shareCustomImage() {
     const src = document.getElementById('clipboard');
     html2canvas(src).then((canvas) => {
       document.getElementById('clipboard').appendChild(canvas);
-      // const txt = 'Teste';
-      // const type = 'text/plain';
-      // const blob2 = new Blob([txt], { type });
       canvas.toBlob((blob) => {
         navigator.clipboard
           .write([
-            // new ClipboardItem(
-            //   Object.defineProperty({}, blob2.type, {
-            //     value: txt,
-            //     enumerable: true
-            //   })
-            // ),
             new ClipboardItem(
               Object.defineProperty({}, blob.type, {
                 value: blob,
@@ -114,32 +93,43 @@ Ttalizando ${this.wordsStorage.score} pontos!!! 💪`,
     toast.present();
   }
 
+  async presentWrongToast() {
+    const toast = await this.toastController.create({
+      message: 'Algo saiu errado!',
+      icon: 'copy-outline',
+      position: 'top',
+      color: 'danger',
+      duration: 3000
+    });
+    toast.present();
+  }
+
   closeModal() {
     this.modal.dismiss();
   }
 
-  async shareVia(shareData) {
-    if (shareData.shareType === 'viaEmail') {
-      this.shareViaEmail();
-    } else {
-      this.socialSharing[`${shareData.shareType}`](this.sharingText, this.sharingImage, this.sharingUrl)
-      .then((res) => {
-        this.modal.dismiss();
-      })
-      .catch((e) => {
-        console.log('error', e);
-        this.modal.dismiss();
-      });
-    }
-  }
+//   async shareVia(shareData) {
+//     if (shareData.shareType === 'viaEmail') {
+//       this.shareViaEmail();
+//     } else {
+//       this.socialSharing[`${shareData.shareType}`](this.sharingText, this.sharingImage, this.sharingUrl)
+//       .then((res) => {
+//         this.modal.dismiss();
+//       })
+//       .catch((e) => {
+//         console.log('error', e);
+//         this.modal.dismiss();
+//       });
+//     }
+//   }
 
-  shareViaEmail() {
-    this.socialSharing.canShareViaEmail().then((res) => {
-      this.socialSharing.shareViaEmail(this.sharingText, this.emailSubject, this.recipent, null, null, this.sharingImage).then(() => {
-        this.modal.dismiss();
-      });
-    }).catch((e) => {
-      // Error!
-    });
-  }
+//   shareViaEmail() {
+//     this.socialSharing.canShareViaEmail().then((res) => {
+//       this.socialSharing.shareViaEmail(this.sharingText, this.emailSubject, this.recipent, null, null, this.sharingImage).then(() => {
+//         this.modal.dismiss();
+//       });
+//     }).catch((e) => {
+//       // Error!
+//     });
+//   }
 }

@@ -8,6 +8,8 @@ import { DataService } from 'src/app/services/data.service';
 import { SecurityUtil } from 'src/app/utils/security.utils';
 
 import { SocialShareComponent } from 'src/app/components/social-share/social-share.component';
+import { SuccessComponent } from 'src/app/components/success/success.component';
+import { Success } from 'src/app/models/Success';
 
 
 @Component({
@@ -110,15 +112,6 @@ export class HomePage implements  OnInit {
     loading.dismiss();
   }
 
-  async showShareOptions() {
-    const modal = await this.modalCtrl.create({
-      component: SocialShareComponent,
-      cssClass: 'custom-modal',
-      backdropDismiss: true
-    });
-    return modal.present();
-  }
-
   async getWords() {
     this.words = new Array<Words>();
 
@@ -154,19 +147,20 @@ export class HomePage implements  OnInit {
 
     if (this.wordsStorage) {
       this.words = this.wordsStorage.words;
-  
+
       this.words = this.words.filter(x => x.word !== null);
-  
+
       this.totalSuccess = this.wordsStorage.success;
       this.totalErrors = this.wordsStorage.errors;
-  
+
       this.totalScore = this.wordsStorage.score;
       this.score = 5;
       this.statusAttempt = '';
-  
+
       this.wordObj = null;
       this.word = '';
       this.meaning = '';
+      this.actualWord = this.wordsStorage.actual - 1;
       this.wordObj = this.words[this.wordsStorage.actual - 1];
       await this.startSquare();
     } else {
@@ -214,7 +208,33 @@ export class HomePage implements  OnInit {
     this.statusAttempt = '';
   }
 
-  // alerts handles
+  // alerts and modals handles
+  async showShareOptions() {
+    const modal = await this.modalCtrl.create({
+      component: SocialShareComponent,
+      cssClass: 'custom-modal',
+      backdropDismiss: true,
+    });
+    return await modal.present();
+  }
+
+  async showSuccessModal(thisType: string) {
+    const modal = await this.modalCtrl.create({
+      component: SuccessComponent,
+      componentProps: {
+        attempts: this.actual,
+        author: this.author,
+        font: this.font,
+        phrase: this.phrase,
+        word: this.word,
+        type: thisType
+      },
+      cssClass: 'custom-modal-success',
+      backdropDismiss: true,
+    });
+    return await modal.present();
+  }
+
   async handleMeaningButtonClick() {
     const alert = await this.alertController.create({
       header: ``,
@@ -228,26 +248,26 @@ export class HomePage implements  OnInit {
     await alert.present();
   }
 
-  async handleLimitExceeded() {
-    const alert = await this.alertController.create({
-      header: 'Suas tentativas acabaram!',
-      cssClass:'alertLimitExceeded',
-      subHeader: 'A palavra é',
-      message: `${this.word}`,
-      buttons: [
-        {
-          text: 'OK',
-        }
-      ]
-    });
+  // async handleLimitExceeded() {
+  //   const alert = await this.alertController.create({
+  //     header: 'Suas tentativas acabaram!',
+  //     cssClass:'alertLimitExceeded',
+  //     subHeader: 'A palavra é',
+  //     message: `${this.word}`,
+  //     buttons: [
+  //       {
+  //         text: 'OK',
+  //       }
+  //     ]
+  //   });
 
-    await alert.present();
-    await alert.onDidDismiss().then(() => {
-      setTimeout(() => {
-        window.location.reload();
-      }, 300);
-    });
-  }
+  //   await alert.present();
+  //   await alert.onDidDismiss().then(() => {
+  //     setTimeout(() => {
+  //       window.location.reload();
+  //     }, 300);
+  //   });
+  // }
 
   async handleWrongMsg(h, msg) {
     const alert = await this.alertController.create({
@@ -261,26 +281,26 @@ export class HomePage implements  OnInit {
     await alert.present();
   }
 
-  async handleSuccess() {
-    const alert = await this.alertController.create({
-      header: 'PARABÉNS!!!',
-      subHeader: `Você acertou na ${this.actual}ª tentativa!`,
-      cssClass:'alertSuccess',
-      message: `Uso na frase: ${this.author}: ${this.phrase}`,
+  // async handleSuccess() {
+  //   const alert = await this.alertController.create({
+  //     header: 'PARABÉNS!!!',
+  //     subHeader: `Você acertou na ${this.actual}ª tentativa!`,
+  //     cssClass:'alertSuccess',
+  //     message: `Uso na frase: ${this.author}: ${this.phrase}`,
 
-      buttons: [
-        {
-          text: 'OK',
-        }
-      ],
-    });
-    await alert.present();
-    await alert.onDidDismiss().then(() => {
-      setTimeout(() => {
-        window.location.reload();
-      }, 300);
-    });
-  }
+  //     buttons: [
+  //       {
+  //         text: 'OK',
+  //       }
+  //     ],
+  //   });
+  //   await alert.present();
+  //   await alert.onDidDismiss().then(() => {
+  //     setTimeout(() => {
+  //       window.location.reload();
+  //     }, 300);
+  //   });
+  // }
   // alerts handles end
 
   // functions
@@ -450,12 +470,13 @@ export class HomePage implements  OnInit {
       this.wordsStorage = SecurityUtil.get();
       this.wordsStorage.actual += 1;
       this.wordsStorage.success += 1;
-      this.wordsStorage.attempts += this.attempts;
+      this.wordsStorage.attempts += this.actual;
       this.wordsStorage.score += this.score;
       SecurityUtil.clear();
       SecurityUtil.set(this.wordsStorage);
 
-      this.handleSuccess();
+      //this.handleSuccess();
+      this.showSuccessModal(this.statusAttempt);
       return;
     } else {
       if(this.actual === this.limitAttempts) {
@@ -465,12 +486,13 @@ export class HomePage implements  OnInit {
         this.wordsStorage = SecurityUtil.get();
         this.wordsStorage.actual += 1;
         this.wordsStorage.errors += 1;
-        this.wordsStorage.attempts += this.attempts;
+        this.wordsStorage.attempts += this.actual;
 
         SecurityUtil.clear();
         SecurityUtil.set(this.wordsStorage);
 
-        this.handleLimitExceeded();
+        //this.handleLimitExceeded();
+        this.showSuccessModal(this.statusAttempt);
         return;
       } else {
         this.statusAttempt = '';

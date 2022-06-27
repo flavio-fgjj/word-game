@@ -1,9 +1,9 @@
-<div padding class="mainContent">
+<ion-content padding class="mainContent">
   <div no-margin margin-top class="feedbackCard">
     <div id="clipboard">
       <div class="custom-border">
         <h2>PERFORMANCE</h2>
-        <p>{{emailSubject}}</p>
+        <p>Word Game</p>
         <a href="https://tigatae.com.br" style="text-decoration: none">https://tigatae.com.br</a>
         <ion-item-divider style="margin-top:20px;"></ion-item-divider>
         <div class="performance">
@@ -34,12 +34,12 @@
         <ion-img class="socialLogo" [src]="item['logo']" style="width: 50px; height: 50px;"></ion-img>
       </div>
     </div>
-    <ion-button class="btn" (click)="cc()">
-      Compartilhe
+    <ion-button class="btn" (click)="copyToClipboard()">
+      Compartilhe <ion-icon name="share-social-outline" style="padding-left:5px;padding-top:2px;"></ion-icon>
     </ion-button>
     <br>
     <ion-button class="btn" (click)="closeModal()" fill="clear">
       Fechar
     </ion-button>
   </div>
-</div>
+</ion-content>

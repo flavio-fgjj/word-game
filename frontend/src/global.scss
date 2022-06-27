@@ -40,8 +40,15 @@ ion-footer{
   //--ion-background-color:#D7C6AB;
 }
 
+.custom-modal-success {
+  --backdrop-opacity: 0.2 !important;
+  //--background: linear-gradient(90deg, rgba(165, 255, 192, 1) 1%, rgba(0, 212, 255, 1) 100%) !important;
+  //--ion-background-color: linear-gradient(to bottom right, lightgreen, lightyellow);
+}
+
 .custom-modal {
   --backdrop-opacity: 1;
+  --ion-background-color: beige
   //backdrop-filter: blur(3px);
 
   // ion-backdrop {

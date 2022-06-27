@@ -5,14 +5,15 @@ import { IonicModule } from '@ionic/angular';
 import { ModalInfoComponent } from './modal-info/modal-info.component';
 import { SocialShareComponent } from './social-share/social-share.component';
 import { SocialSharing } from '@ionic-native/social-sharing/ngx';
+import { SuccessComponent } from './success/success.component';
 
 @NgModule({
-  declarations: [LoadingComponent, ModalInfoComponent, SocialShareComponent],
+  declarations: [LoadingComponent, ModalInfoComponent, SocialShareComponent, SuccessComponent],
   imports: [
     CommonModule,
     IonicModule
   ],
   providers: [SocialSharing],
-  exports: [LoadingComponent, ModalInfoComponent, SocialShareComponent]
+  exports: [LoadingComponent, ModalInfoComponent, SocialShareComponent, SuccessComponent]
 })
 export class ComponentsModule { }
