@@ -181,6 +181,8 @@ export class HomePage implements  OnInit {
     this.word = this.wordObj.word.toString().toLowerCase();
     this.meaning = this.wordObj.meaning;
 
+    console.log(this.words);
+
     // convert grammatical class in pascal case
     this.grammaticalClass = '';
     const g = this.wordObj.grammatical_class.split(' ');

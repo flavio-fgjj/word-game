@@ -22,11 +22,30 @@ const wordResolver = {
 
       if (result) {
         //ret.push(result.sort(() => Math.random() - Math.random()).slice(0, 2))
-        result.sort(() => Math.random() - Math.random()).slice(0, 50).forEach(x => {
-          if(x.word.length >= 3 && x.word.length <= 7) {
-            ret.push(x)
-          }
+        // result.sort(() => Math.random() - Math.random()).slice(0, 50).forEach(x => {
+        //   if(x.word.length >= 3 && x.word.length <= 7) {
+        //     ret.push(x)
+        //   }
+        // })
+        result.forEach(x => {
+          ret.push(x)
         })
+      }
+
+      if(ret.length <= 0) {
+        query = { $and: [ 
+          { extracted_date: {$gte: startToday, $lt: endToday} }, 
+          { "dictionary_type": "Dicionario Completo"},
+          { "grammatical_class": { $exists: true, $ne: null } },
+          { "$expr": { "$gte": [ { "$strLenCP": "$phrase.font" }, 1 ] } }
+        ]}
+        result = await Word.find(query)
+
+        if (result) {
+          result.forEach(x => {
+            ret.push(x)
+          })
+        }
       }
 
       // // Dicionario para criancas (1)
