@@ -160,7 +160,7 @@ export class HomePage implements  OnInit {
       this.wordObj = null;
       this.word = '';
       this.meaning = '';
-      this.actualWord = this.wordsStorage.actual - 1;
+      this.actualWord = this.wordsStorage.actual;
       this.wordObj = this.words[this.wordsStorage.actual - 1];
       await this.startSquare();
     } else {

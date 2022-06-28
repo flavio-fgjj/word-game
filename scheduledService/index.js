@@ -1,4 +1,4 @@
-const job = require('./service')
+const { job, saveForNextDay } = require('./service')
 
 let timesPerDay = 1
 async function runJob() {
@@ -6,27 +6,34 @@ async function runJob() {
   const hour = today.getHours()
 
   console.log('Actual hour', hour)
-  console.log(`Service started at ${new Date()}`)
+  
+  if ((hour >= 19 && hour < 23) && timesPerDay < 4) {
+    console.log(`Service started at ${new Date()}`)
 
-  if ((hour > 7 && hour <= 23) && timesPerDay < 4) {
     //TODO: check if service was already executed (send email)
     await job()
       .then(r => {
-        console.log(`Process number (${timesPerDay}) executed successfully at ${new Date()}`)
+        console.log(`Process number for job (${timesPerDay}) executed successfully at ${new Date()}`)
         console.log(r.data)
       })
       .catch((err) => {
-        console.log(`Process number (${timesPerDay}) executed without success ${new Date()}`)
+        console.log(`Process number for job (${timesPerDay}) executed without success ${new Date()}`)
         console.error(err)
       })
 
       if (timesPerDay < 4) {
         timesPerDay++
-        console.log(`Job finished at ${new Date()}`)
+        console.log(`Service Job ${timesPerDay} finished at ${new Date()}`)
       }
   }
 
-  console.log(`Service finished at ${new Date()}`)
+  if (hour > 21 && hour <= 23) {
+    console.log(`Service 'saveForNextDay' started at ${new Date()}`)
+    await saveForNextDay()
+
+    console.log(`Service finished at ${new Date()}`)
+  }
+  
 }
 
 runJob()

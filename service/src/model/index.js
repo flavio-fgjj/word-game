@@ -12,8 +12,9 @@ const schema = new mongoose.Schema({
     phrase: { type: String },
     author: { type: String }
   },
-  date: {type: Date, defaul: Date.now() }, 
-  isWordVaild: Boolean
+  extracted_date: {type: Date, defaul: Date.now() },
+  game_date: {type: Date, defaul: Date.now() },
+  isWordValid: { type: Boolean }
 })
 
 module.exports = mongoose.model('Words', schema)

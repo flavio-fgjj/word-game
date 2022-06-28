@@ -127,8 +127,7 @@
   <div id="container" style="padding-right:8px;">
     <div id="board-container">
       <div class="pageError" *ngIf="errorPage && !alreadyStarted">
-        <ion-icon name="warning-outline" color="danger"></ion-icon><br>
-        <ion-label color="danger">Estamos enfrentando problemas! <br><br>Favor tentar mais tarde! <br><br>Desculpe o transtorno!</ion-label>
+        <ion-label color="danger"><ion-icon name="warning-outline" color="danger"></ion-icon><br>Estamos enfrentando problemas! <br><br>Favor tentar mais tarde! <br><br>Desculpe o transtorno!</ion-label>
       </div>
 
       <div *ngIf="!errorPage && alreadyStarted">
@@ -140,7 +139,7 @@
           </ion-row>
           <ion-row>
             <ion-col size="12">
-              <ion-badge color="secondary">{{score}}</ion-badge>
+              <ion-label style="display:flex;justify-content: center;"><ion-badge color="secondary">{{score}}</ion-badge><span style="margin-left:5px;">pontos</span></ion-label>
             </ion-col>
           </ion-row>
         </ion-grid>

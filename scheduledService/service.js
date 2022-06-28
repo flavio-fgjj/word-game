@@ -7,8 +7,17 @@ const job = async () => {
     return await axios.post(`${process.env.ENDPOINT}`)
   } catch (error) {
     console.error(error.config.url)
-    return { "status": "NOK", "output": "Web Scraping error!"}
+    return { "status": "NOK", "output": "Error to save words from service!"}
   }
 }
 
-module.exports = job
+const saveForNextDay = async () => {
+  try {
+    return await axios.get(`${process.env.ENDPOINT}`)
+  } catch (error) {
+    console.error(error.config.url)
+    return { "status": "NOK", "output": "Error to save for next day!"}
+  }
+}
+
+module.exports = { job, saveForNextDay }

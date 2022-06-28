@@ -6,14 +6,14 @@ const wordResolver = {
       let query, result
       let ret = [Word]
       let now = new Date()
-      //now.setDate(now.getDate())
-      now.setDate(now.getDate() - 6)
+      now.setDate(now.getDate())
+      //now.setDate(now.getDate() - 6)
       const startToday = new Date(now.getFullYear(),now.getMonth(),now.getDate(),1,0,0)
       const endToday = new Date(now.getFullYear(),now.getMonth(),now.getDate()+1,0,59,59)
      
       // Dicionario completo (0)
       query = { $and: [ 
-        { date: {$gte: startToday, $lt: endToday} }, 
+        { game_date: {$gte: startToday, $lt: endToday} }, 
         { "dictionary_type": "Dicionario Completo"},
         { "grammatical_class": { $exists: true, $ne: null } },
         { "$expr": { "$gte": [ { "$strLenCP": "$phrase.font" }, 1 ] } }

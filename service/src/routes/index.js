@@ -7,6 +7,52 @@ const Model = require('../model/index')
 
 const route = express.Router()
 
+route.get('/', (req, res) => {
+  let now = new Date()
+  now.setDate(now.getDate())
+  const startToday = new Date(now.getFullYear(),now.getMonth(),now.getDate(),1,0,0)
+  const endToday = new Date(now.getFullYear(),now.getMonth(),now.getDate()+1,0,59,59)
+  now.setDate(now.getDate() + 1)
+
+  let query = { $and: [ 
+    { extracted_date: {$gte: startToday, $lt: endToday} }
+  ]}
+
+  let update = { game_date: now }
+  let filter
+
+  Model.find((err, result) => {
+    if(err) {
+      return result
+        .status(500)
+        .send({
+          output: `Err -> ${err}`
+        })
+    }
+
+    let nextDay = 0
+    if(result.length > 0) {
+      result.forEach(async (item, index) => {
+        if (nextDay > 7) {
+          nextDay = 1
+          now.setDate(now.getDate() + 1)
+          update = { game_date: now }
+        } else {
+          nextDay++
+        }
+        
+        filter = { _id: item._id }
+        await Model.findOneAndUpdate(filter, update)
+      })
+    }
+
+    return res.status(200).send({
+      output: 'OK',
+      //payload: result
+    })
+  })
+})
+
 route.post('/', async (req,res)  => {
   let randonWords = null
   let hasError = false
@@ -52,7 +98,7 @@ route.post('/', async (req,res)  => {
 })
 
 async function getMeaning(word, dictionaryType) {
-  let today = new Date()
+  // let today = new Date()
   await wordDataController(word)
   .then(async x => {
     let wordData = await x.data
@@ -69,6 +115,8 @@ async function getMeaning(word, dictionaryType) {
         ant = jsonData.antonyms.slice(0, 5)
       }
 
+      let isValid = word.toString().trim().indexOf(' ') == -1 && (word.toString().trim().length > 2 && word.toString().trim().length < 8) && word.toString().trim().toLowerCase().slice(-1) != 's'
+
       let model = new Model({
         dictionary_type: dictionaryType,
         word: word,
@@ -77,8 +125,8 @@ async function getMeaning(word, dictionaryType) {
         synonyms: syn, 
         antonyms: ant,
         phrase: wordData.phrase, 
-        date: today, 
-        isWordValid: false
+        // date: today, 
+        isWordValid: isValid
       })
 
       jsonData = null
@@ -86,14 +134,16 @@ async function getMeaning(word, dictionaryType) {
       ant = []
 
       // saving at mongodb
-      model
-        .save()
-        .then((result) => {
-        })
-        .catch((error) => {
-          hasError = true
-          err = error
-        }) 
+      if (isValid) {
+        model
+          .save()
+          .then((result) => {
+          })
+          .catch((error) => {
+            hasError = true
+            err = error
+          }) 
+      }
     }
   })
   .catch(err => console.error(err))

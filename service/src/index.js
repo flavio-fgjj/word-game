@@ -11,6 +11,7 @@ const notFound = require('./middleware/mw-notFound')
 // routes
 const routeIndex = require('./routes/index')
 
+
 const app = express()
 
 app.use(express.json())
