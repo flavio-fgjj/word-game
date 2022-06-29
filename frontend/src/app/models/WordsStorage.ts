@@ -1,3 +1,4 @@
+import { Attempts } from './Attempts';
 import { Words } from './Words';
 
 export class WordsStorage {
@@ -6,6 +7,7 @@ export class WordsStorage {
   success: number;
   errors: number;
   score: number;
-  attempts: number;
+  current_score: number;
+  attempts: Array<Attempts>;
   words: Array<Words>;
 }

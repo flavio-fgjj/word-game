@@ -1,15 +1,17 @@
-import { AfterViewInit, OnInit , Component } from '@angular/core';
+import { OnInit , Component } from '@angular/core';
 import { LoadingController, AlertController, ModalController, Platform } from '@ionic/angular';
 import { modalController } from '@ionic/core';
 
 import { Words } from 'src/app/models/Words';
 import { WordsStorage } from 'src/app/models/WordsStorage';
+import { Attempts } from 'src/app/models/Attempts';
+// import { Success } from 'src/app/models/Success';
+
 import { DataService } from 'src/app/services/data.service';
 import { SecurityUtil } from 'src/app/utils/security.utils';
 
 import { SocialShareComponent } from 'src/app/components/social-share/social-share.component';
 import { SuccessComponent } from 'src/app/components/success/success.component';
-import { Success } from 'src/app/models/Success';
 
 
 @Component({
@@ -64,7 +66,9 @@ export class HomePage implements  OnInit {
   public actualWord = 0;
   public score = 0;
   public totalScore = 0;
-  public attempts = 0;
+
+  public attempts: Attempts;
+  public attemptsArray: Array<Attempts>;
 
   public meaningSeen = false;
   public synSeen = false;
@@ -127,13 +131,16 @@ export class HomePage implements  OnInit {
           this.errorPage = true;
         } else {
           this.wordsStorage = new WordsStorage();
+          this.attempts = new Attempts();
+          this.attemptsArray = new Array<Attempts>();
           this.wordsStorage.date = new Date();
           this.wordsStorage.actual = 1;
           this.wordsStorage.success = 0;
           this.wordsStorage.errors = 0;
-          this.wordsStorage.score = 0;
-          this.wordsStorage.attempts = 0;
+          this.wordsStorage.score = 5;
+          this.wordsStorage.current_score = 5;
           this.wordsStorage.words = this.words;
+          this.wordsStorage.attempts = this.attemptsArray;
           SecurityUtil.set(this.wordsStorage);
 
           await this.startFromStorage();
@@ -154,13 +161,15 @@ export class HomePage implements  OnInit {
       this.totalErrors = this.wordsStorage.errors;
 
       this.totalScore = this.wordsStorage.score;
-      this.score = 5;
+      //this.score = 5;
       this.statusAttempt = '';
-
+      
+      this.attemptsArray = this.wordsStorage.attempts;
       this.wordObj = null;
       this.word = '';
       this.meaning = '';
       this.actualWord = this.wordsStorage.actual;
+      this.score = this.wordsStorage.current_score;
       this.wordObj = this.words[this.wordsStorage.actual - 1];
       await this.startSquare();
     } else {
@@ -180,8 +189,6 @@ export class HomePage implements  OnInit {
   async startSquare() {
     this.word = this.wordObj.word.toString().toLowerCase();
     this.meaning = this.wordObj.meaning;
-
-    console.log(this.words);
 
     // convert grammatical class in pascal case
     this.grammaticalClass = '';
@@ -205,9 +212,45 @@ export class HomePage implements  OnInit {
     this.createSquares();
     this.keys = document.querySelectorAll('.keyboard-row button');
 
-    this.actual = 1;
+    // fill words already typeds
+    //this.actual = 1;
+    this.actual = this.attemptsArray.length;
+    this.attemptsArray.forEach((item, index) => {
+      const currentWordArr = item.word.split('');
+      const firstLetterId = index * this.word.length + 1;
+      const interval = 200;
+
+      let letterE1Aux;
+      currentWordArr.forEach((letter, index) => {
+        setTimeout(() => {
+          const tileColor = this.getTileColor(letter.toString().toLowerCase().trim(), index);
+          const letterId = firstLetterId + index;
+  
+          if (this.statusAttempt === 'success' || this.statusAttempt === 'fail') {
+            letterE1Aux = document.getElementById(`${letterId.toString()}_try${(this.actual)}`);
+          } else {
+            letterE1Aux = document.getElementById(`${letterId.toString()}_try${(this.actual - 1)}`);
+          }
+          letterE1Aux.classList.add('animate__flipInX');
+          if (tileColor === 'rgb(58, 58, 60)') {
+            document.getElementById(`${letter.toString().toLowerCase().trim()}`).setAttribute('style', 'opacity: 0.33;');
+          }
+          letterE1Aux.setAttribute('style', `background-color:${tileColor};border-color:${tileColor};color:whitesmoke;`);
+  
+        }, interval * index);
+      });
+    })
     this.limitAttempts = 5;
     this.statusAttempt = '';
+  }
+
+  createSquares() {
+    this.wordSquares = []
+    for (let index = 0; index < this.word.length; index++) {
+      this.wordSquares.push({
+        id: (index + 1).toString(),
+      });
+    }
   }
 
   // alerts and modals handles
@@ -322,15 +365,6 @@ export class HomePage implements  OnInit {
 
     return '#EEAD2D';
     //return '#ffff8d';
-  }
-
-  createSquares() {
-    this.wordSquares = []
-    for (let index = 0; index < this.word.length; index++) {
-      this.wordSquares.push({
-        id: (index + 1).toString(),
-      });
-    }
   }
 
   // typeSelected(event) {
@@ -472,7 +506,8 @@ export class HomePage implements  OnInit {
       this.wordsStorage = SecurityUtil.get();
       this.wordsStorage.actual += 1;
       this.wordsStorage.success += 1;
-      this.wordsStorage.attempts += this.actual;
+      //this.wordsStorage.attempts += this.actual;
+      this.wordsStorage.attempts = new Array<Attempts>();
       this.wordsStorage.score += this.score;
       SecurityUtil.clear();
       SecurityUtil.set(this.wordsStorage);
@@ -488,7 +523,8 @@ export class HomePage implements  OnInit {
         this.wordsStorage = SecurityUtil.get();
         this.wordsStorage.actual += 1;
         this.wordsStorage.errors += 1;
-        this.wordsStorage.attempts += this.actual;
+        // this.wordsStorage.attempts += this.actual;
+        this.wordsStorage.attempts = new Array<Attempts>();
 
         SecurityUtil.clear();
         SecurityUtil.set(this.wordsStorage);
