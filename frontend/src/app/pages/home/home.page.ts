@@ -1,4 +1,4 @@
-import { OnInit , Component } from '@angular/core';
+import { OnInit, AfterViewInit, Component } from '@angular/core';
 import { LoadingController, AlertController, ModalController, Platform } from '@ionic/angular';
 import { modalController } from '@ionic/core';
 
@@ -19,7 +19,7 @@ import { SuccessComponent } from 'src/app/components/success/success.component';
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage implements  OnInit {
+export class HomePage implements OnInit, AfterViewInit {
 
   public keyboardFirstRow = ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'];
   public keyboardSecondRow = ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'];
@@ -83,6 +83,29 @@ export class HomePage implements  OnInit {
     public modalCtrl: ModalController,
     public platform: Platform) {}
 
+  async ngAfterViewInit() {
+    const loading = await this.loadingCtrl.create({ message: 'Iniciando...' });
+    loading.present();
+
+    this.wordsStorage = SecurityUtil.get();
+    if(this.wordsStorage) {
+      const storageDate = new Date(this.wordsStorage.date);
+      const today = new Date();
+      if((storageDate.getDate() === today.getDate()
+        && storageDate.getMonth() === today.getMonth()
+        && storageDate.getFullYear() === today.getFullYear()) && this.wordsStorage.words.length > 0) {
+          this.startFromStorage();
+          loading.dismiss();
+          return;
+      } else {
+        SecurityUtil.clear();
+      }
+    }
+    this.startFromStorage();
+
+    loading.dismiss();
+  }
+
   async ngOnInit() {
     // this.wordArray = ['Flavio', 'Estela', 'Joao', 'Teo'];
     // this.startSquare();
@@ -95,25 +118,6 @@ export class HomePage implements  OnInit {
     for (let j = 1; j <= this.limitAttempts; j++) {
       this.limitAttemptsArray.push(j.toString());
     }
-
-    const loading = await this.loadingCtrl.create({ message: 'Iniciando...' });
-    loading.present();
-
-    this.wordsStorage = SecurityUtil.get();
-    if(this.wordsStorage) {
-      const storageDate = new Date(this.wordsStorage.date);
-      const today = new Date();
-      if((storageDate.getDate() === today.getDate()
-        && storageDate.getMonth() === today.getMonth()
-        && storageDate.getFullYear() === today.getFullYear()) && this.wordsStorage.words.length > 0) {
-          this.startFromStorage();
-      } else {
-        SecurityUtil.clear();
-      }
-    }
-    this.startFromStorage();
-
-    loading.dismiss();
   }
 
   async getWords() {
@@ -163,7 +167,7 @@ export class HomePage implements  OnInit {
       this.totalScore = this.wordsStorage.score;
       //this.score = 5;
       this.statusAttempt = '';
-      
+
       this.attemptsArray = this.wordsStorage.attempts;
       this.wordObj = null;
       this.word = '';
@@ -171,7 +175,18 @@ export class HomePage implements  OnInit {
       this.actualWord = this.wordsStorage.actual;
       this.score = this.wordsStorage.current_score;
       this.wordObj = this.words[this.wordsStorage.actual - 1];
+
+      const loading = await this.loadingCtrl.create({ message: 'Iniciando...' });
+      loading.present();
       await this.startSquare();
+      setTimeout(async () => {
+        await this.attempsFromStorage();
+        console.log(this.wordObj);
+        if(this.attemptsArray.length) {
+          this.actual++;
+        }
+        loading.dismiss();
+      }, 2000);
     } else {
       this.start();
     }
@@ -214,38 +229,37 @@ export class HomePage implements  OnInit {
 
     // fill words already typeds
     //this.actual = 1;
-    this.actual = this.attemptsArray.length;
-    this.attemptsArray.forEach((item, index) => {
-      const currentWordArr = item.word.split('');
-      const firstLetterId = index * this.word.length + 1;
-      const interval = 200;
+    this.actual = this.attemptsArray.length === 0 ? 1 : this.attemptsArray.length;
 
-      let letterE1Aux;
-      currentWordArr.forEach((letter, index) => {
-        setTimeout(() => {
-          const tileColor = this.getTileColor(letter.toString().toLowerCase().trim(), index);
-          const letterId = firstLetterId + index;
-  
-          if (this.statusAttempt === 'success' || this.statusAttempt === 'fail') {
-            letterE1Aux = document.getElementById(`${letterId.toString()}_try${(this.actual)}`);
-          } else {
-            letterE1Aux = document.getElementById(`${letterId.toString()}_try${(this.actual - 1)}`);
-          }
-          letterE1Aux.classList.add('animate__flipInX');
-          if (tileColor === 'rgb(58, 58, 60)') {
-            document.getElementById(`${letter.toString().toLowerCase().trim()}`).setAttribute('style', 'opacity: 0.33;');
-          }
-          letterE1Aux.setAttribute('style', `background-color:${tileColor};border-color:${tileColor};color:whitesmoke;`);
-  
-        }, interval * index);
-      });
-    })
     this.limitAttempts = 5;
     this.statusAttempt = '';
   }
 
+  async attempsFromStorage() {
+    let currentWordArr;
+    let letterE1Aux;
+    let letter;
+
+    for(let tryId = 1; tryId <= this.attemptsArray.length; tryId++) {
+      currentWordArr = this.attemptsArray[tryId - 1].typed_word.split('');
+
+      for(let i = 1; i <= currentWordArr.length; i ++) {
+        letter = currentWordArr[i - 1];
+        const tileColor = this.getTileColor(letter.toString().toLowerCase().trim(), i - 1);
+        letterE1Aux = document.getElementById(`${i.toString()}_try${(tryId.toString())}`);
+
+        letterE1Aux.classList.add('animate__flipInX');
+        if (tileColor === 'rgb(58, 58, 60)') {
+          letterE1Aux.setAttribute('style', 'opacity: 0.33;');
+        }
+        letterE1Aux.setAttribute('style', `background-color:${tileColor};border-color:${tileColor};color:whitesmoke;`);
+        letterE1Aux.innerText = letter.toString().toUpperCase();
+      }
+    }
+  }
+
   createSquares() {
-    this.wordSquares = []
+    this.wordSquares = [];
     for (let index = 0; index < this.word.length; index++) {
       this.wordSquares.push({
         id: (index + 1).toString(),
@@ -293,27 +307,6 @@ export class HomePage implements  OnInit {
     await alert.present();
   }
 
-  // async handleLimitExceeded() {
-  //   const alert = await this.alertController.create({
-  //     header: 'Suas tentativas acabaram!',
-  //     cssClass:'alertLimitExceeded',
-  //     subHeader: 'A palavra é',
-  //     message: `${this.word}`,
-  //     buttons: [
-  //       {
-  //         text: 'OK',
-  //       }
-  //     ]
-  //   });
-
-  //   await alert.present();
-  //   await alert.onDidDismiss().then(() => {
-  //     setTimeout(() => {
-  //       window.location.reload();
-  //     }, 300);
-  //   });
-  // }
-
   async handleWrongMsg(h, msg) {
     const alert = await this.alertController.create({
       header: `${h}`,
@@ -325,27 +318,6 @@ export class HomePage implements  OnInit {
 
     await alert.present();
   }
-
-  // async handleSuccess() {
-  //   const alert = await this.alertController.create({
-  //     header: 'PARABÉNS!!!',
-  //     subHeader: `Você acertou na ${this.actual}ª tentativa!`,
-  //     cssClass:'alertSuccess',
-  //     message: `Uso na frase: ${this.author}: ${this.phrase}`,
-
-  //     buttons: [
-  //       {
-  //         text: 'OK',
-  //       }
-  //     ],
-  //   });
-  //   await alert.present();
-  //   await alert.onDidDismiss().then(() => {
-  //     setTimeout(() => {
-  //       window.location.reload();
-  //     }, 300);
-  //   });
-  // }
   // alerts handles end
 
   // functions
@@ -364,12 +336,7 @@ export class HomePage implements  OnInit {
     }
 
     return '#EEAD2D';
-    //return '#ffff8d';
   }
-
-  // typeSelected(event) {
-  //   this.fs2 = event.detail.value.toString();
-  // }
 
   getCurrentWordArr() {
     const numberOfGuessedWords = this.guessedWords.length;
@@ -418,7 +385,6 @@ export class HomePage implements  OnInit {
 
   handleDeleteLetter() {
     const currentWordArr = this.getCurrentWordArr();
-    // const removedLetter = currentWordArr.pop();
     if(currentWordArr.length > 0) {
       currentWordArr.pop();
       this.guessedWords[this.guessedWords.length - 1] = currentWordArr;
@@ -462,6 +428,12 @@ export class HomePage implements  OnInit {
     loading.present();
 
     const currentWord = currentWordArr.join('');
+
+    if(this.wordsStorage.attempts.filter(x => x.typed_word.toString().toLowerCase() === currentWord.toString().toLowerCase()).length > 0) {
+      this.handleWrongMsg('Erro!', 'Palavra já digitada!');
+      loading.dismiss();
+      return;
+    }
 
     const isWordValid = await this.wordValidation(currentWord);
 
@@ -533,6 +505,14 @@ export class HomePage implements  OnInit {
         this.showSuccessModal(this.statusAttempt);
         return;
       } else {
+        const a = new Attempts();
+        a.typed_word = currentWord.toString().toLowerCase().trim();
+        a.total_attempts = this.actual;
+        a.word = this.word;
+        this.wordsStorage.attempts.push(a);
+        SecurityUtil.clear();
+        SecurityUtil.set(this.wordsStorage);
+
         this.statusAttempt = '';
         this.guessedWords.push([]);
         this.availableSpace = 1;

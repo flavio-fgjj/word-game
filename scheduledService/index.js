@@ -7,7 +7,7 @@ async function runJob() {
 
   console.log('Actual hour', hour)
   
-  if ((hour >= 19 && hour < 23) && timesPerDay < 4) {
+  if ((hour >= 18 && hour < 23) && timesPerDay < 4) {
     console.log(`Service started at ${new Date()}`)
 
     //TODO: check if service was already executed (send email)
@@ -39,4 +39,4 @@ async function runJob() {
 runJob()
 console.log(`Process number (${timesPerDay}) executed successfully at ${new Date()}`)
 
-setInterval(runJob, 1000 * 60 * 60)
+setInterval(runJob, 1000 * 60 * 60) // run job every one hour

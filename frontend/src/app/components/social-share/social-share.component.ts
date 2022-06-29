@@ -35,8 +35,8 @@ export class SocialShareComponent implements OnInit {
   ngOnInit() {
     this.wordsStorage = SecurityUtil.get();
     this.average =
-    this.wordsStorage.attempts > 0 ?
-    (this.wordsStorage.attempts / (this.wordsStorage.success + this.wordsStorage.errors)).toFixed(2) :
+    this.wordsStorage.attempts.length > 0 ?
+    (this.wordsStorage.attempts.length / (this.wordsStorage.success + this.wordsStorage.errors)).toFixed(2) :
     0;
   }
 

@@ -7,7 +7,7 @@ const Model = require('../model/index')
 
 const route = express.Router()
 
-route.get('/', (req, res) => {
+route.get('/', async (req, res) => {
   let now = new Date()
   now.setDate(now.getDate())
   const startToday = new Date(now.getFullYear(),now.getMonth(),now.getDate(),1,0,0)
@@ -15,41 +15,40 @@ route.get('/', (req, res) => {
   now.setDate(now.getDate() + 1)
 
   let query = { $and: [ 
-    { extracted_date: {$gte: startToday, $lt: endToday} }
+    { extracted_date: {$gte: startToday, $lt: endToday} },
+    { "meaning": { $exists: true, $ne: null } },
   ]}
 
   let update = { game_date: now }
   let filter
 
-  Model.find((err, result) => {
-    if(err) {
-      return result
-        .status(500)
-        .send({
-          output: `Err -> ${err}`
-        })
-    }
-
-    let nextDay = 0
-    if(result.length > 0) {
-      result.forEach(async (item, index) => {
-        if (nextDay > 7) {
-          nextDay = 1
-          now.setDate(now.getDate() + 1)
-          update = { game_date: now }
-        } else {
-          nextDay++
-        }
-        
-        filter = { _id: item._id }
-        await Model.findOneAndUpdate(filter, update)
+  let result = Model.find(query);
+  if (!result) {
+    return result
+      .status(500)
+      .send({
+        output: `Err -> ${err}`
       })
-    }
+  }
 
-    return res.status(200).send({
-      output: 'OK',
-      //payload: result
+  if(result.length > 0) {
+    result.forEach(async (item, index) => {
+      if (nextDay > 7) {
+        nextDay = 1
+        now.setDate(now.getDate() + 1)
+        update = { game_date: now }
+      } else {
+        nextDay++
+      }
+      
+      filter = { _id: item._id }
+      await Model.findOneAndUpdate(filter, update)
     })
+  }
+
+  return res.status(200).send({
+    output: 'OK',
+    //payload: result
   })
 })
 
