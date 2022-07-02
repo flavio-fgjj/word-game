@@ -14,6 +14,7 @@ const schema = new mongoose.Schema({
   },
   extracted_date: {type: Date, defaul: Date.now() },
   game_date: {type: Date, defaul: Date.now() },
+  game_seq: { type: Number },
   isWordValid: { type: Boolean }
 })
 

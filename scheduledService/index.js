@@ -1,4 +1,4 @@
-const { job, saveForNextDay } = require('./service')
+const { job, saveForNextDay, fixForNextDay } = require('./service')
 
 let timesPerDay = 1
 async function runJob() {
@@ -7,7 +7,7 @@ async function runJob() {
 
   console.log('Actual hour', hour)
   
-  if ((hour >= 18 && hour < 23) && timesPerDay < 4) {
+  if ((hour >= 17 && hour < 20) && timesPerDay < 4) {
     console.log(`Service started at ${new Date()}`)
 
     //TODO: check if service was already executed (send email)
@@ -27,16 +27,21 @@ async function runJob() {
       }
   }
 
-  if (hour > 21 && hour <= 23) {
+  if (hour >= 16 && hour <= 22) {
     console.log(`Service 'saveForNextDay' started at ${new Date()}`)
     await saveForNextDay()
+    console.log(`Service 'saveForNextDay' finished at ${new Date()}`)
+  }
 
+  if (hour > 10) {
+    console.log(`Service 'fixForNextDay' started at ${new Date()}`)
+    await fixForNextDay()
+    console.log(`Service 'fixForNextDay' finished at ${new Date()}`)
     console.log(`Service finished at ${new Date()}`)
   }
   
 }
 
 runJob()
-console.log(`Process number (${timesPerDay}) executed successfully at ${new Date()}`)
 
 setInterval(runJob, 1000 * 60 * 60) // run job every one hour

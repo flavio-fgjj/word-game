@@ -7,49 +7,138 @@ const Model = require('../model/index')
 
 const route = express.Router()
 
+route.get('/fix', async (req, res) => {
+  let now = new Date()
+  now.setDate(now.getDate())
+  const startToday = new Date(now.getFullYear(),now.getMonth(),now.getDate(),1,0,0)
+  const endToday = new Date(now.getFullYear(),now.getMonth(),now.getDate()+1,0,59,59)
+
+  let query = { $and: [ 
+    { "extracted_date": {$gte: startToday, $lt: endToday} },
+    { "meaning": { $exists: true, $ne: null } },
+  ]}
+
+  // get max gane_seq
+  let group = {$group:{_id:"$game_seq", gameDate:{$push:"$game_date"}, count:{$sum:1}}}
+  let sort  = {$sort:{"_id":-1}}
+  let limit = {$limit:1}
+
+  //let maxSeq = await Model.find().sort({"game_seq": -1}).limit(1)
+  let maxSeq = await Model.aggregate([group, sort, limit])
+  let maxGameSeq = 0
+  let totalOfMaxGameSeq = 0
+  let game_date
+
+  if (maxSeq) {
+    maxGameSeq = maxSeq[0]._id
+    totalOfMaxGameSeq = maxSeq[0].count
+    game_date = maxSeq[0].game_date
+  }
+
+  let update = { game_date: now }
+  let filter
+
+  console.log(maxSeq)
+  console.log(maxGameSeq)
+  console.log(totalOfMaxGameSeq)
+  // Model.find(query, (err, result) => {
+  //   if (err) {
+  //     return result
+  //       .status(500)
+  //       .send({
+  //         output: `Err -> ${err}`
+  //       })
+  //   }
+    
+  //   if(result.length > 0) {
+  //     now.setDate(now.getDate() + 1)
+  //     let nextDay = 1
+
+  //     result.forEach(async (item, index) => {
+  //       if (nextDay > 7) {
+  //         nextDay = 1
+  //         now.setDate(now.getDate() + 1)
+  //         update = { game_date: now }
+  //       } else {
+  //         nextDay++
+  //       }
+        
+  //       filter = { _id: item._id }
+  //       await Model.findOneAndUpdate(filter, update)
+  //     })
+  //   }
+
+  //   return res.status(200).send({
+  //     output: 'OK',
+  //     //payload: result
+  //   })
+  // }); 
+})
+
 route.get('/', async (req, res) => {
   let now = new Date()
   now.setDate(now.getDate())
   const startToday = new Date(now.getFullYear(),now.getMonth(),now.getDate(),1,0,0)
   const endToday = new Date(now.getFullYear(),now.getMonth(),now.getDate()+1,0,59,59)
-  now.setDate(now.getDate() + 1)
+
+  // get max gane_seq
+  let maxSeq = await Model.aggregate([group, sort, limit])
+  let maxGameSeq = 0
+  let totalOfMaxGameSeq = 0
+  if (maxSeq) {
+    maxGameSeq = maxSeq[0]._id
+    totalOfMaxGameSeq = maxSeq[0].count
+  } else {
+    totalOfMaxGameSeq = 1
+  }
+
+  // let maxSeq = await Model.find().sort({"game_seq": -1}).limit(1)
+  // let maxGameSeq = 0
+  // if (maxSeq) {
+  //   maxGameSeq = maxSeq[0].game_seq + 1
+  // }
 
   let query = { $and: [ 
-    { extracted_date: {$gte: startToday, $lt: endToday} },
+    { "extracted_date": {$gte: startToday, $lt: endToday} },
     { "meaning": { $exists: true, $ne: null } },
   ]}
 
-  let update = { game_date: now }
+  let update = { game_date: now, game_seq: maxGameSeq }
   let filter
 
-  let result = Model.find(query);
-  if (!result) {
-    return result
-      .status(500)
-      .send({
-        output: `Err -> ${err}`
+  Model.find(query, (err, result) => {
+    if (err) {
+      return result
+        .status(500)
+        .send({
+          output: `Err -> ${err}`
+        })
+    }
+    
+    if(result.length > 0) {
+      now.setDate(now.getDate() + 1) // 7 words per day
+      let nextDay = totalOfMaxGameSeq
+
+      result.forEach(async (item, index) => {
+        if (nextDay > 7) {
+          maxGameSeq++
+          nextDay = 1
+          now.setDate(now.getDate() + 1)
+          update = { game_date: now, game_seq: maxGameSeq }
+        } else {
+          nextDay++
+        }
+        
+        filter = { _id: item._id }
+        await Model.findOneAndUpdate(filter, update)
       })
-  }
+    }
 
-  if(result.length > 0) {
-    result.forEach(async (item, index) => {
-      if (nextDay > 7) {
-        nextDay = 1
-        now.setDate(now.getDate() + 1)
-        update = { game_date: now }
-      } else {
-        nextDay++
-      }
-      
-      filter = { _id: item._id }
-      await Model.findOneAndUpdate(filter, update)
+    return res.status(200).send({
+      output: 'OK',
+      //payload: result
     })
-  }
-
-  return res.status(200).send({
-    output: 'OK',
-    //payload: result
-  })
+  }); 
 })
 
 route.post('/', async (req,res)  => {
@@ -97,7 +186,7 @@ route.post('/', async (req,res)  => {
 })
 
 async function getMeaning(word, dictionaryType) {
-  // let today = new Date()
+  let today = new Date()
   await wordDataController(word)
   .then(async x => {
     let wordData = await x.data
@@ -124,8 +213,10 @@ async function getMeaning(word, dictionaryType) {
         synonyms: syn, 
         antonyms: ant,
         phrase: wordData.phrase, 
-        // date: today, 
-        isWordValid: isValid
+        extracted_date: today,
+        game_date: today,
+        isWordValid: isValid, 
+        game_seq: 0
       })
 
       jsonData = null
@@ -133,7 +224,7 @@ async function getMeaning(word, dictionaryType) {
       ant = []
 
       // saving at mongodb
-      if (isValid) {
+      if (isValid && model.meaning.length > 0) {
         model
           .save()
           .then((result) => {
