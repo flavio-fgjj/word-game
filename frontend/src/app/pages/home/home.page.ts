@@ -459,19 +459,19 @@ export class HomePage implements OnInit, AfterViewInit {
     this.currentWord = currentWordArr.join('').toString().toLowerCase().trim();
 
     // eslint-disable-next-line max-len
-    // if(this.wordsStorage.attempts.filter(x => x.typed_word.toString().toLowerCase() === this.currentWord.toString().toLowerCase()).length > 0) {
-    //   this.handleWrongMsg('Erro!', 'Palavra já digitada!');
-    //   loading.dismiss();
-    //   return;
-    // }
+    if(this.wordsStorage.attempts.filter(x => x.typed_word.toString().toLowerCase() === this.currentWord.toString().toLowerCase()).length > 0) {
+      this.handleWrongMsg('Erro!', 'Palavra já digitada!');
+      loading.dismiss();
+      return;
+    }
 
-    // const isWordValid = await this.wordValidation(this.currentWord);
+    const isWordValid = await this.wordValidation(this.currentWord);
 
-    // if(!isWordValid) {
-    //   this.handleWrongMsg('Erro!', 'Palavra inválida!');
-    //   loading.dismiss();
-    //   return;
-    // }
+    if(!isWordValid) {
+      this.handleWrongMsg('Erro!', 'Palavra inválida!');
+      loading.dismiss();
+      return;
+    }
 
     loading.dismiss();
 
