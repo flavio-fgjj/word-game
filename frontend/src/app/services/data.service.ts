@@ -10,7 +10,7 @@ export class DataService {
 
   public baseUrl = environment.apiEndpoint;
   public validationUrl = environment.validationEndpoint;
-
+ 
   // public headers = {
   //   // eslint-disable-next-line @typescript-eslint/naming-convention
   //   'Content-Type': 'application/json'

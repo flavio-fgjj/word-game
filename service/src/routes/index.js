@@ -81,7 +81,11 @@ route.get('/', async (req, res) => {
   const startToday = new Date(now.getFullYear(),now.getMonth(),now.getDate(),1,0,0)
   const endToday = new Date(now.getFullYear(),now.getMonth(),now.getDate()+1,0,59,59)
 
-  // get max gane_seq
+  // get max game_seq
+  let group = {$group:{_id:"$game_seq", gameDate:{$push:"$game_date"}, count:{$sum:1}}}
+  let sort  = {$sort:{"_id":-1}}
+  let limit = {$limit:1}
+  
   let maxSeq = await Model.aggregate([group, sort, limit])
   let maxGameSeq = 0
   let totalOfMaxGameSeq = 0

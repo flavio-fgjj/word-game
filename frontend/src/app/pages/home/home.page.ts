@@ -26,6 +26,7 @@ export class HomePage implements OnInit, AfterViewInit {
   public keyboardThirdRow = ['z', 'x', 'c', 'v', 'b', 'n', 'm'];
 
   public wordArray: string[];
+  public partialWordTyped: string[];
   public words: Array<Words>;
   public wordsStorage: WordsStorage;
   public guessedWords = [[]];
@@ -49,6 +50,7 @@ export class HomePage implements OnInit, AfterViewInit {
   public fs2 = '0';
 
   public word: string = null;
+  public currentWord: string = null;
   public meaning: string = null;
   public grammaticalClass: string = null;
   public syn: string[] = [];
@@ -60,6 +62,7 @@ export class HomePage implements OnInit, AfterViewInit {
   public errorPage = false;
   public alreadyStarted = false;
   public readyToGo = false;
+  public auxValidation = false;
 
   public totalSuccess = 0;
   public totalErrors = 0;
@@ -181,7 +184,6 @@ export class HomePage implements OnInit, AfterViewInit {
       await this.startSquare();
       setTimeout(async () => {
         await this.attempsFromStorage();
-        console.log(this.wordObj);
         if(this.attemptsArray.length) {
           this.actual++;
         }
@@ -202,6 +204,9 @@ export class HomePage implements OnInit, AfterViewInit {
   }
 
   async startSquare() {
+    this.partialWordTyped = [];
+    this.auxValidation = false;
+    this.currentWord = '';
     this.word = this.wordObj.word.toString().toLowerCase();
     this.meaning = this.wordObj.meaning;
 
@@ -241,6 +246,8 @@ export class HomePage implements OnInit, AfterViewInit {
     let letter;
 
     for(let tryId = 1; tryId <= this.attemptsArray.length; tryId++) {
+      this.currentWord = this.attemptsArray[tryId - 1].typed_word;
+      this.partialWordTyped = [];
       currentWordArr = this.attemptsArray[tryId - 1].typed_word.split('');
 
       for(let i = 1; i <= currentWordArr.length; i ++) {
@@ -322,6 +329,23 @@ export class HomePage implements OnInit, AfterViewInit {
 
   // functions
   getTileColor(letter, index) {
+    this.partialWordTyped.push(letter);
+
+    console.log(this.currentWord);
+    const totalWordsFromCurrent = this.currentWord.split('').reduce((group, item) => {
+      if(item === letter) {
+        group.push(item);
+      }
+      return group;
+    }, []);
+
+    const totalWordsFromWord = this.word.split('').reduce((group, item) => {
+      if(item === letter) {
+        group.push(item);
+      }
+      return group;
+    }, []);
+
     const isCorrectLetter = this.word.toString().toLowerCase().trim().includes(letter);
 
     if (!isCorrectLetter) {
@@ -333,6 +357,9 @@ export class HomePage implements OnInit, AfterViewInit {
 
     if (isCorrectPosition) {
       return '#32cd32';
+    } else if ((totalWordsFromCurrent.length > totalWordsFromWord.length) && !this.auxValidation) {
+      this.auxValidation = true;
+      return 'rgb(58, 58, 60)';
     }
 
     return '#EEAD2D';
@@ -417,6 +444,8 @@ export class HomePage implements OnInit, AfterViewInit {
   }
 
   async handleSubmitWord() {
+    this.auxValidation = false;
+    this.partialWordTyped = [];
     const currentWordArr = this.getCurrentWordArr();
 
     if (currentWordArr.length !== this.word.length) {
@@ -427,21 +456,22 @@ export class HomePage implements OnInit, AfterViewInit {
     const loading = await this.loadingCtrl.create({ message: 'Validando a palavra digitada...' });
     loading.present();
 
-    const currentWord = currentWordArr.join('');
+    this.currentWord = currentWordArr.join('').toString().toLowerCase().trim();
 
-    if(this.wordsStorage.attempts.filter(x => x.typed_word.toString().toLowerCase() === currentWord.toString().toLowerCase()).length > 0) {
-      this.handleWrongMsg('Erro!', 'Palavra já digitada!');
-      loading.dismiss();
-      return;
-    }
+    // eslint-disable-next-line max-len
+    // if(this.wordsStorage.attempts.filter(x => x.typed_word.toString().toLowerCase() === this.currentWord.toString().toLowerCase()).length > 0) {
+    //   this.handleWrongMsg('Erro!', 'Palavra já digitada!');
+    //   loading.dismiss();
+    //   return;
+    // }
 
-    const isWordValid = await this.wordValidation(currentWord);
+    // const isWordValid = await this.wordValidation(this.currentWord);
 
-    if(!isWordValid) {
-      this.handleWrongMsg('Erro!', 'Palavra inválida!');
-      loading.dismiss();
-      return;
-    }
+    // if(!isWordValid) {
+    //   this.handleWrongMsg('Erro!', 'Palavra inválida!');
+    //   loading.dismiss();
+    //   return;
+    // }
 
     loading.dismiss();
 
@@ -471,7 +501,7 @@ export class HomePage implements OnInit, AfterViewInit {
 
     this.guessedWordCount += 1;
 
-    if (currentWord.toString().toLowerCase().trim() === this.word.toString().toLowerCase().trim()) {
+    if (this.currentWord.toString().toLowerCase().trim() === this.word.toString().toLowerCase().trim()) {
       this.statusAttempt = 'success';
       this.totalSuccess += 1;
 
@@ -506,7 +536,7 @@ export class HomePage implements OnInit, AfterViewInit {
         return;
       } else {
         const a = new Attempts();
-        a.typed_word = currentWord.toString().toLowerCase().trim();
+        a.typed_word = this.currentWord.toString().toLowerCase().trim();
         a.total_attempts = this.actual;
         a.word = this.word;
         this.wordsStorage.attempts.push(a);

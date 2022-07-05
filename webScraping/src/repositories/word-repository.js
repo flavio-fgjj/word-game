@@ -55,7 +55,7 @@ exports.get = async(_word) => {
     } catch(err) {
       synonyms = []
       antonyms = []
-      console.log('palavra -> ', word)
+      console.log('ERRO: palavra -> ', word)
       console.error(err)
       return {
         "status": "NOK",
