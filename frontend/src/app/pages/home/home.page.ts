@@ -128,7 +128,7 @@ export class HomePage implements OnInit, AfterViewInit {
     if (this.startWithTest) {
       this.words = new Array<Words>();
       const w = new Words();
-      w.word = 'castelo';
+      w.word = 'maringa';
       w.antonyms = [''];
       w.synonyms = [''];
       w.meaning = '';
@@ -512,13 +512,13 @@ export class HomePage implements OnInit, AfterViewInit {
       return;
     }
 
-    const isWordValid = await this.wordValidation(this.currentWord);
+    // const isWordValid = await this.wordValidation(this.currentWord);
 
-    if(!isWordValid) {
-      this.handleWrongMsg('Erro!', 'Palavra inválida!');
-      loading.dismiss();
-      return;
-    }
+    // if(!isWordValid) {
+    //   this.handleWrongMsg('Erro!', 'Palavra inválida!');
+    //   loading.dismiss();
+    //   return;
+    // }
 
     loading.dismiss();
 

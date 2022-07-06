@@ -1,8 +1,9 @@
 <ion-header >
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-title size="medium" class="pageTitle">
-        Word Game
+      <ion-title size="medium" class="pageTitle" style="text-align: center;">
+        Word Game<br>
+        BETA
       </ion-title>
     </ion-buttons>
     <app-modal-info></app-modal-info>
@@ -95,30 +96,6 @@
               </ion-item>
             </ion-list>
           </ion-accordion>
-
-          <!-- <ion-accordion>
-            <ion-item slot="header">
-              <ion-label>Uso na frase</ion-label>
-            </ion-item>
-            <ion-list slot="content">
-              <ion-item>
-                <ion-card>
-                  <ion-card-header>
-                    <ion-card-title *ngIf="!phraseSeen">
-                      <ion-chip outline color="secondary" (click)="fnPhraseSeen()">
-                        <ion-icon name="eye-outline" style="padding-right: 10px;"></ion-icon>
-                      </ion-chip>
-                    </ion-card-title>
-                  </ion-card-header>
-                  <ion-card-content *ngIf="phraseSeen">
-                    {{font}}<br><br>
-                    <p style="text-align:center;" *ngFor="let p of phrase">{{p}}</p><br>
-                    {{author}}
-                  </ion-card-content>
-                </ion-card>
-              </ion-item>
-            </ion-list>
-          </ion-accordion> -->
         </ion-accordion-group>
       </ion-content>
     </ng-template>
@@ -144,9 +121,7 @@
           </ion-row>
         </ion-grid>
       </div>
-      <!-- <div *ngFor="let num of limitTryArray; let index = index" id="board_try{{num}}" [class.hide]="index > 0"> -->
       <div *ngFor="let num of limitAttemptsArray; let index = index" id="board_try{{num}}">
-        <!-- <P>{{num}}</P> -->
         <div *ngFor="let div of wordSquares" class="square animate__animated" id="{{div.id}}_try{{num}}">
         </div>
       </div>
