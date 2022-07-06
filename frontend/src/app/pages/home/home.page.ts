@@ -79,6 +79,8 @@ export class HomePage implements OnInit, AfterViewInit {
 
   public isMobilePlatform = false;
 
+  public startWithTest = false;
+
   constructor(
     private loadingCtrl: LoadingController,
     private service: DataService,
@@ -87,26 +89,30 @@ export class HomePage implements OnInit, AfterViewInit {
     public platform: Platform) {}
 
   async ngAfterViewInit() {
-    // const loading = await this.loadingCtrl.create({ message: 'Iniciando...' });
-    // loading.present();
+    if (this.startWithTest) {
+      return;
+    }
 
-    // this.wordsStorage = SecurityUtil.get();
-    // if(this.wordsStorage) {
-    //   const storageDate = new Date(this.wordsStorage.date);
-    //   const today = new Date();
-    //   if((storageDate.getDate() === today.getDate()
-    //     && storageDate.getMonth() === today.getMonth()
-    //     && storageDate.getFullYear() === today.getFullYear()) && this.wordsStorage.words.length > 0) {
-    //       this.startFromStorage();
-    //       loading.dismiss();
-    //       return;
-    //   } else {
-    //     SecurityUtil.clear();
-    //   }
-    // }
-    // this.startFromStorage();
+    const loading = await this.loadingCtrl.create({ message: 'Iniciando...' });
+    loading.present();
 
-    // loading.dismiss();
+    this.wordsStorage = SecurityUtil.get();
+    if(this.wordsStorage) {
+      const storageDate = new Date(this.wordsStorage.date);
+      const today = new Date();
+      if((storageDate.getDate() === today.getDate()
+        && storageDate.getMonth() === today.getMonth()
+        && storageDate.getFullYear() === today.getFullYear()) && this.wordsStorage.words.length > 0) {
+          this.startFromStorage();
+          loading.dismiss();
+          return;
+      } else {
+        SecurityUtil.clear();
+      }
+    }
+    this.startFromStorage();
+
+    loading.dismiss();
   }
 
   async ngOnInit() {
@@ -119,38 +125,37 @@ export class HomePage implements OnInit, AfterViewInit {
       this.limitAttemptsArray.push(j.toString());
     }
 
-    this.words = new Array<Words>();
-    const w = new Words();
-    w.word = 'castelo';
-    w.antonyms = [''];
-    w.synonyms = [''];
-    w.meaning = '';
-    w.grammatical_class = '';
-    w.phrase = {
-      author: '',
-      font: '',
-      phrase: ''
-    };
-    this.words.push(w);
+    if (this.startWithTest) {
+      this.words = new Array<Words>();
+      const w = new Words();
+      w.word = 'castelo';
+      w.antonyms = [''];
+      w.synonyms = [''];
+      w.meaning = '';
+      w.grammatical_class = '';
+      w.phrase = {
+        author: '',
+        font: '',
+        phrase: ''
+      };
+      this.words.push(w);
 
-    this.wordsStorage = new WordsStorage();
-    this.attempts = new Attempts();
-    this.attemptsArray = new Array<Attempts>();
-    this.wordsStorage.date = new Date();
-    this.wordsStorage.actual = 1;
-    this.wordsStorage.success = 0;
-    this.wordsStorage.errors = 0;
-    this.wordsStorage.score = 5;
-    this.wordsStorage.current_score = 5;
-    this.wordsStorage.words = this.words;
-    this.wordsStorage.attempts = this.attemptsArray;
-    SecurityUtil.set(this.wordsStorage);
+      this.wordsStorage = new WordsStorage();
+      this.attempts = new Attempts();
+      this.attemptsArray = new Array<Attempts>();
+      this.wordsStorage.date = new Date();
+      this.wordsStorage.actual = 1;
+      this.wordsStorage.success = 0;
+      this.wordsStorage.errors = 0;
+      this.wordsStorage.score = 5;
+      this.wordsStorage.current_score = 5;
+      this.wordsStorage.words = this.words;
+      this.wordsStorage.attempts = this.attemptsArray;
+      SecurityUtil.set(this.wordsStorage);
 
-    await this.startFromStorage();
+      await this.startFromStorage();
+    }
 
-
-    // this.wordArray = ['Castelo', 'Joao'];
-    // this.startSquare();
   }
 
   async getWords() {
