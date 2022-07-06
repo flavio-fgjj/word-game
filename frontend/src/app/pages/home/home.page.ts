@@ -87,32 +87,29 @@ export class HomePage implements OnInit, AfterViewInit {
     public platform: Platform) {}
 
   async ngAfterViewInit() {
-    const loading = await this.loadingCtrl.create({ message: 'Iniciando...' });
-    loading.present();
+    // const loading = await this.loadingCtrl.create({ message: 'Iniciando...' });
+    // loading.present();
 
-    this.wordsStorage = SecurityUtil.get();
-    if(this.wordsStorage) {
-      const storageDate = new Date(this.wordsStorage.date);
-      const today = new Date();
-      if((storageDate.getDate() === today.getDate()
-        && storageDate.getMonth() === today.getMonth()
-        && storageDate.getFullYear() === today.getFullYear()) && this.wordsStorage.words.length > 0) {
-          this.startFromStorage();
-          loading.dismiss();
-          return;
-      } else {
-        SecurityUtil.clear();
-      }
-    }
-    this.startFromStorage();
+    // this.wordsStorage = SecurityUtil.get();
+    // if(this.wordsStorage) {
+    //   const storageDate = new Date(this.wordsStorage.date);
+    //   const today = new Date();
+    //   if((storageDate.getDate() === today.getDate()
+    //     && storageDate.getMonth() === today.getMonth()
+    //     && storageDate.getFullYear() === today.getFullYear()) && this.wordsStorage.words.length > 0) {
+    //       this.startFromStorage();
+    //       loading.dismiss();
+    //       return;
+    //   } else {
+    //     SecurityUtil.clear();
+    //   }
+    // }
+    // this.startFromStorage();
 
-    loading.dismiss();
+    // loading.dismiss();
   }
 
   async ngOnInit() {
-    // this.wordArray = ['Flavio', 'Estela', 'Joao', 'Teo'];
-    // this.startSquare();
-
     // check if platform is mobile
     for (const item of this.platform.platforms()) {
       this.isMobilePlatform = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(item);
@@ -121,6 +118,39 @@ export class HomePage implements OnInit, AfterViewInit {
     for (let j = 1; j <= this.limitAttempts; j++) {
       this.limitAttemptsArray.push(j.toString());
     }
+
+    this.words = new Array<Words>();
+    const w = new Words();
+    w.word = 'castelo';
+    w.antonyms = [''];
+    w.synonyms = [''];
+    w.meaning = '';
+    w.grammatical_class = '';
+    w.phrase = {
+      author: '',
+      font: '',
+      phrase: ''
+    };
+    this.words.push(w);
+
+    this.wordsStorage = new WordsStorage();
+    this.attempts = new Attempts();
+    this.attemptsArray = new Array<Attempts>();
+    this.wordsStorage.date = new Date();
+    this.wordsStorage.actual = 1;
+    this.wordsStorage.success = 0;
+    this.wordsStorage.errors = 0;
+    this.wordsStorage.score = 5;
+    this.wordsStorage.current_score = 5;
+    this.wordsStorage.words = this.words;
+    this.wordsStorage.attempts = this.attemptsArray;
+    SecurityUtil.set(this.wordsStorage);
+
+    await this.startFromStorage();
+
+
+    // this.wordArray = ['Castelo', 'Joao'];
+    // this.startSquare();
   }
 
   async getWords() {
@@ -331,38 +361,50 @@ export class HomePage implements OnInit, AfterViewInit {
   getTileColor(letter, index) {
     this.partialWordTyped.push(letter);
 
-    console.log(this.currentWord);
-    const totalWordsFromCurrent = this.currentWord.split('').reduce((group, item) => {
+    if(this.word.toString().toLowerCase().trim().split('')[index] === letter) {
+      return '#32cd32'; // green color (correct)
+    }
+    if(!this.word.toString().toLowerCase().trim().includes(letter)) {
+      return 'rgb(58, 58, 60)'; // black color (wrong)
+    }
+
+    // wrong position
+    const totalLettersFromWord = this.word.split('').reduce((group, item) => {
       if(item === letter) {
         group.push(item);
       }
       return group;
     }, []);
 
-    const totalWordsFromWord = this.word.split('').reduce((group, item) => {
+    const totalLettersFromCurrent = this.currentWord.split('').reduce((group, item) => {
       if(item === letter) {
         group.push(item);
       }
       return group;
     }, []);
 
-    const isCorrectLetter = this.word.toString().toLowerCase().trim().includes(letter);
+    const totalLettersFromPartial = this.partialWordTyped.reduce((group, item) => {
+      if(item === letter) {
+        group.push(item);
+      }
+      return group;
+    }, []);
 
-    if (!isCorrectLetter) {
-      return 'rgb(58, 58, 60)';
+    // incorrect position
+    if (totalLettersFromCurrent.length === totalLettersFromWord.length) {
+      return '#EEAD2D'; // yellow color (wrong position)
+    } else {
+      if (totalLettersFromPartial.length < totalLettersFromCurrent.length) {
+        return 'rgb(58, 58, 60)'; // black color (has more occurrences for this letter to validate)
+      }
+
+      // daqui começa a CAGAR TUDO ###########
+      if (totalLettersFromPartial.length <= totalLettersFromCurrent.length
+        && this.partialWordTyped.indexOf(letter) > 0) {
+          return 'rgb(58, 58, 60)'; // black color (has more occurrences for this letter to validate)
+        }
     }
-
-    const letterInThatPosition = this.word.toString().toLowerCase().trim().charAt(index);
-    const isCorrectPosition = letter === letterInThatPosition;
-
-    if (isCorrectPosition) {
-      return '#32cd32';
-    } else if ((totalWordsFromCurrent.length > totalWordsFromWord.length) && !this.auxValidation) {
-      this.auxValidation = true;
-      return 'rgb(58, 58, 60)';
-    }
-
-    return '#EEAD2D';
+    return '#EEAD2D'; // yellow color (wrong position)
   }
 
   getCurrentWordArr() {
@@ -491,7 +533,7 @@ export class HomePage implements OnInit, AfterViewInit {
           letterE1Aux = document.getElementById(`${letterId.toString()}_try${(this.actual - 1)}`);
         }
         letterE1Aux.classList.add('animate__flipInX');
-        if (tileColor === 'rgb(58, 58, 60)') {
+        if (tileColor === 'rgb(58, 58, 60)' && this.word.indexOf(letter.toString().toLowerCase().trim()) === -1) {
           document.getElementById(`${letter.toString().toLowerCase().trim()}`).setAttribute('style', 'opacity: 0.33;');
         }
         letterE1Aux.setAttribute('style', `background-color:${tileColor};border-color:${tileColor};color:whitesmoke;`);
