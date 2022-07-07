@@ -26,18 +26,19 @@
 @import "~@ionic/angular/css/flex-utils.css";
 
 ion-content{
-  //--ion-background-color:#D7C6AB;
-  //--ion-background-color: #111D12;
+  --ion-background-color:#DCE1E3;
 }
 
 ion-header{
-  //--ion-background-color: #111D12;
-  //--ion-background-color:#D7C6AB;
+  --ion-background-color: #DCE1E3;
 }
 
 ion-footer{
-  //--ion-background-color: #111D12; 
-  //--ion-background-color:#D7C6AB;
+  --ion-background-color: #DCE1E3; 
+}
+
+.alert-button-group {
+  padding: 10px;
 }
 
 .custom-modal-success {
@@ -48,12 +49,9 @@ ion-footer{
 
 .custom-modal {
   --backdrop-opacity: 1;
-  --ion-background-color: beige
-  //backdrop-filter: blur(3px);
-
-  // ion-backdrop {
-  //   --backdrop-opacity: 0.33;
-  // }
+  //--ion-background-color: beige
+  --ion-background-color: #fff;
+  
 
   &::part(backdrop) {
       background: #000;
@@ -69,7 +67,8 @@ ion-footer{
   &::part(content) {
       border-radius: 20px; // Here the border radius
       box-shadow: 0px 0px 20px 5px rgb(0 0 0 / 32%);
-      background-color: beige;
+      // background-color: beige;
+      background-color: #fff;
   }
 }
 

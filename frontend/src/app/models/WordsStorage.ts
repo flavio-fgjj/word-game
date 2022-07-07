@@ -7,7 +7,9 @@ export class WordsStorage {
   success: number;
   errors: number;
   score: number;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   current_score: number;
   attempts: Array<Attempts>;
+  average: number;
   words: Array<Words>;
 }

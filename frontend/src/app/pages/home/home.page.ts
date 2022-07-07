@@ -195,6 +195,10 @@ export class HomePage implements OnInit, AfterViewInit {
     this.wordsStorage = SecurityUtil.get();
 
     if (this.wordsStorage) {
+      if (this.wordsStorage.actual > 7) {
+        this.showShareOptions();
+        return;
+      }
       this.words = this.wordsStorage.words;
 
       this.words = this.words.filter(x => x.word !== null);
@@ -243,6 +247,7 @@ export class HomePage implements OnInit, AfterViewInit {
     this.auxValidation = false;
     this.currentWord = '';
     this.word = this.wordObj.word.toString().toLowerCase();
+    this.word = this.word.replaceAll('ç', 'c').replaceAll('Ç', 'C');
     this.meaning = this.wordObj.meaning;
 
     // convert grammatical class in pascal case
@@ -512,13 +517,13 @@ export class HomePage implements OnInit, AfterViewInit {
       return;
     }
 
-    // const isWordValid = await this.wordValidation(this.currentWord);
+    const isWordValid = await this.wordValidation(this.currentWord);
 
-    // if(!isWordValid) {
-    //   this.handleWrongMsg('Erro!', 'Palavra inválida!');
-    //   loading.dismiss();
-    //   return;
-    // }
+    if(!isWordValid) {
+      this.handleWrongMsg('Erro!', 'Palavra inválida!');
+      loading.dismiss();
+      return;
+    }
 
     loading.dismiss();
 
@@ -555,13 +560,12 @@ export class HomePage implements OnInit, AfterViewInit {
       this.wordsStorage = SecurityUtil.get();
       this.wordsStorage.actual += 1;
       this.wordsStorage.success += 1;
-      //this.wordsStorage.attempts += this.actual;
       this.wordsStorage.attempts = new Array<Attempts>();
+      this.wordsStorage.average = this.wordsStorage.average != null ? this.wordsStorage.average + this.actual : 0;
       this.wordsStorage.score += this.score;
       SecurityUtil.clear();
       SecurityUtil.set(this.wordsStorage);
 
-      //this.handleSuccess();
       this.showSuccessModal(this.statusAttempt);
       return;
     } else {
@@ -572,13 +576,11 @@ export class HomePage implements OnInit, AfterViewInit {
         this.wordsStorage = SecurityUtil.get();
         this.wordsStorage.actual += 1;
         this.wordsStorage.errors += 1;
-        // this.wordsStorage.attempts += this.actual;
         this.wordsStorage.attempts = new Array<Attempts>();
-
+        this.wordsStorage.average = this.wordsStorage.average != null ? this.wordsStorage.average + this.actual : 0;
         SecurityUtil.clear();
         SecurityUtil.set(this.wordsStorage);
 
-        //this.handleLimitExceeded();
         this.showSuccessModal(this.statusAttempt);
         return;
       } else {

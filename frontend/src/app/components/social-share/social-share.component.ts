@@ -35,13 +35,13 @@ export class SocialShareComponent implements OnInit {
   ngOnInit() {
     this.wordsStorage = SecurityUtil.get();
     this.average =
-    this.wordsStorage.attempts.length > 0 ?
-    (this.wordsStorage.attempts.length / (this.wordsStorage.success + this.wordsStorage.errors)).toFixed(2) :
+    this.wordsStorage.average > 0 ?
+    (this.wordsStorage.average / (this.wordsStorage.success + this.wordsStorage.errors)).toFixed(2) :
     0;
   }
 
   async copyToClipboard() {
-    this.sharingText = `Meu desempenho no tigatae.com hoje: 
+    this.sharingText = `Meu desempenho no wordgame.com hoje: 
 ✅ --> ${this.wordsStorage.success}
 ❌ --> ${this.wordsStorage.errors}
 Totalizando ${this.wordsStorage.score} pontos 💪
