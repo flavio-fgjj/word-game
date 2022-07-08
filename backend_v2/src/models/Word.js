@@ -1,4 +1,5 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose')
+
 
 const WordSchema = mongoose.Schema({
   dictionary_type: String,
@@ -12,7 +13,10 @@ const WordSchema = mongoose.Schema({
     phrase: String,
     author: String 
   },
-  date:  Date
-});
+  extracted_date: Date,
+  game_date: Date, 
+  game_seq: Number, 
+  isWordValid: Boolean
+})
 
-module.exports = mongoose.model("Word",WordSchema);
+module.exports = mongoose.model('Word', WordSchema)

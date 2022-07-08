@@ -3,50 +3,39 @@ const Word = require('../models/Word')
 const wordResolver = {
   Query: {
     async words() {
-      let query, result
+      let result
       let ret = [Word]
       let now = new Date()
       now.setDate(now.getDate())
-      //now.setDate(now.getDate() - 6)
-      const startToday = new Date(now.getFullYear(),now.getMonth(),now.getDate(),1,0,0)
-      const endToday = new Date(now.getFullYear(),now.getMonth(),now.getDate()+1,0,59,59)
-     
-      // Dicionario completo (0)
-      query = { $and: [ 
-        { game_date: {$gte: startToday, $lt: endToday} }, 
-        { "dictionary_type": "Dicionario Completo"},
-        { "grammatical_class": { $exists: true, $ne: null } },
-        { "$expr": { "$gte": [ { "$strLenCP": "$phrase.font" }, 1 ] } }
-      ]}
-      result = await Word.find(query)
+      const gd = `${now.getDate().toString().padStart(2, '0')}${month.toString().padStart(2, '0')}${now.getFullYear().toString().padStart(4, '0')}`
+      result = await Word.find({ 
+        game_date: { gd } 
+      })
 
       if (result) {
-        //ret.push(result.sort(() => Math.random() - Math.random()).slice(0, 2))
-        // result.sort(() => Math.random() - Math.random()).slice(0, 50).forEach(x => {
-        //   if(x.word.length >= 3 && x.word.length <= 7) {
-        //     ret.push(x)
-        //   }
-        // })
         result.forEach(x => {
-          ret.push(x)
+          if(ret.length <= 7) {
+            ret.push(x)
+          }
         })
       }
 
-      if(ret.length <= 0) {
-        query = { $and: [ 
-          { extracted_date: {$gte: startToday, $lt: endToday} }, 
-          { "dictionary_type": "Dicionario Completo"},
-          { "grammatical_class": { $exists: true, $ne: null } },
-          { "$expr": { "$gte": [ { "$strLenCP": "$phrase.font" }, 1 ] } }
-        ]}
-        result = await Word.find(query)
+      // if(ret.length <= 7) {
+      //   query = { $and: [ 
+      //     { "extracted_date": {$gte: startToday, $lt: endToday} }, 
+      //     { "dictionary_type": "Dicionario Completo"},
+      //     { "grammatical_class": { $exists: true, $ne: null } },
+      //     { "word": { $exists: true, $ne: null } },
+      //     { "$expr": { "$gte": [ { "$strLenCP": "$phrase.font" }, 1 ] } }
+      //   ]}
+      //   result = await Word.find(query)
 
-        if (result) {
-          result.forEach(x => {
-            ret.push(x)
-          })
-        }
-      }
+      //   if (result) {
+      //     result.forEach(x => {
+      //       ret.push(x)
+      //     })
+      //   }
+      // }
 
       // // Dicionario para criancas (1)
       // query = { $and: [ 

@@ -26,15 +26,16 @@
 @import "~@ionic/angular/css/flex-utils.css";
 
 ion-content{
-  --ion-background-color:#DCE1E3;
+  //--ion-background-color:#DCE1E3;
+  --ion-background-color:#5c6e68;
 }
 
 ion-header{
-  --ion-background-color: #DCE1E3;
+  --ion-background-color: #5c6e68;
 }
 
 ion-footer{
-  --ion-background-color: #DCE1E3; 
+  --ion-background-color: #5c6e68; 
 }
 
 .alert-button-group {

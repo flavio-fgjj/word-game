@@ -77,9 +77,9 @@ route.get('/fix', async (req, res) => {
 
 route.get('/', async (req, res) => {
   let now = new Date()
-  now.setDate(now.getDate())
-  const startToday = new Date(now.getFullYear(),now.getMonth(),now.getDate(),1,0,0)
-  const endToday = new Date(now.getFullYear(),now.getMonth(),now.getDate()+1,0,59,59)
+  let year = ''
+  let month = ''
+  let day = ''
 
   // get max game_seq
   let group = {$group:{_id:"$game_seq", gameDate:{$push:"$game_date"}, count:{$sum:1}}}
@@ -87,62 +87,91 @@ route.get('/', async (req, res) => {
   let limit = {$limit:1}
   
   let maxSeq = await Model.aggregate([group, sort, limit])
+  //let maxSeq = await Model.find({ game_seq: 0 })
   let maxGameSeq = 0
   let totalOfMaxGameSeq = 0
-  if (maxSeq) {
+  if (maxSeq && maxSeq.length > 0) {
     maxGameSeq = maxSeq[0]._id
-    totalOfMaxGameSeq = maxSeq[0].count
+    totalOfMaxGameSeq = maxSeq[0].count > 7 ? 7 : maxSeq[0].count
+    year = maxSeq[0].gameDate[0].substring(4,10)
+    month = maxSeq[0].gameDate[0].substring(2,4)
+    day = maxSeq[0].gameDate[0].substring(0,2)
   } else {
-    totalOfMaxGameSeq = 1
+    totalOfMaxGameSeq = 7
   }
 
-  // let maxSeq = await Model.find().sort({"game_seq": -1}).limit(1)
-  // let maxGameSeq = 0
-  // if (maxSeq) {
-  //   maxGameSeq = maxSeq[0].game_seq + 1
-  // }
-
-  let query = { $and: [ 
-    { "extracted_date": {$gte: startToday, $lt: endToday} },
-    { "meaning": { $exists: true, $ne: null } },
-  ]}
-
-  let update = { game_date: now, game_seq: maxGameSeq }
+  console.log(month)
+  if (year != '' && !isNaN(year)) {
+    now = new Date(`${year}-${month}-${day}T00:00:00`)
+    now.setDate(now.getDate() + 1)
+  }
   let filter
+  let update
+  maxGameSeq++
+  
+  console.log(totalOfMaxGameSeq)
+  Model
+    .find({ game_seq: 0 })
+    .limit(totalOfMaxGameSeq)
+    .exec((err, result) => {
+      if (err) {
+        return result
+          .status(500)
+          .send({
+            output: `Err -> ${err}`
+          })
+      }
 
-  Model.find(query, (err, result) => {
-    if (err) {
-      return result
-        .status(500)
-        .send({
-          output: `Err -> ${err}`
-        })
-    }
-    
-    if(result.length > 0) {
-      now.setDate(now.getDate() + 1) // 7 words per day
-      let nextDay = totalOfMaxGameSeq
+      console.log(result.length)
 
-      result.forEach(async (item, index) => {
-        if (nextDay > 7) {
-          maxGameSeq++
+      let month = now.getMonth() + 1
+      if(result.length > 0) {
+        result.forEach(async (item, index) => {
           nextDay = 1
-          now.setDate(now.getDate() + 1)
-          update = { game_date: now, game_seq: maxGameSeq }
-        } else {
-          nextDay++
-        }
-        
-        filter = { _id: item._id }
-        await Model.findOneAndUpdate(filter, update)
+          update = { game_date: `${now.getDate().toString().padStart(2, '0')}${month.toString().padStart(2, '0')}${now.getFullYear().toString().padStart(4, '0')}`, game_seq: maxGameSeq }
+          filter = { _id: item._id }
+          await Model.findOneAndUpdate(filter, update)
+        })
+      }
+  
+      return res.status(200).send({
+        output: 'OK',
+        //payload: result
       })
-    }
-
-    return res.status(200).send({
-      output: 'OK',
-      //payload: result
     })
-  }); 
+  // Model.find(query, (err, result) => {
+  //   if (err) {
+  //     return result
+  //       .status(500)
+  //       .send({
+  //         output: `Err -> ${err}`
+  //       })
+  //   }
+    
+  //   if(result.length > 0) {
+  //     now.setDate(now.getDate() + 1) // 7 words per day
+  //     let nextDay = totalOfMaxGameSeq
+
+  //     result.forEach(async (item, index) => {
+  //       if (nextDay > 7) {
+  //         maxGameSeq++
+  //         nextDay = 1
+  //         now.setDate(now.getDate() + 1)
+  //         update = { game_date: now, game_seq: maxGameSeq }
+  //       } else {
+  //         nextDay++
+  //       }
+        
+  //       filter = { _id: item._id }
+  //       await Model.findOneAndUpdate(filter, update)
+  //     })
+  //   }
+
+  //   return res.status(200).send({
+  //     output: 'OK',
+  //     //payload: result
+  //   })
+  // }); 
 })
 
 route.post('/', async (req,res)  => {

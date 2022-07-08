@@ -13,7 +13,7 @@ const schema = new mongoose.Schema({
     author: { type: String }
   },
   extracted_date: {type: Date, defaul: Date.now() },
-  game_date: {type: Date, defaul: Date.now() },
+  game_date: {type: String },
   game_seq: { type: Number },
   isWordValid: { type: Boolean }
 })

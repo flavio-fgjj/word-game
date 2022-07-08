@@ -2,6 +2,7 @@ import { WordsStorage } from '../models/WordsStorage';
 
 export class SecurityUtil {
   public static set(words: WordsStorage) {
+    this.clear();
     const data = JSON.stringify(words);
     localStorage.setItem('word-game', btoa(data));
   }

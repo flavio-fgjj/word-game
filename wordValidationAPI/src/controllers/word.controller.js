@@ -6,9 +6,7 @@ exports.getWord = async (req, res, next)=> {
         const query = 'SELECT * FROM words WHERE LOWER(TRIM(word)) = ?;'
         const result = await mysql.execute(query, [req.params.word])
 
-        
         if (result.length == 0) {
-          console.log(result)
           return res.status(200).send({
             status: 'NOK',
             message: `Word doesn't exists!`

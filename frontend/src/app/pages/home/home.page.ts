@@ -81,6 +81,8 @@ export class HomePage implements OnInit, AfterViewInit {
 
   public startWithTest = false;
 
+  public selectedSpace = false;
+
   constructor(
     private loadingCtrl: LoadingController,
     private service: DataService,
@@ -167,8 +169,7 @@ export class HomePage implements OnInit, AfterViewInit {
       .subscribe(async response => {
         this.words = response.data.words;
 
-        this.words = this.words.filter(x => x.word !== null).slice(0, 7);
-
+        //this.words = this.words.filter(x => x.word !== null).slice(0, 7);
         if (this.words.length === 0) {
           this.errorPage = true;
         } else {
@@ -449,7 +450,25 @@ export class HomePage implements OnInit, AfterViewInit {
   // functions end
 
   // keyboard handles
+  selectPositionByClick(event) {
+    this.selectedSpace = true;
+    try {
+      document.getElementById(`${String(this.availableSpace)}_try${this.actual}`).style.border = '';
+    } catch {
+
+    }
+    this.availableSpace = parseFloat(event.target.getAttribute('data'));
+    document.getElementById(`${String(this.availableSpace)}_try${this.actual}`).style.border = '3px solid black';
+  }
+
   updateGuessedWords(event) {
+    this.selectedSpace = false;
+    try {
+      document.getElementById(`${String(this.availableSpace)}_try${this.actual}`).style.border = '';
+    } catch {
+
+    }
+
     const letter = event.target.innerText;
     const currentWordArr = this.getCurrentWordArr();
 
@@ -458,18 +477,36 @@ export class HomePage implements OnInit, AfterViewInit {
 
       this.availableSpace = this.availableSpace + 1;
 
+      console.log(this.guessedWords.length - 1);
+      this.guessedWords[this.guessedWords.length - 1] = currentWordArr;
       document.getElementById(`${String(this.availableSpace - 1)}_try${this.actual}`).textContent = letter;
     }
   }
 
   handleDeleteLetter() {
+    try {
+      document.getElementById(`${String(this.availableSpace)}_try${this.actual}`).style.border = '';
+    } catch {
+
+    }
     const currentWordArr = this.getCurrentWordArr();
     if(currentWordArr.length > 0) {
       currentWordArr.pop();
-      this.guessedWords[this.guessedWords.length - 1] = currentWordArr;
-      document.getElementById(`${String(this.availableSpace - 1)}_try${this.actual}`).textContent = '';
+      // this.guessedWords[!this.selectedSpace ? this.guessedWords.length - 1 : this.guessedWords.length] = currentWordArr;
+      document.getElementById(`${!this.selectedSpace ?
+        String(this.availableSpace - 1) :
+        String(this.availableSpace)}_try${this.actual}`).textContent = '';
+
+      let j = 0;
+      for(let i = 1; i <= this.word.split('').length; i++) {
+        if(document.getElementById(`${i.toString()}_try${(this.actual)}`).innerText !== '') {
+          j++;
+        }
+      }
+      this.guessedWords[j] = currentWordArr;
       this.availableSpace = this.availableSpace - 1;
     }
+    this.selectedSpace = false;
   }
 
   async wordValidation(word): Promise<boolean> {
@@ -498,18 +535,22 @@ export class HomePage implements OnInit, AfterViewInit {
   async handleSubmitWord() {
     this.auxValidation = false;
     this.partialWordTyped = [];
-    const currentWordArr = this.getCurrentWordArr();
+    let currentWordArr = this.getCurrentWordArr();
 
     if (currentWordArr.length !== this.word.length) {
       this.handleWrongMsg('A palavra deve ter', `${this.word.length} letras`);
       return;
     }
 
+    currentWordArr = [];
+    for(let i = 1; i <= this.word.split('').length; i++) {
+      currentWordArr.push(document.getElementById(`${i.toString()}_try${(this.actual)}`).innerText);
+    }
+
     const loading = await this.loadingCtrl.create({ message: 'Validando a palavra digitada...' });
     loading.present();
 
     this.currentWord = currentWordArr.join('').toString().toLowerCase().trim();
-
     // eslint-disable-next-line max-len
     if(this.wordsStorage.attempts.filter(x => x.typed_word.toString().toLowerCase() === this.currentWord.toString().toLowerCase()).length > 0) {
       this.handleWrongMsg('Erro!', 'Palavra já digitada!');

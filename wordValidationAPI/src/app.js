@@ -8,7 +8,7 @@ const wordRoute = require('./routes/word.route')
 app.use(express.json())
 app.use(cors())
 
-app.use(bodyParser.urlencoded({ extended: false }))  // only sample data
+app.use(bodyParser.urlencoded({ extended: true }))  // only sample data
 app.use(bodyParser.json()) // json from body
 
 app.use((req, res, next) => {

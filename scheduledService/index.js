@@ -7,7 +7,7 @@ async function runJob() {
 
   console.log('Actual hour', hour)
   
-  if ((hour >= 16 && hour < 20) && timesPerDay < 4) {
+  if ((hour >= 20 && hour < 20) && timesPerDay < 4) {
     console.log(`Service started at ${new Date()}`)
 
     //TODO: check if service was already executed (send email)
@@ -27,7 +27,7 @@ async function runJob() {
   }
 
   //if (hour >= 21 && hour <= 22) {
-  if (hour >= 14 && hour <= 22) {
+  if (hour >= 13 && hour <= 22) {
     console.log(`Service 'saveForNextDay' started at ${new Date()}`)
     await saveForNextDay()
     console.log(`Service 'saveForNextDay' finished at ${new Date()}`)

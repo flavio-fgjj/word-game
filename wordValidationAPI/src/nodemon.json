@@ -3,7 +3,7 @@
     "MYSQL_USER": "root",
     "MYSQL_PASSWORD": "Mudar@1q2w3e",
     "MYSQL_DATABASE": "words",
-    "MYSQL_HOST": "localhost",
+    "MYSQL_HOST": "93.188.167.175",
     "MYSQL_PORT": 3306
   }
 }

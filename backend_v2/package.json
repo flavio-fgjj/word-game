@@ -14,6 +14,7 @@
     "apollo-server": "^3.8.1",
     "dotenv": "^16.0.1",
     "graphql": "^16.5.0",
+    "graphql-scalars": "^1.17.0",
     "graphql-tools": "^8.2.11",
     "mongoose": "^6.3.5",
     "nodemon": "^2.0.16"
