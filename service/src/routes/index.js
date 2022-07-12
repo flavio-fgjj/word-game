@@ -38,41 +38,53 @@ route.get('/fix', async (req, res) => {
   let update = { game_date: now }
   let filter
 
-  console.log(maxSeq)
-  console.log(maxGameSeq)
-  console.log(totalOfMaxGameSeq)
-  // Model.find(query, (err, result) => {
-  //   if (err) {
-  //     return result
-  //       .status(500)
-  //       .send({
-  //         output: `Err -> ${err}`
-  //       })
-  //   }
-    
-  //   if(result.length > 0) {
-  //     now.setDate(now.getDate() + 1)
-  //     let nextDay = 1
+  // Model
+  //   .find({ game_seq: maxGameSeq })
+  //   .exec((err, result) => {
+  //     if (err) {
+  //       return result
+  //         .status(500)
+  //         .send({
+  //           output: `Err -> ${err}`
+  //         })
+  //     }
 
-  //     result.forEach(async (item, index) => {
-  //       if (nextDay > 7) {
-  //         nextDay = 1
-  //         now.setDate(now.getDate() + 1)
-  //         update = { game_date: now }
-  //       } else {
-  //         nextDay++
-  //       }
-        
-  //       filter = { _id: item._id }
-  //       await Model.findOneAndUpdate(filter, update)
-  //     })
-  //   }
 
-  //   return res.status(200).send({
-  //     output: 'OK',
-  //     //payload: result
   //   })
-  // }); 
+
+
+//   Model.find(query, (err, result) => {
+//     if (err) {
+//       return result
+//         .status(500)
+//         .send({
+//           output: `Err -> ${err}`
+//         })
+//     }
+    
+//     if(result.length > 0) {
+//       now.setDate(now.getDate() + 1)
+//       let nextDay = 1
+
+//       result.forEach(async (item, index) => {
+//         if (nextDay > 7) {
+//           nextDay = 1
+//           now.setDate(now.getDate() + 1)
+//           update = { game_date: now }
+//         } else {
+//           nextDay++
+//         }
+        
+//         filter = { _id: item._id }
+//         await Model.findOneAndUpdate(filter, update)
+//       })
+//     }
+
+//     return res.status(200).send({
+//       output: 'OK',
+//       //payload: result
+//     })
+//   }); 
 })
 
 route.get('/', async (req, res) => {
@@ -93,23 +105,34 @@ route.get('/', async (req, res) => {
   if (maxSeq && maxSeq.length > 0) {
     maxGameSeq = maxSeq[0]._id
     totalOfMaxGameSeq = maxSeq[0].count > 7 ? 7 : maxSeq[0].count
-    year = maxSeq[0].gameDate[0].substring(4,10)
-    month = maxSeq[0].gameDate[0].substring(2,4)
-    day = maxSeq[0].gameDate[0].substring(0,2)
+    if (maxGameSeq > 0) {
+      year = maxSeq[0].gameDate[0].substring(4,10)
+      month = maxSeq[0].gameDate[0].substring(2,4)
+      day = maxSeq[0].gameDate[0].substring(0,2)
+    }
   } else {
     totalOfMaxGameSeq = 7
   }
 
-  console.log(month)
-  if (year != '' && !isNaN(year)) {
+  if (totalOfMaxGameSeq == 7 && maxGameSeq == 0) {
+    now.setDate(now.getDate()) 
+    maxGameSeq++
+  } else if (totalOfMaxGameSeq == 7 && maxGameSeq > 0) {
     now = new Date(`${year}-${month}-${day}T00:00:00`)
     now.setDate(now.getDate() + 1)
+    maxGameSeq++
+  } else {
+    if (year != '' && !isNaN(year)) {
+      now = new Date(`${year}-${month}-${day}T00:00:00`)
+      now.setDate(now.getDate())
+    }
   }
+  
   let filter
   let update
-  maxGameSeq++
   
-  console.log(totalOfMaxGameSeq)
+  totalOfMaxGameSeq = totalOfMaxGameSeq < 7 ? 7 - totalOfMaxGameSeq : 7
+
   Model
     .find({ game_seq: 0 })
     .limit(totalOfMaxGameSeq)
@@ -121,8 +144,6 @@ route.get('/', async (req, res) => {
             output: `Err -> ${err}`
           })
       }
-
-      console.log(result.length)
 
       let month = now.getMonth() + 1
       if(result.length > 0) {
@@ -257,7 +278,7 @@ async function getMeaning(word, dictionaryType) {
       ant = []
 
       // saving at mongodb
-      if (isValid && model.meaning.length > 0) {
+      if (isValid && model.meaning != '') {
         model
           .save()
           .then((result) => {

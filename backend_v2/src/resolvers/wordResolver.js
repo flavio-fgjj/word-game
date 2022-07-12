@@ -7,7 +7,7 @@ const wordResolver = {
       let ret = [Word]
       let now = new Date()
       now.setDate(now.getDate())
-      const gd = `${now.getDate().toString().padStart(2, '0')}${month.toString().padStart(2, '0')}${now.getFullYear().toString().padStart(4, '0')}`
+      const gd = `${now.getDate().toString().padStart(2, '0')}${(now.getMonth() + 1).toString().padStart(2, '0')}${now.getFullYear().toString().padStart(4, '0')}`
       result = await Word.find({ 
         game_date: { gd } 
       })

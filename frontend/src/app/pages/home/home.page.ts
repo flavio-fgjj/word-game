@@ -1,4 +1,4 @@
-import { OnInit, AfterViewInit, Component } from '@angular/core';
+import { OnInit, AfterViewInit, Component, ɵresetCompiledComponents } from '@angular/core';
 import { LoadingController, AlertController, ModalController, Platform } from '@ionic/angular';
 import { modalController } from '@ionic/core';
 
@@ -79,9 +79,9 @@ export class HomePage implements OnInit, AfterViewInit {
 
   public isMobilePlatform = false;
 
-  public startWithTest = false;
-
   public selectedSpace = false;
+
+  public startWithTest = false;
 
   constructor(
     private loadingCtrl: LoadingController,
@@ -102,6 +102,7 @@ export class HomePage implements OnInit, AfterViewInit {
     if(this.wordsStorage) {
       const storageDate = new Date(this.wordsStorage.date);
       const today = new Date();
+
       if((storageDate.getDate() === today.getDate()
         && storageDate.getMonth() === today.getMonth()
         && storageDate.getFullYear() === today.getFullYear()) && this.wordsStorage.words.length > 0) {
@@ -127,10 +128,11 @@ export class HomePage implements OnInit, AfterViewInit {
       this.limitAttemptsArray.push(j.toString());
     }
 
+    // for test
     if (this.startWithTest) {
       this.words = new Array<Words>();
       const w = new Words();
-      w.word = 'maringa';
+      w.word = 'vizinho';
       w.antonyms = [''];
       w.synonyms = [''];
       w.meaning = '';
@@ -149,7 +151,7 @@ export class HomePage implements OnInit, AfterViewInit {
       this.wordsStorage.actual = 1;
       this.wordsStorage.success = 0;
       this.wordsStorage.errors = 0;
-      this.wordsStorage.score = 5;
+      this.wordsStorage.score = 0;
       this.wordsStorage.current_score = 5;
       this.wordsStorage.words = this.words;
       this.wordsStorage.attempts = this.attemptsArray;
@@ -167,7 +169,12 @@ export class HomePage implements OnInit, AfterViewInit {
       .service
       .getWords()
       .subscribe(async response => {
-        this.words = response.data.words;
+        if(response.payload.length === 0 || response.output !== 'OK') {
+          this.errorPage = true;
+          return;
+        }
+        //this.words = response.data.words;
+        this.words = response.payload;
 
         //this.words = this.words.filter(x => x.word !== null).slice(0, 7);
         if (this.words.length === 0) {
@@ -180,7 +187,7 @@ export class HomePage implements OnInit, AfterViewInit {
           this.wordsStorage.actual = 1;
           this.wordsStorage.success = 0;
           this.wordsStorage.errors = 0;
-          this.wordsStorage.score = 5;
+          this.wordsStorage.score = 0;
           this.wordsStorage.current_score = 5;
           this.wordsStorage.words = this.words;
           this.wordsStorage.attempts = this.attemptsArray;
@@ -228,6 +235,7 @@ export class HomePage implements OnInit, AfterViewInit {
           this.actual++;
         }
         loading.dismiss();
+        document.getElementById(`${String(this.availableSpace)}_try${this.actual}`).style.border = '3px solid black';
       }, 2000);
     } else {
       this.start();
@@ -270,7 +278,7 @@ export class HomePage implements OnInit, AfterViewInit {
 
     this.alreadyStarted = true;
 
-    this.createSquares();
+    await this.createSquares();
     this.keys = document.querySelectorAll('.keyboard-row button');
 
     // fill words already typeds
@@ -297,8 +305,11 @@ export class HomePage implements OnInit, AfterViewInit {
         letterE1Aux = document.getElementById(`${i.toString()}_try${(tryId.toString())}`);
 
         letterE1Aux.classList.add('animate__flipInX');
-        if (tileColor === 'rgb(58, 58, 60)') {
+        if (tileColor === 'rgb(58, 58, 60)' && this.word.indexOf(letter.toString().toLowerCase().trim()) === -1) {
           letterE1Aux.setAttribute('style', 'opacity: 0.33;');
+          document.getElementById(`${letter.toString().toLowerCase().trim()}`).setAttribute('style', 'opacity: 0.33;');
+        } else if (tileColor === '#32cd32' && this.word.indexOf(letter.toString().toLowerCase().trim()) !== -1) {
+          document.getElementById(`${letter.toString().toLowerCase().trim()}_badge`).setAttribute('style', 'display: block;');
         }
         letterE1Aux.setAttribute('style', `background-color:${tileColor};border-color:${tileColor};color:whitesmoke;`);
         letterE1Aux.innerText = letter.toString().toUpperCase();
@@ -306,7 +317,7 @@ export class HomePage implements OnInit, AfterViewInit {
     }
   }
 
-  createSquares() {
+  async createSquares() {
     this.wordSquares = [];
     for (let index = 0; index < this.word.length; index++) {
       this.wordSquares.push({
@@ -375,6 +386,7 @@ export class HomePage implements OnInit, AfterViewInit {
     if(this.word.toString().toLowerCase().trim().split('')[index] === letter) {
       return '#32cd32'; // green color (correct)
     }
+
     if(!this.word.toString().toLowerCase().trim().includes(letter)) {
       return 'rgb(58, 58, 60)'; // black color (wrong)
     }
@@ -410,17 +422,12 @@ export class HomePage implements OnInit, AfterViewInit {
       }
 
       // daqui começa a CAGAR TUDO ###########
-      if (totalLettersFromPartial.length <= totalLettersFromCurrent.length
+      if (totalLettersFromPartial.length < totalLettersFromCurrent.length
         && this.partialWordTyped.indexOf(letter) > 0) {
           return 'rgb(58, 58, 60)'; // black color (has more occurrences for this letter to validate)
         }
     }
     return '#EEAD2D'; // yellow color (wrong position)
-  }
-
-  getCurrentWordArr() {
-    const numberOfGuessedWords = this.guessedWords.length;
-    return this.guessedWords[numberOfGuessedWords - 1];
   }
 
   closeModal() {
@@ -461,52 +468,47 @@ export class HomePage implements OnInit, AfterViewInit {
     document.getElementById(`${String(this.availableSpace)}_try${this.actual}`).style.border = '3px solid black';
   }
 
-  updateGuessedWords(event) {
-    this.selectedSpace = false;
-    try {
-      document.getElementById(`${String(this.availableSpace)}_try${this.actual}`).style.border = '';
-    } catch {
+  // getCurrentWordArr() {
+  //   const numberOfGuessedWords = this.guessedWords.length;
+  //   return this.guessedWords[numberOfGuessedWords - 1];
+  // }
 
+  updateGuessedWords(event) {
+    if (this.availableSpace >= 1) {
+      document.getElementById(`${String(this.availableSpace)}_try${this.actual}`).style.border = '';
     }
 
+    const curArr = [];
+    for(let i = 1; i <= this.word.length; i++) {
+      if (document.getElementById(`${String(i)}_try${this.actual}`).textContent !== '') {
+        curArr.push(document.getElementById(`${String(i)}_try${this.actual}`).textContent);
+      }
+    }
     const letter = event.target.innerText;
-    const currentWordArr = this.getCurrentWordArr();
 
-    if (currentWordArr && currentWordArr.length < this.word.length) {
-      currentWordArr.push(letter);
+    if (curArr.length <= this.word.length) {
+      curArr.push(letter);
 
-      this.availableSpace = this.availableSpace + 1;
+      document.getElementById(`${String(this.availableSpace)}_try${this.actual}`).textContent = letter;
+      if (curArr.length < this.word.length) {
+        if (this.availableSpace < this.word.length) {
+          this.availableSpace++;
+        }
+        document.getElementById(`${String(this.availableSpace)}_try${this.actual}`).style.border = '3px solid black';
+      }
 
-      console.log(this.guessedWords.length - 1);
-      this.guessedWords[this.guessedWords.length - 1] = currentWordArr;
-      document.getElementById(`${String(this.availableSpace - 1)}_try${this.actual}`).textContent = letter;
+    } else {
+      document.getElementById(`${String(this.availableSpace)}_try${this.actual}`).textContent = letter;
     }
   }
 
   handleDeleteLetter() {
-    try {
+    document.getElementById(`${String(this.availableSpace)}_try${this.actual}`).textContent = '';
+    if(this.availableSpace > 1) {
       document.getElementById(`${String(this.availableSpace)}_try${this.actual}`).style.border = '';
-    } catch {
-
+      this.availableSpace--;
+      document.getElementById(`${String(this.availableSpace)}_try${this.actual}`).style.border = '3px solid black';
     }
-    const currentWordArr = this.getCurrentWordArr();
-    if(currentWordArr.length > 0) {
-      currentWordArr.pop();
-      // this.guessedWords[!this.selectedSpace ? this.guessedWords.length - 1 : this.guessedWords.length] = currentWordArr;
-      document.getElementById(`${!this.selectedSpace ?
-        String(this.availableSpace - 1) :
-        String(this.availableSpace)}_try${this.actual}`).textContent = '';
-
-      let j = 0;
-      for(let i = 1; i <= this.word.split('').length; i++) {
-        if(document.getElementById(`${i.toString()}_try${(this.actual)}`).innerText !== '') {
-          j++;
-        }
-      }
-      this.guessedWords[j] = currentWordArr;
-      this.availableSpace = this.availableSpace - 1;
-    }
-    this.selectedSpace = false;
   }
 
   async wordValidation(word): Promise<boolean> {
@@ -535,16 +537,14 @@ export class HomePage implements OnInit, AfterViewInit {
   async handleSubmitWord() {
     this.auxValidation = false;
     this.partialWordTyped = [];
-    let currentWordArr = this.getCurrentWordArr();
+    const currentWordArr = [];
+    for(let i = 1; i <= this.word.split('').length; i++) {
+      currentWordArr.push(document.getElementById(`${i.toString()}_try${(this.actual)}`).innerText);
+    }
 
     if (currentWordArr.length !== this.word.length) {
       this.handleWrongMsg('A palavra deve ter', `${this.word.length} letras`);
       return;
-    }
-
-    currentWordArr = [];
-    for(let i = 1; i <= this.word.split('').length; i++) {
-      currentWordArr.push(document.getElementById(`${i.toString()}_try${(this.actual)}`).innerText);
     }
 
     const loading = await this.loadingCtrl.create({ message: 'Validando a palavra digitada...' });
@@ -586,6 +586,8 @@ export class HomePage implements OnInit, AfterViewInit {
         letterE1Aux.classList.add('animate__flipInX');
         if (tileColor === 'rgb(58, 58, 60)' && this.word.indexOf(letter.toString().toLowerCase().trim()) === -1) {
           document.getElementById(`${letter.toString().toLowerCase().trim()}`).setAttribute('style', 'opacity: 0.33;');
+        } else if (tileColor === '#32cd32' && this.word.indexOf(letter.toString().toLowerCase().trim()) !== -1) {
+          document.getElementById(`${letter.toString().toLowerCase().trim()}_badge`).setAttribute('style', 'display: block;');
         }
         letterE1Aux.setAttribute('style', `background-color:${tileColor};border-color:${tileColor};color:whitesmoke;`);
 

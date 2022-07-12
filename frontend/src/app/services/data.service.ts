@@ -22,28 +22,34 @@ export class DataService {
 
   constructor(private http: HttpClient) { }
 
-  getWords(): Observable<any> {
-    this.query = `
-    query {
-      words {
-        word
-        grammatical_class
-        meaning
-        synonyms
-        antonyms
-        phrase {
-          author
-          phrase
-          font
-        }
-      }
-    }
-   `;
+  // getWords(): Observable<any> {
+  //   this.query = `
+  //   query {
+  //     words {
+  //       word
+  //       grammatical_class
+  //       meaning
+  //       synonyms
+  //       antonyms
+  //       phrase {
+  //         author
+  //         phrase
+  //         font
+  //       }
+  //     }
+  //   }
+  //  `;
 
-    return this.http.post(
-      `${this.baseUrl}`,
-      JSON.stringify({ query: this.query }),
-      this.httpOptions
+  //   return this.http.post(
+  //     `${this.baseUrl}`,
+  //     JSON.stringify({ query: this.query }),
+  //     this.httpOptions
+  //   );
+  // }
+
+  getWords(): Observable<any> {
+    return this.http.get(
+      `${this.baseUrl}`
     );
   }
 

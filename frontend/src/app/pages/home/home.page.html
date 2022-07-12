@@ -1,13 +1,13 @@
 <ion-header >
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-title size="medium" class="pageTitle" style="text-align: center; color: #fff !important">
-        Word Game<br>
-        BETA
+      <ion-title size="small" class="pageTitle" style="text-align: center; color: #fff !important;">
+        <img src="assets/logo.png" style="width: 50px; height: 40px;"/>
       </ion-title>
+      <app-modal-info></app-modal-info>
     </ion-buttons>
-    <app-modal-info></app-modal-info>
     <ion-item-group slot="end" style="border: none !important;">
+      
       <ion-item *ngIf="alreadyStarted" style="margin-right:5px;">
         <!-- <ion-badge color="primary" mode="ios">✅ {{ totalSuccess }}</ion-badge> -->
         <span style="color: #fff !important">✅ {{ totalSuccess }}</span>
@@ -39,7 +39,7 @@
         <ion-toolbar>
           <ion-title slot="start" style="color:#fff !important">Ajuda extra</ion-title>
           <ion-buttons slot="end">
-            <ion-button (click)="closeModal()"><ion-icon name="close-circle-outline"></ion-icon></ion-button>
+            <ion-button (click)="closeModal()"><ion-icon name="close-circle-outline" style="color:white"></ion-icon></ion-button>
           </ion-buttons>
         </ion-toolbar>
       </ion-header>
@@ -114,16 +114,17 @@
         <ion-grid>
           <ion-row>
             <ion-col size="12">
-              <span style="color:#fff !important">{{actualWord}}ª das {{words.length}} palavras do dia</span><br>
+              <!-- <span style="color:#fff !important">{{actualWord}}ª das {{words.length}} palavras do dia | <ion-badge color="light" mode="ios" style="margin-left: 5px">{{score}}</ion-badge> pontos</span><br> -->
+              <span style="color:#fff !important">{{actualWord}}ª das {{words.length}} palavras do dia | <b>{{score}}</b> pontos</span><br>
             </ion-col>
           </ion-row>
-          <ion-row>
+          <!-- <ion-row>
             <ion-col size="12">
               <ion-label style="display:flex;justify-content: center;">
-                <ion-badge color="light" mode="ios">{{score}}</ion-badge><span style="margin-left:5px;color:#fff !important">pontos</span>
+                <span style="margin-left:5px;color:#fff !important">pontos</span>
               </ion-label>
             </ion-col>
-          </ion-row>
+          </ion-row> -->
         </ion-grid>
       </div>
       <div *ngFor="let num of limitAttemptsArray; let index = index" id="board_try{{num}}">
@@ -134,24 +135,24 @@
   </div>
 
   <div id="keyboard-container">
-    <div class="keyboard-row" >
-      <button *ngFor="let first of keyboardFirstRow" id="{{first}}" (click)="updateGuessedWords($event)">{{first}}</button>
+    <div class="keyboard-row">
+        <button *ngFor="let first of keyboardFirstRow" id="{{first}}" (click)="updateGuessedWords($event)" style="position: relative;">{{first}}<span class="badge" id="{{first}}_badge"></span></button>
     </div>
     <div class="keyboard-row">
       <div class="spacer-half"></div>
-      <button *ngFor="let second of keyboardSecondRow" id="{{second}}" (click)="updateGuessedWords($event)">{{second}}</button>
+      <button *ngFor="let second of keyboardSecondRow" id="{{second}}" (click)="updateGuessedWords($event)" style="position: relative;">{{second}}<span class="badge" id="{{second}}_badge"></span></button>
       <div class="spacer-half"></div>
     </div>
     <div class="keyboard-row">
       <button data-key="enter" class="wide-button" (click)="handleSubmitWord()">Enter</button>
-      <button *ngFor="let third of keyboardThirdRow" id="{{third}}" (click)="updateGuessedWords($event)">{{third}}</button>
+      <button *ngFor="let third of keyboardThirdRow" id="{{third}}" (click)="updateGuessedWords($event)" style="position: relative;">{{third}}<span class="badge" id="{{third}}_badge"></span></button>
       <button data-key="del" class="wide-button" (click)="handleDeleteLetter()">Del</button>
     </div>
   </div>
   
 </ion-content>
 
-<ion-footer collapse="fade">
+<ion-footer collapse="fade" style="background-color:#5c6e68">
   <ion-toolbar>
     <ion-grid>
       <ion-row text-center>

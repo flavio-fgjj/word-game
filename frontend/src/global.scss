@@ -38,6 +38,25 @@ ion-footer{
   --ion-background-color: #5c6e68; 
 }
 
+ion-toolbar{
+  --background: #5c6e68; 
+}
+
+ion-accordion-group{
+  ion-accordion {
+      .ion-accordion-toggle-icon {
+          color: white;
+      }
+  }
+}
+
+.alert-title {
+  color: white !important;
+  font-weight: bold !important;
+}
+.alert-sub-title {
+  color: white !important;
+}
 .alert-button-group {
   padding: 10px;
 }

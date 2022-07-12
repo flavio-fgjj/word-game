@@ -1,6 +1,6 @@
-<ion-button slot="start" class="info-button" size="small" id="triggerInfo">
-  <ion-icon name="information-circle-outline"></ion-icon>
-</ion-button>
+<ion-chip outline color="warning" id="triggerInfo">
+  <ion-icon name="information-circle-outline" style="margin-right:5px;"></ion-icon>
+</ion-chip>
 <ion-modal trigger="triggerInfo"
   [breakpoints]="[0.1, 0.6, 1]"
   [initialBreakpoint]="1"
@@ -9,13 +9,14 @@
   <ng-template>
     <ion-header translucent>
       <ion-toolbar>
-        <ion-title slot="start">Informações & Regras</ion-title>
+        <ion-title slot="start" style="color:white">Info & Regras</ion-title>
+        <ion-buttons slot="start"><span style="color:white">V. BETA</span></ion-buttons>
         <ion-buttons slot="end">
-          <ion-button (click)="closeModal()"><ion-icon name="close-circle-outline"></ion-icon></ion-button>
+          <ion-button (click)="closeModal()"><ion-icon name="close-circle-outline" style="color:white"></ion-icon></ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
-    <ion-content >
+    <ion-content class="info_and_rules">
       <ion-accordion-group>
         <ion-accordion value="">
           <ion-item slot="header">
@@ -25,15 +26,15 @@
           <ion-list slot="content">
             <ion-item>
               <ion-label>7 palavras por dia</ion-label>
-              <ion-icon slot="end" name="checkmark-done-outline"></ion-icon>
+              <ion-icon slot="end" name="checkmark-done-outline" style="color:white"></ion-icon>
             </ion-item>
             <ion-item>
               <ion-label>5 tentativas por palavra</ion-label>
-              <ion-icon slot="end" name="checkmark-done-outline"></ion-icon>
+              <ion-icon slot="end" name="checkmark-done-outline" style="color:white"></ion-icon>
             </ion-item>
             <ion-item>
               <ion-label>Palavras sobre temas diversos</ion-label>
-              <ion-icon slot="end" name="checkmark-done-outline"></ion-icon>
+              <ion-icon slot="end" name="checkmark-done-outline" style="color:white"></ion-icon>
             </ion-item>
             <ion-item>
               <ion-accordion-group>
@@ -61,7 +62,7 @@
             </ion-item>
             <ion-item>
               <ion-label>'ENTER' para validar a tentativa</ion-label>
-              <ion-icon slot="end" name="checkmark-done-outline"></ion-icon>
+              <ion-icon slot="end" name="checkmark-done-outline" style="color:white"></ion-icon>
             </ion-item>
             <ion-item>
               <ion-label>letra existe e está na posição correta</ion-label>
