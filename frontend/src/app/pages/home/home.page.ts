@@ -240,7 +240,6 @@ export class HomePage implements OnInit, AfterViewInit {
         }
         loading.dismiss();
         document.getElementById(`${String(this.availableSpace)}_try${this.actual}`).style.border = '3px solid black';
-        console.log(this.wordsStorage);
       }, 2000);
     } else {
       this.start();
