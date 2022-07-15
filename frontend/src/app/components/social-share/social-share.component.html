@@ -3,8 +3,8 @@
     <div id="clipboard">
       <div class="custom-border">
         <h2>PERFORMANCE</h2>
-        <p>Word Game</p>
-        <a href="https://tigatae.com.br" style="text-decoration: none">https://tigatae.com.br</a>
+        <p>Letrando</p>
+        <a href="https://letrando.xyz" style="text-decoration: none">https://letrando.xyz</a>
         <ion-item-divider style="margin-top:20px;"></ion-item-divider>
         <div class="performance">
           <b>{{wordsStorage.score}}</b>
@@ -25,6 +25,35 @@
           <p>MÉDIA DE TENTATIVAS</p>
           <ion-label><ion-icon name="ellipse" color="warning" style="padding: 5px; margin-bottom: 2px;"></ion-icon></ion-label>
         </div>
+        <ion-grid *ngIf="statusFirstRow.length > 0">
+          <ion-row>
+            <ion-col *ngFor="let w of statusFirstRow">
+              <p>
+                {{w.word }}
+                <span *ngIf="w.status === 'success'">✅</span>
+                <span *ngIf="w.status === 'fail'">❌</span>
+              </p>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+        <ion-grid *ngIf="statusSecondRow.length > 0">
+          <ion-row>
+            <ion-col *ngFor="let w of statusSecondRow">
+              <p>
+                {{w.word }}
+                <span *ngIf="w.status === 'success'">✅</span>
+                <span *ngIf="w.status === 'fail'">❌</span>
+              </p>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+        <!-- <div class="words" *ngIf="wordsStorage.status.length > 0">
+          <p *ngFor="let w of wordsStorage.status">
+            {{w.word }}
+            <span *ngIf="w.status === 'success'">✅</span>
+            <span *ngIf="w.status === 'fail'">❌</span>
+          </p>
+        </div> -->
         <ion-item-divider></ion-item-divider>
         <br><br>
       </div>

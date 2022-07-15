@@ -1,4 +1,5 @@
 import { Attempts } from './Attempts';
+import { Status } from './Status';
 import { Words } from './Words';
 
 export class WordsStorage {
@@ -12,4 +13,5 @@ export class WordsStorage {
   attempts: Array<Attempts>;
   average: number;
   words: Array<Words>;
+  status: Array<Status>;
 }

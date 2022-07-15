@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { modalController } from '@ionic/core';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-modal-info',
@@ -8,6 +9,7 @@ import { modalController } from '@ionic/core';
 })
 export class ModalInfoComponent implements OnInit {
 
+  public version = `Versão ${environment.version}`;
   constructor() { }
 
   ngOnInit() {}

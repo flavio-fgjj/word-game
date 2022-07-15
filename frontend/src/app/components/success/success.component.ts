@@ -18,6 +18,7 @@ export class SuccessComponent implements OnInit, OnDestroy {
   @Input() type: string;
 
   public wordsStorage: WordsStorage;
+  public congratsWord: string = null;
 
   constructor(private modal: ModalController) { }
 
@@ -28,7 +29,20 @@ export class SuccessComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.wordsStorage = SecurityUtil.get();
-    console.log(this.wordsStorage);
+    if (this.type === 'success') {
+      switch (this.attempts) {
+        case 1:
+          this.congratsWord = 'FENOMENAL';
+          break;
+        case 2:
+          this.congratsWord = 'SURPREENDENTE';
+          break;
+        default:
+          this.congratsWord = 'PARABÉNS';
+      }
+    } else {
+      this.congratsWord = 'NÃO FOI DESSA VEZ';
+    }
   }
 
   closeModal() {

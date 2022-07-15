@@ -2,13 +2,13 @@
   <ion-grid class="ion-text-center">
     <ion-row *ngIf="type !== 'finished'">
       <ion-col size="12">
-        <ion-label *ngIf="type === 'success'" color="success" style="font-weight: bold;"><h1>PARABÉNS!!! 😎</h1></ion-label>
-        <ion-label *ngIf="type !== 'success'" style="font-weight: bold;color:#FA8072;"><h1>NÃO FOI DESSA VEZ!!! 😕</h1></ion-label>
+        <ion-label *ngIf="type === 'success'" color="success" style="font-weight: bold;"><h1>{{congratsWord}} 😎</h1></ion-label>
+        <ion-label *ngIf="type !== 'success'" style="font-weight: bold;color:#FA8072;"><h1>{{congratsWord}} 😕</h1></ion-label>
       </ion-col>
     </ion-row>
     <ion-row *ngIf="type !== 'finished'">
       <ion-col size="12">
-        <ion-label *ngIf="type === 'success'" color="success" style="font-weight: bold;"><h1>Você acertou na {{attempts}}ª tentativa! 🔥</h1></ion-label>
+        <ion-label *ngIf="type === 'success'" color="success" style="font-weight: bold;"><h1>Acertou na {{attempts}}ª tentativa! 🔥</h1></ion-label>
         <ion-label *ngIf="type !== 'success'" style="font-weight: bold;color:#FA8072;"><h1>A palavra correta é:</h1></ion-label>
       </ion-col>
     </ion-row>
@@ -66,9 +66,9 @@
             </ion-card-title>
           </ion-card-header>
           <ion-card-content>
-            <p style="text-align:left !important;color:white;">{{font}}</p><br>
-            <p style="text-align:center;color:white;" *ngFor="let p of phrase">{{p}}</p><br>
-            <p style="text-align:left !important;color:white;">{{author}}</p><br>
+            <p style="text-align:left !important;color:white !important;">{{font}}</p><br>
+            <p style="text-align:center;color:white !important;" *ngFor="let p of phrase">{{p}}</p><br>
+            <p style="text-align:left !important;color:white !important;">{{author}}</p><br>
           </ion-card-content>
         </ion-card>
       </ion-col>

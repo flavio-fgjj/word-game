@@ -9,9 +9,11 @@ import { Attempts } from 'src/app/models/Attempts';
 
 import { DataService } from 'src/app/services/data.service';
 import { SecurityUtil } from 'src/app/utils/security.utils';
+import { CleanWordUtil } from 'src/app/utils/cleanWord.utils';
 
 import { SocialShareComponent } from 'src/app/components/social-share/social-share.component';
 import { SuccessComponent } from 'src/app/components/success/success.component';
+import { Status } from 'src/app/models/Status';
 
 
 @Component({
@@ -132,7 +134,7 @@ export class HomePage implements OnInit, AfterViewInit {
     if (this.startWithTest) {
       this.words = new Array<Words>();
       const w = new Words();
-      w.word = 'vizinho';
+      w.word = 'Égua';
       w.antonyms = [''];
       w.synonyms = [''];
       w.meaning = '';
@@ -147,6 +149,7 @@ export class HomePage implements OnInit, AfterViewInit {
       this.wordsStorage = new WordsStorage();
       this.attempts = new Attempts();
       this.attemptsArray = new Array<Attempts>();
+      this.wordsStorage.status = new Array<Status>();
       this.wordsStorage.date = new Date();
       this.wordsStorage.actual = 1;
       this.wordsStorage.success = 0;
@@ -191,6 +194,7 @@ export class HomePage implements OnInit, AfterViewInit {
           this.wordsStorage.current_score = 5;
           this.wordsStorage.words = this.words;
           this.wordsStorage.attempts = this.attemptsArray;
+          this.wordsStorage.status = new Array<Status>();
           SecurityUtil.set(this.wordsStorage);
 
           await this.startFromStorage();
@@ -236,6 +240,7 @@ export class HomePage implements OnInit, AfterViewInit {
         }
         loading.dismiss();
         document.getElementById(`${String(this.availableSpace)}_try${this.actual}`).style.border = '3px solid black';
+        console.log(this.wordsStorage);
       }, 2000);
     } else {
       this.start();
@@ -383,16 +388,18 @@ export class HomePage implements OnInit, AfterViewInit {
   getTileColor(letter, index) {
     this.partialWordTyped.push(letter);
 
-    if(this.word.toString().toLowerCase().trim().split('')[index] === letter) {
+    const cleanedWord = CleanWordUtil.clean(this.word);
+
+    if(cleanedWord.split('')[index] === letter) {
       return '#32cd32'; // green color (correct)
     }
 
-    if(!this.word.toString().toLowerCase().trim().includes(letter)) {
+    if(!cleanedWord.includes(letter)) {
       return 'rgb(58, 58, 60)'; // black color (wrong)
     }
 
     // wrong position
-    const totalLettersFromWord = this.word.split('').reduce((group, item) => {
+    const totalLettersFromWord = cleanedWord.split('').reduce((group, item) => {
       if(item === letter) {
         group.push(item);
       }
@@ -503,11 +510,13 @@ export class HomePage implements OnInit, AfterViewInit {
   }
 
   handleDeleteLetter() {
-    document.getElementById(`${String(this.availableSpace)}_try${this.actual}`).textContent = '';
-    if(this.availableSpace > 1) {
+    if (document.getElementById(`${String(this.availableSpace)}_try${this.actual}`).textContent === '' && this.availableSpace > 1) {
       document.getElementById(`${String(this.availableSpace)}_try${this.actual}`).style.border = '';
       this.availableSpace--;
       document.getElementById(`${String(this.availableSpace)}_try${this.actual}`).style.border = '3px solid black';
+
+    } else {
+      document.getElementById(`${String(this.availableSpace)}_try${this.actual}`).textContent = '';
     }
   }
 
@@ -538,12 +547,17 @@ export class HomePage implements OnInit, AfterViewInit {
     this.auxValidation = false;
     this.partialWordTyped = [];
     const currentWordArr = [];
-    for(let i = 1; i <= this.word.split('').length; i++) {
-      currentWordArr.push(document.getElementById(`${i.toString()}_try${(this.actual)}`).innerText);
+
+    const cleanedWord = CleanWordUtil.clean(this.word);
+
+    for(let i = 1; i <= cleanedWord.split('').length; i++) {
+      if (document.getElementById(`${i.toString()}_try${(this.actual)}`).innerText !== '') {
+        currentWordArr.push(document.getElementById(`${i.toString()}_try${(this.actual)}`).innerText);
+      }
     }
 
-    if (currentWordArr.length !== this.word.length) {
-      this.handleWrongMsg('A palavra deve ter', `${this.word.length} letras`);
+    if (currentWordArr.length < cleanedWord.split('').length) {
+      this.handleWrongMsg('A palavra deve ter', `${cleanedWord.length} letras`);
       return;
     }
 
@@ -558,7 +572,7 @@ export class HomePage implements OnInit, AfterViewInit {
       return;
     }
 
-    const isWordValid = await this.wordValidation(this.currentWord);
+    const isWordValid = this.currentWord !== cleanedWord ? await this.wordValidation(this.currentWord) : true;
 
     if(!isWordValid) {
       this.handleWrongMsg('Erro!', 'Palavra inválida!');
@@ -584,9 +598,9 @@ export class HomePage implements OnInit, AfterViewInit {
           letterE1Aux = document.getElementById(`${letterId.toString()}_try${(this.actual - 1)}`);
         }
         letterE1Aux.classList.add('animate__flipInX');
-        if (tileColor === 'rgb(58, 58, 60)' && this.word.indexOf(letter.toString().toLowerCase().trim()) === -1) {
+        if (tileColor === 'rgb(58, 58, 60)' && cleanedWord.indexOf(letter.toString().toLowerCase().trim()) === -1) {
           document.getElementById(`${letter.toString().toLowerCase().trim()}`).setAttribute('style', 'opacity: 0.33;');
-        } else if (tileColor === '#32cd32' && this.word.indexOf(letter.toString().toLowerCase().trim()) !== -1) {
+        } else if (tileColor === '#32cd32' && cleanedWord.indexOf(letter.toString().toLowerCase().trim()) !== -1) {
           document.getElementById(`${letter.toString().toLowerCase().trim()}_badge`).setAttribute('style', 'display: block;');
         }
         letterE1Aux.setAttribute('style', `background-color:${tileColor};border-color:${tileColor};color:whitesmoke;`);
@@ -596,7 +610,7 @@ export class HomePage implements OnInit, AfterViewInit {
 
     this.guessedWordCount += 1;
 
-    if (this.currentWord.toString().toLowerCase().trim() === this.word.toString().toLowerCase().trim()) {
+    if (this.currentWord.toString().toLowerCase().trim() === cleanedWord.toString().toLowerCase().trim()) {
       this.statusAttempt = 'success';
       this.totalSuccess += 1;
 
@@ -606,6 +620,10 @@ export class HomePage implements OnInit, AfterViewInit {
       this.wordsStorage.attempts = new Array<Attempts>();
       this.wordsStorage.average = this.wordsStorage.average != null ? this.wordsStorage.average + this.actual : 0;
       this.wordsStorage.score += this.score;
+      const st = new Status();
+      st.status = 'success';
+      st.word = this.word;
+      this.wordsStorage.status.push(st);
       SecurityUtil.clear();
       SecurityUtil.set(this.wordsStorage);
 
@@ -621,6 +639,10 @@ export class HomePage implements OnInit, AfterViewInit {
         this.wordsStorage.errors += 1;
         this.wordsStorage.attempts = new Array<Attempts>();
         this.wordsStorage.average = this.wordsStorage.average != null ? this.wordsStorage.average + this.actual : 0;
+        const st = new Status();
+        st.status = 'fail';
+        st.word = this.word;
+        this.wordsStorage.status.push(st);
         SecurityUtil.clear();
         SecurityUtil.set(this.wordsStorage);
 

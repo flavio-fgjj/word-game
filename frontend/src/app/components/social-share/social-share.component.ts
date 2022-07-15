@@ -5,6 +5,7 @@ import { environment } from 'src/environments/environment';
 import { WordsStorage } from 'src/app/models/WordsStorage';
 import { SecurityUtil } from 'src/app/utils/security.utils';
 import html2canvas from 'html2canvas';
+import { Status } from 'src/app/models/Status';
 // import * as ClipboardJS from 'clipboard';
 
 @Component({
@@ -24,6 +25,8 @@ export class SocialShareComponent implements OnInit {
 
   public wordsStorage: WordsStorage;
   public average;
+  public statusFirstRow: Array<Status>;
+  public statusSecondRow: Array<Status>;
 
   constructor(
     private modal: ModalController,
@@ -38,6 +41,17 @@ export class SocialShareComponent implements OnInit {
     this.wordsStorage.average > 0 ?
     (this.wordsStorage.average / (this.wordsStorage.success + this.wordsStorage.errors)).toFixed(2) :
     0;
+
+    console.log(this.wordsStorage.status.length);
+    if (this.wordsStorage.status.length > 4) {
+      this.statusFirstRow = this.wordsStorage.status.slice(0, 4);
+      this.statusSecondRow = this.wordsStorage.status.slice(-(this.wordsStorage.status.length - 4));
+    } else {
+      this.statusFirstRow = this.wordsStorage.status;
+      this.statusSecondRow = [];
+    }
+
+    console.log(this.statusFirstRow.length);
   }
 
   async copyToClipboard() {
