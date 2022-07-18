@@ -14,6 +14,7 @@ import { CleanWordUtil } from 'src/app/utils/cleanWord.utils';
 import { SocialShareComponent } from 'src/app/components/social-share/social-share.component';
 import { SuccessComponent } from 'src/app/components/success/success.component';
 import { Status } from 'src/app/models/Status';
+import { ScoreEnum } from './handles/score.handle';
 
 
 @Component({
@@ -23,12 +24,14 @@ import { Status } from 'src/app/models/Status';
 })
 export class HomePage implements OnInit, AfterViewInit {
 
+// #region variables
   public keyboardFirstRow = ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'];
   public keyboardSecondRow = ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'];
   public keyboardThirdRow = ['z', 'x', 'c', 'v', 'b', 'n', 'm'];
 
   public wordArray: string[];
   public partialWordTyped: string[];
+  public correctWordsFounded: string[];
   public words: Array<Words>;
   public wordsStorage: WordsStorage;
   public guessedWords = [[]];
@@ -83,7 +86,8 @@ export class HomePage implements OnInit, AfterViewInit {
 
   public selectedSpace = false;
 
-  public startWithTest = false;
+  public startWithTest = true;
+// #endregion
 
   constructor(
     private loadingCtrl: LoadingController,
@@ -122,6 +126,7 @@ export class HomePage implements OnInit, AfterViewInit {
 
   async ngOnInit() {
     // check if platform is mobile
+    this.fnMeaningSeen();
     for (const item of this.platform.platforms()) {
       this.isMobilePlatform = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(item);
     }
@@ -130,11 +135,11 @@ export class HomePage implements OnInit, AfterViewInit {
       this.limitAttemptsArray.push(j.toString());
     }
 
-    // for test
+// #region for test
     if (this.startWithTest) {
       this.words = new Array<Words>();
       const w = new Words();
-      w.word = 'castelo';
+      w.word = 'sinal';
       w.antonyms = [''];
       w.synonyms = [''];
       w.meaning = '';
@@ -162,7 +167,7 @@ export class HomePage implements OnInit, AfterViewInit {
 
       await this.startFromStorage();
     }
-
+// #endregion
   }
 
   async getWords() {
@@ -176,10 +181,8 @@ export class HomePage implements OnInit, AfterViewInit {
           this.errorPage = true;
           return;
         }
-        //this.words = response.data.words;
         this.words = response.payload;
 
-        //this.words = this.words.filter(x => x.word !== null).slice(0, 7);
         if (this.words.length === 0) {
           this.errorPage = true;
         } else {
@@ -219,7 +222,6 @@ export class HomePage implements OnInit, AfterViewInit {
       this.totalErrors = this.wordsStorage.errors;
 
       this.totalScore = this.wordsStorage.score;
-      //this.score = 5;
       this.statusAttempt = '';
 
       this.attemptsArray = this.wordsStorage.attempts;
@@ -257,6 +259,7 @@ export class HomePage implements OnInit, AfterViewInit {
 
   async startSquare() {
     this.partialWordTyped = [];
+    this.correctWordsFounded = [];
     this.auxValidation = false;
     this.currentWord = '';
     this.word = this.wordObj.word.toString().toLowerCase();
@@ -286,7 +289,6 @@ export class HomePage implements OnInit, AfterViewInit {
     this.keys = document.querySelectorAll('.keyboard-row button');
 
     // fill words already typeds
-    //this.actual = 1;
     this.actual = this.attemptsArray.length === 0 ? 1 : this.attemptsArray.length;
 
     this.limitAttempts = 5;
@@ -301,6 +303,7 @@ export class HomePage implements OnInit, AfterViewInit {
     for(let tryId = 1; tryId <= this.attemptsArray.length; tryId++) {
       this.currentWord = this.attemptsArray[tryId - 1].typed_word;
       this.partialWordTyped = [];
+      this.correctWordsFounded = [];
       currentWordArr = this.attemptsArray[tryId - 1].typed_word.split('');
 
       for(let i = 1; i <= currentWordArr.length; i ++) {
@@ -330,7 +333,66 @@ export class HomePage implements OnInit, AfterViewInit {
     }
   }
 
-  // alerts and modals handles
+  getTileColor(letter, index) {
+    this.partialWordTyped.push(letter);
+
+    const cleanedWord = CleanWordUtil.clean(this.word);
+
+    if(cleanedWord.split('')[index] === letter) {
+      this.correctWordsFounded.push(letter);
+      return '#32cd32'; // green color (correct)
+    }
+
+    if(!cleanedWord.includes(letter)) {
+      return 'rgb(58, 58, 60)'; // black color (wrong)
+    }
+
+    // wrong position
+    const totalLettersFromWord = cleanedWord.split('').reduce((group, item) => {
+      if(item === letter) {
+        group.push(item);
+      }
+      return group;
+    }, []);
+
+    const totalLettersFromCurrent = this.currentWord.split('').reduce((group, item) => {
+      if(item === letter) {
+        group.push(item);
+      }
+      return group;
+    }, []);
+
+    const totalLettersFromPartial = this.partialWordTyped.reduce((group, item) => {
+      if(item === letter) {
+        group.push(item);
+      }
+      return group;
+    }, []);
+
+    // incorrect position
+    if (totalLettersFromCurrent.length === totalLettersFromWord.length) {
+      return '#EEAD2D'; // yellow color (wrong position)
+    } else {
+      if (totalLettersFromPartial.length < totalLettersFromCurrent.length) {
+        return 'rgb(58, 58, 60)'; // black color (has more occurrences for this letter to validate)
+      }
+
+      // daqui começa a CAGAR TUDO ###########
+      if (totalLettersFromPartial.length < totalLettersFromCurrent.length
+        && this.partialWordTyped.indexOf(letter) > 0) {
+          return 'rgb(58, 58, 60)'; // black color (has more occurrences for this letter to validate)
+        }
+
+        const rest = cleanedWord.slice(-((cleanedWord.split('').length + 1) - this.partialWordTyped.length));
+        if(rest.split('').indexOf(letter) === -1 && this.correctWordsFounded.indexOf(letter) > -1) {
+          return 'rgb(58, 58, 60)';
+        }
+    }
+
+    return '#EEAD2D'; // yellow color (wrong position)
+  }
+
+// #region alerts and modals handle
   async showShareOptions() {
     const modal = await this.modalCtrl.create({
       component: SocialShareComponent,
@@ -381,94 +443,36 @@ export class HomePage implements OnInit, AfterViewInit {
 
     await alert.present();
   }
-  // alerts handles end
-
-  // functions
-  getTileColor(letter, index) {
-    this.partialWordTyped.push(letter);
-
-    const cleanedWord = CleanWordUtil.clean(this.word);
-
-    if(cleanedWord.split('')[index] === letter) {
-      return '#32cd32'; // green color (correct)
-    }
-
-    if(!cleanedWord.includes(letter)) {
-      return 'rgb(58, 58, 60)'; // black color (wrong)
-    }
-
-    // wrong position
-    const totalLettersFromWord = cleanedWord.split('').reduce((group, item) => {
-      if(item === letter) {
-        group.push(item);
-      }
-      return group;
-    }, []);
-
-    const totalLettersFromCurrent = this.currentWord.split('').reduce((group, item) => {
-      if(item === letter) {
-        group.push(item);
-      }
-      return group;
-    }, []);
-
-    const totalLettersFromPartial = this.partialWordTyped.reduce((group, item) => {
-      if(item === letter) {
-        group.push(item);
-      }
-      return group;
-    }, []);
-
-    // incorrect position
-    if (totalLettersFromCurrent.length === totalLettersFromWord.length) {
-      return '#EEAD2D'; // yellow color (wrong position)
-    } else {
-      if (totalLettersFromPartial.length < totalLettersFromCurrent.length) {
-        return 'rgb(58, 58, 60)'; // black color (has more occurrences for this letter to validate)
-      }
-
-      // daqui começa a CAGAR TUDO ###########
-      if (totalLettersFromPartial.length < totalLettersFromCurrent.length
-        && this.partialWordTyped.indexOf(letter) > 0) {
-          return 'rgb(58, 58, 60)'; // black color (has more occurrences for this letter to validate)
-        }
-
-        const rest = cleanedWord.slice(-((cleanedWord.split('').length + 1) - this.partialWordTyped.length));
-        if(rest.split('').indexOf(letter) === -1) {
-          return 'rgb(58, 58, 60)';
-        }
-    }
-
-    return '#EEAD2D'; // yellow color (wrong position)
-  }
 
   closeModal() {
     modalController.dismiss();
   }
+// #endregion
 
+// #region scores handle
   fnMeaningSeen() {
     if(this.alreadyStarted) {
-      this.score -= 1;
+      this.score -= ScoreEnum.meaning_already_seen;
       this.meaningSeen = true;
     }
   }
 
   fnSynSeen() {
     if(this.alreadyStarted) {
-      this.score -= 1.5;
+      this.score -= ScoreEnum.synonyms_already_seen;
       this.synSeen = true;
     }
   }
 
   fnPhraseSeen() {
     if(this.alreadyStarted) {
-      this.score -= 2;
+      this.score -= ScoreEnum.phrase_already_seen;
       this.phraseSeen = true;
     }
   }
-  // functions end
+// #endregion
 
-  // keyboard handles
+// #region keyboard handles
   selectPositionByClick(event) {
     this.selectedSpace = true;
     try {
@@ -480,10 +484,6 @@ export class HomePage implements OnInit, AfterViewInit {
     document.getElementById(`${String(this.availableSpace)}_try${this.actual}`).style.border = '3px solid black';
   }
 
-  // getCurrentWordArr() {
-  //   const numberOfGuessedWords = this.guessedWords.length;
-  //   return this.guessedWords[numberOfGuessedWords - 1];
-  // }
 
   updateGuessedWords(event) {
     if (this.availableSpace >= 1) {
@@ -524,7 +524,9 @@ export class HomePage implements OnInit, AfterViewInit {
       document.getElementById(`${String(this.availableSpace)}_try${this.actual}`).textContent = '';
     }
   }
+// #endregion
 
+// #region submit handle
   async wordValidation(word): Promise<boolean> {
     if (this.startWithTest) {
       return true;
@@ -685,5 +687,5 @@ export class HomePage implements OnInit, AfterViewInit {
       this.actual++;
     }
   }
-
+// #endregion
 }
