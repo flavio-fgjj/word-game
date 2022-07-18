@@ -134,7 +134,7 @@ export class HomePage implements OnInit, AfterViewInit {
     if (this.startWithTest) {
       this.words = new Array<Words>();
       const w = new Words();
-      w.word = 'Égua';
+      w.word = 'castelo';
       w.antonyms = [''];
       w.synonyms = [''];
       w.meaning = '';
@@ -348,7 +348,7 @@ export class HomePage implements OnInit, AfterViewInit {
         author: this.author,
         font: this.font,
         phrase: this.phrase,
-        word: this.word,
+        word: this.word.toString().toUpperCase(),
         type: thisType
       },
       cssClass: 'custom-modal-success',
@@ -432,7 +432,13 @@ export class HomePage implements OnInit, AfterViewInit {
         && this.partialWordTyped.indexOf(letter) > 0) {
           return 'rgb(58, 58, 60)'; // black color (has more occurrences for this letter to validate)
         }
+
+        const rest = cleanedWord.slice(-((cleanedWord.split('').length + 1) - this.partialWordTyped.length));
+        if(rest.split('').indexOf(letter) === -1) {
+          return 'rgb(58, 58, 60)';
+        }
     }
+
     return '#EEAD2D'; // yellow color (wrong position)
   }
 
@@ -520,6 +526,10 @@ export class HomePage implements OnInit, AfterViewInit {
   }
 
   async wordValidation(word): Promise<boolean> {
+    if (this.startWithTest) {
+      return true;
+    }
+
     let ret = true;
     class ValidWordOutput {
       status: string;

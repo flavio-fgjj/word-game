@@ -24,7 +24,6 @@ export class SuccessComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     window.location.reload();
-    //window.location.href = 'https://tinyurl.com/bdd55pxk';
   }
 
   ngOnInit() {

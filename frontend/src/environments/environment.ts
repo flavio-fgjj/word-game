@@ -3,10 +3,10 @@
 // The list of file replacements can be found in `angular.json`.
 
 const PRODUCTION = `${window.location.protocol}//${window.location.host}`;
-// const DEVELOPMENT = `http://${window.location.hostname}:4002`;
-// const WORD_VALIDATION = `http://${window.location.hostname}:3005/api/validate-word`;
-const DEVELOPMENT = `${window.location.protocol}//${window.location.hostname}/api/get-words`;
-const WORD_VALIDATION = `${window.location.protocol}//${window.location.hostname}/api/validate-word`;
+const DEVELOPMENT = `http://${window.location.hostname}:4002`;
+const WORD_VALIDATION = `http://${window.location.hostname}:3005/api/validate-word`;
+// const DEVELOPMENT = `${window.location.protocol}//${window.location.hostname}/api/get-words`;
+// const WORD_VALIDATION = `${window.location.protocol}//${window.location.hostname}/api/validate-word`;
 const VERSION = `1.0.0`;
 
 export const environment = {

@@ -55,7 +55,7 @@ export class SocialShareComponent implements OnInit {
   }
 
   async copyToClipboard() {
-    this.sharingText = `Meu desempenho no wordgame.com hoje: 
+    this.sharingText = `Meu desempenho no letrando.xyz hoje: 
 ✅ --> ${this.wordsStorage.success}
 ❌ --> ${this.wordsStorage.errors}
 Totalizando ${this.wordsStorage.score} pontos 💪
