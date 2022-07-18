@@ -151,6 +151,11 @@
   animation-duration: 2s;
 }
 
+.row-error-msg {
+  animation: shakeX;
+  animation-duration: 2s;
+}
+
 .hide {
   display: none !important;
 }

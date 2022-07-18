@@ -1,5 +1,5 @@
 import { OnInit, AfterViewInit, Component, ɵresetCompiledComponents } from '@angular/core';
-import { LoadingController, AlertController, ModalController, Platform } from '@ionic/angular';
+import { LoadingController, AlertController, ModalController, Platform, ToastController } from '@ionic/angular';
 import { modalController } from '@ionic/core';
 
 import { Words } from 'src/app/models/Words';
@@ -86,7 +86,7 @@ export class HomePage implements OnInit, AfterViewInit {
 
   public selectedSpace = false;
 
-  public startWithTest = true;
+  public startWithTest = false;
 // #endregion
 
   constructor(
@@ -94,7 +94,8 @@ export class HomePage implements OnInit, AfterViewInit {
     private service: DataService,
     private alertController: AlertController,
     public modalCtrl: ModalController,
-    public platform: Platform) {}
+    public platform: Platform,
+    public toastController: ToastController) {}
 
   async ngAfterViewInit() {
     if (this.startWithTest) {
@@ -393,6 +394,17 @@ export class HomePage implements OnInit, AfterViewInit {
   }
 
 // #region alerts and modals handle
+  async wrongMsgToast(msg) {
+    const toast = await this.toastController.create({
+      message: msg,
+      icon: 'alert-circle-outline',
+      position: 'top',
+      color: 'danger',
+      duration: 3000
+    });
+    toast.present();
+  }
+
   async showShareOptions() {
     const modal = await this.modalCtrl.create({
       component: SocialShareComponent,
@@ -568,7 +580,11 @@ export class HomePage implements OnInit, AfterViewInit {
     }
 
     if (currentWordArr.length < cleanedWord.split('').length) {
-      this.handleWrongMsg('A palavra deve ter', `${cleanedWord.length} letras`);
+      await this.wrongMsgToast(`A palavra deve ter ${cleanedWord.length} letras`);
+      document.getElementById(`board_try${this.actual}`).setAttribute('class', 'row-error-msg');
+      setTimeout(() => {
+        document.getElementById(`board_try${this.actual}`).classList.remove('row-error-msg');
+      }, 2000);
       return;
     }
 
@@ -578,7 +594,11 @@ export class HomePage implements OnInit, AfterViewInit {
     this.currentWord = currentWordArr.join('').toString().toLowerCase().trim();
     // eslint-disable-next-line max-len
     if(this.wordsStorage.attempts.filter(x => x.typed_word.toString().toLowerCase() === this.currentWord.toString().toLowerCase()).length > 0) {
-      this.handleWrongMsg('Erro!', 'Palavra já digitada!');
+      await this.wrongMsgToast(`Palavra já digitada`);
+      document.getElementById(`board_try${this.actual}`).setAttribute('class', 'row-error-msg');
+      setTimeout(() => {
+        document.getElementById(`board_try${this.actual}`).classList.remove('row-error-msg');
+      }, 2000);
       loading.dismiss();
       return;
     }
@@ -586,7 +606,11 @@ export class HomePage implements OnInit, AfterViewInit {
     const isWordValid = this.currentWord !== cleanedWord ? await this.wordValidation(this.currentWord) : true;
 
     if(!isWordValid) {
-      this.handleWrongMsg('Erro!', 'Palavra inválida!');
+      await this.wrongMsgToast(`Palavra inválida!`);
+      document.getElementById(`board_try${this.actual}`).setAttribute('class', 'row-error-msg');
+      setTimeout(() => {
+        document.getElementById(`board_try${this.actual}`).classList.remove('row-error-msg');
+      }, 2000);
       loading.dismiss();
       return;
     }
