@@ -27,6 +27,7 @@ export class SocialShareComponent implements OnInit {
   public average;
   public statusFirstRow: Array<Status>;
   public statusSecondRow: Array<Status>;
+  public statusThirdRow: Array<Status>;
 
   constructor(
     private modal: ModalController,
@@ -42,24 +43,31 @@ export class SocialShareComponent implements OnInit {
     (this.wordsStorage.average / (this.wordsStorage.success + this.wordsStorage.errors)).toFixed(2) :
     0;
 
-    console.log(this.wordsStorage.status.length);
-    if (this.wordsStorage.status.length > 4) {
-      this.statusFirstRow = this.wordsStorage.status.slice(0, 4);
+    if (this.wordsStorage.status.length > 3) {
+      this.statusFirstRow = this.wordsStorage.status.slice(0, 3);
       this.statusSecondRow = this.wordsStorage.status.slice(-(this.wordsStorage.status.length - 4));
+      if (this.wordsStorage.status.length === 7) {
+        this.statusSecondRow = this.wordsStorage.status.slice(-4);
+        this.statusSecondRow.pop();
+        this.statusThirdRow = this.wordsStorage.status.slice(-1);
+      } else {
+        this.statusThirdRow = [];
+      }
     } else {
       this.statusFirstRow = this.wordsStorage.status;
       this.statusSecondRow = [];
+      this.statusThirdRow = [];
     }
-
-    console.log(this.statusFirstRow.length);
   }
 
   async copyToClipboard() {
-    this.sharingText = `Meu desempenho no letrando.xyz hoje: 
+    this.sharingText = `Meu desempenho no Letrando hoje: 
 ✅ --> ${this.wordsStorage.success}
 ❌ --> ${this.wordsStorage.errors}
 Totalizando ${this.wordsStorage.score} pontos 💪
 e ${this.average} tentativas em média!!! 🔥
+
+https://letrando.xyz
 `;
 
     try {

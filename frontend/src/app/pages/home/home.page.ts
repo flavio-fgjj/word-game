@@ -66,6 +66,7 @@ export class HomePage implements OnInit, AfterViewInit {
 
   public errorPage = false;
   public alreadyStarted = false;
+  public areadyDone = false;
   public readyToGo = false;
   public auxValidation = false;
 
@@ -85,6 +86,7 @@ export class HomePage implements OnInit, AfterViewInit {
   public isMobilePlatform = false;
 
   public selectedSpace = false;
+  public hasSyn = true;
 
   public startWithTest = false;
 // #endregion
@@ -213,6 +215,7 @@ export class HomePage implements OnInit, AfterViewInit {
     if (this.wordsStorage) {
       if (this.wordsStorage.actual > 7) {
         this.showShareOptions();
+        this.areadyDone = true;
         return;
       }
       this.words = this.wordsStorage.words;
@@ -233,6 +236,11 @@ export class HomePage implements OnInit, AfterViewInit {
       this.score = this.wordsStorage.current_score;
       this.wordObj = this.words[this.wordsStorage.actual - 1];
 
+      // eslint-disable-next-line max-len
+      this.wordsStorage.meaning_already_seen = this.wordsStorage.meaning_already_seen !== undefined ? this.wordsStorage.meaning_already_seen : false;
+      this.wordsStorage.syn_already_seen = this.wordsStorage.syn_already_seen !== undefined ? this.wordsStorage.syn_already_seen : false;
+      // eslint-disable-next-line max-len
+      this.wordsStorage.phrase_already_seden = this.wordsStorage.phrase_already_seden !== undefined ? this.wordsStorage.phrase_already_seden : false;
       const loading = await this.loadingCtrl.create({ message: 'Iniciando...' });
       loading.present();
       await this.startSquare();
@@ -243,6 +251,7 @@ export class HomePage implements OnInit, AfterViewInit {
         }
         loading.dismiss();
         document.getElementById(`${String(this.availableSpace)}_try${this.actual}`).style.border = '3px solid black';
+        this.hasSyn = this.wordsStorage.words[this.wordsStorage.actual -1].synonyms.length > 0;
       }, 2000);
     } else {
       this.start();
@@ -463,22 +472,55 @@ export class HomePage implements OnInit, AfterViewInit {
 
 // #region scores handle
   fnMeaningSeen() {
-    if(this.alreadyStarted) {
+    if(this.alreadyStarted && !this.meaningSeen) {
       this.score -= ScoreEnum.meaning_already_seen;
+      this.wordsStorage.current_score -= ScoreEnum.meaning_already_seen;
+      this.wordsStorage.meaning_already_seen = true;
+      SecurityUtil.clear();
+      SecurityUtil.set(this.wordsStorage);
+      this.wordsStorage = new WordsStorage();
+      this.wordsStorage = SecurityUtil.get();
+      // eslint-disable-next-line max-len
+      this.wordsStorage.meaning_already_seen = this.wordsStorage.meaning_already_seen !== undefined ? this.wordsStorage.meaning_already_seen : false;
+      this.wordsStorage.syn_already_seen = this.wordsStorage.syn_already_seen !== undefined ? this.wordsStorage.syn_already_seen : false;
+      // eslint-disable-next-line max-len
+      this.wordsStorage.phrase_already_seden = this.wordsStorage.phrase_already_seden !== undefined ? this.wordsStorage.phrase_already_seden : false;
       this.meaningSeen = true;
     }
   }
 
   fnSynSeen() {
-    if(this.alreadyStarted) {
+    if(this.alreadyStarted && !this.wordsStorage.syn_already_seen) {
       this.score -= ScoreEnum.synonyms_already_seen;
+      this.wordsStorage.current_score -= ScoreEnum.synonyms_already_seen;
+      this.wordsStorage.syn_already_seen = true;
+      SecurityUtil.clear();
+      SecurityUtil.set(this.wordsStorage);
+      this.wordsStorage = new WordsStorage();
+      this.wordsStorage = SecurityUtil.get();
+      // eslint-disable-next-line max-len
+      this.wordsStorage.meaning_already_seen = this.wordsStorage.meaning_already_seen !== undefined ? this.wordsStorage.meaning_already_seen : false;
+      this.wordsStorage.syn_already_seen = this.wordsStorage.syn_already_seen !== undefined ? this.wordsStorage.syn_already_seen : false;
+      // eslint-disable-next-line max-len
+      this.wordsStorage.phrase_already_seden = this.wordsStorage.phrase_already_seden !== undefined ? this.wordsStorage.phrase_already_seden : false;
       this.synSeen = true;
     }
   }
 
   fnPhraseSeen() {
-    if(this.alreadyStarted) {
+    if(this.alreadyStarted && !this.wordsStorage.phrase_already_seden) {
       this.score -= ScoreEnum.phrase_already_seen;
+      this.wordsStorage.current_score -= ScoreEnum.phrase_already_seen;
+      this.wordsStorage.phrase_already_seden = true;
+      SecurityUtil.clear();
+      SecurityUtil.set(this.wordsStorage);
+      this.wordsStorage = new WordsStorage();
+      this.wordsStorage = SecurityUtil.get();
+      // eslint-disable-next-line max-len
+      this.wordsStorage.meaning_already_seen = this.wordsStorage.meaning_already_seen !== undefined ? this.wordsStorage.meaning_already_seen : false;
+      this.wordsStorage.syn_already_seen = this.wordsStorage.syn_already_seen !== undefined ? this.wordsStorage.syn_already_seen : false;
+      // eslint-disable-next-line max-len
+      this.wordsStorage.phrase_already_seden = this.wordsStorage.phrase_already_seden !== undefined ? this.wordsStorage.phrase_already_seden : false;
       this.phraseSeen = true;
     }
   }
@@ -659,6 +701,10 @@ export class HomePage implements OnInit, AfterViewInit {
       st.status = 'success';
       st.word = this.word;
       this.wordsStorage.status.push(st);
+      this.wordsStorage.current_score = 5;
+      this.wordsStorage.meaning_already_seen = false;
+      this.wordsStorage.syn_already_seen = false;
+      this.wordsStorage.phrase_already_seden = false;
       SecurityUtil.clear();
       SecurityUtil.set(this.wordsStorage);
 
@@ -678,6 +724,10 @@ export class HomePage implements OnInit, AfterViewInit {
         st.status = 'fail';
         st.word = this.word;
         this.wordsStorage.status.push(st);
+        this.wordsStorage.current_score = 5;
+        this.wordsStorage.meaning_already_seen = false;
+        this.wordsStorage.syn_already_seen = false;
+        this.wordsStorage.phrase_already_seden = false;
         SecurityUtil.clear();
         SecurityUtil.set(this.wordsStorage);
 

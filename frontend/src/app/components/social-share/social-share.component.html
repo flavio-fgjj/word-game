@@ -2,9 +2,9 @@
   <div no-margin margin-top class="feedbackCard">
     <div id="clipboard">
       <div class="custom-border">
-        <h2>PERFORMANCE</h2>
-        <p>Letrando</p>
-        <a href="https://letrando.xyz" style="text-decoration: none">https://letrando.xyz</a>
+        <h2 style="color:white">PERFORMANCE</h2>
+        <span style="color:white">Letrando</span>
+        <!-- <a href="https://letrando.xyz" style="text-decoration: none">Letrando</a> -->
         <ion-item-divider style="margin-top:20px;"></ion-item-divider>
         <div class="performance">
           <b>{{wordsStorage.score}}</b>
@@ -25,21 +25,28 @@
           <p>MÉDIA DE TENTATIVAS</p>
           <ion-label><ion-icon name="ellipse" color="warning" style="padding: 5px; margin-bottom: 2px;"></ion-icon></ion-label>
         </div>
-        <ion-grid *ngIf="statusFirstRow.length > 0">
-          <ion-row>
+        <ion-grid >
+          <ion-row *ngIf="statusFirstRow.length > 0">
             <ion-col *ngFor="let w of statusFirstRow">
-              <p>
+              <p style="color:white">
                 {{w.word }}
                 <span *ngIf="w.status === 'success'">✅</span>
                 <span *ngIf="w.status === 'fail'">❌</span>
               </p>
             </ion-col>
           </ion-row>
-        </ion-grid>
-        <ion-grid *ngIf="statusSecondRow.length > 0">
-          <ion-row>
+          <ion-row *ngIf="statusSecondRow.length > 0">
             <ion-col *ngFor="let w of statusSecondRow">
-              <p>
+              <p style="color:white">
+                {{w.word }}
+                <span *ngIf="w.status === 'success'">✅</span>
+                <span *ngIf="w.status === 'fail'">❌</span>
+              </p>
+            </ion-col>
+          </ion-row>
+          <ion-row *ngIf="statusThirdRow.length > 0">
+            <ion-col *ngFor="let w of statusThirdRow">
+              <p style="color:white">
                 {{w.word }}
                 <span *ngIf="w.status === 'success'">✅</span>
                 <span *ngIf="w.status === 'fail'">❌</span>
@@ -47,20 +54,13 @@
             </ion-col>
           </ion-row>
         </ion-grid>
-        <!-- <div class="words" *ngIf="wordsStorage.status.length > 0">
-          <p *ngFor="let w of wordsStorage.status">
-            {{w.word }}
-            <span *ngIf="w.status === 'success'">✅</span>
-            <span *ngIf="w.status === 'fail'">❌</span>
-          </p>
-        </div> -->
         <ion-item-divider></ion-item-divider>
         <br><br>
       </div>
     </div>
     <div class="footer">
       <div *ngFor="let item of sharingList" class="logoList">
-        <ion-img class="socialLogo" [src]="item['logo']" style="width: 50px; height: 50px;"></ion-img>
+        <ion-img class="socialLogo" [src]="item['logo']" style="width: 40px; height: 40px;"></ion-img>
       </div>
     </div>
     <ion-button class="btn" (click)="copyToClipboard()">

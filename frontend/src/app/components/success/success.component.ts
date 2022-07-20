@@ -20,6 +20,8 @@ export class SuccessComponent implements OnInit, OnDestroy {
   public wordsStorage: WordsStorage;
   public congratsWord: string = null;
 
+  public buttonTitle: string = null;
+
   constructor(private modal: ModalController) { }
 
   ngOnDestroy(): void {
@@ -41,6 +43,12 @@ export class SuccessComponent implements OnInit, OnDestroy {
       }
     } else {
       this.congratsWord = 'NÃO FOI DESSA VEZ';
+    }
+
+    if(this.wordsStorage.status.length < 7) {
+      this.buttonTitle = 'Próxima Palavra';
+    } else {
+      this.buttonTitle = 'Ver Resultado';
     }
   }
 

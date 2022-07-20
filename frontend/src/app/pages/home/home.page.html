@@ -37,70 +37,70 @@
         </ion-toolbar>
       </ion-header>
       <ion-content>
-        <ion-accordion-group>
-          <ion-accordion>
-            <ion-item slot="header">
-              <ion-label style="color:#fff !important">Significado</ion-label>
-            </ion-item>
-            <ion-list slot="content">
-              <ion-item>
-                <ion-card>
-                  <ion-card-header>
-                    <ion-card-subtitle style="color:#fff !important">{{grammaticalClass}}</ion-card-subtitle>
-                    <ion-card-title *ngIf="!meaningSeen">
-                      <ion-chip outline color="warning" (click)="fnMeaningSeen()">
-                        <ion-icon name="eye-outline" style="padding-right: 10px;"></ion-icon>
-                      </ion-chip>
-                    </ion-card-title>
-                  </ion-card-header>
+        <ion-card style="width: inherit !important;">
+          <ion-item style="color:#fff !important" (click)="fnMeaningSeen()">
+            <ion-label>Ver Significado: -1 ponto</ion-label>
+            <ion-button fill="outline" slot="end"><ion-icon name="eye-outline"></ion-icon></ion-button>
+          </ion-item>
 
-                  <ion-card-content *ngIf="meaningSeen" style="text-align: center;color:#fff !important">
-                    {{meaning}}
-                  </ion-card-content>
-                </ion-card>
-              </ion-item>
-            </ion-list>
-          </ion-accordion>
+          <ion-card-content *ngIf="wordsStorage.meaning_already_seen" style="text-align: center;color:#fff !important">
+            {{meaning}}
+          </ion-card-content>
+        </ion-card>
+        <ion-card style="width: inherit !important;" *ngIf="hasSyn">
+          <ion-item style="color:#fff !important" (click)="fnSynSeen()">
+            <ion-label>Ver Sinônimos: -1.5 pontos</ion-label>
+            <ion-button fill="outline" slot="end"><ion-icon name="eye-outline"></ion-icon></ion-button>
+          </ion-item>
 
-          <ion-accordion>
-            <ion-item slot="header">
-              <ion-label style="color:#fff !important">Sinônimos/Antônimos</ion-label>
-            </ion-item>
-            <ion-list slot="content">
-              <ion-item>
-                <ion-card>
-                  <ion-card-header>
-                    <ion-card-title *ngIf="!synSeen">
-                      <ion-chip outline color="warning" (click)="fnSynSeen()">
-                        <ion-icon name="eye-outline" style="padding-right: 10px;"></ion-icon>
-                      </ion-chip>
-                    </ion-card-title>
-                  </ion-card-header>
-                  <ion-card-content *ngIf="synSeen">
-                    <ul style="color:#fff !important">
-                      <li>Sinônimos</li>
-                      <ol *ngFor="let s of syn">
-                        {{s}}
-                      </ol>
-                      <li>Antônimos</li>
-                      <ol *ngFor="let s of ant">
-                        {{s}}
-                      </ol>
-                    </ul>
-                  </ion-card-content>
-                </ion-card>
-              </ion-item>
-            </ion-list>
-          </ion-accordion>
-        </ion-accordion-group>
+          <ion-card-content *ngIf="wordsStorage.syn_already_seen">
+            <ul style="color:#fff !important">
+              <li>Sinônimos</li>
+              <ol *ngFor="let s of syn">
+                {{s}}
+              </ol>
+              <li>Antônimos</li>
+              <ol *ngFor="let s of ant">
+                {{s}}
+              </ol>
+            </ul>
+          </ion-card-content>
+        </ion-card>
       </ion-content>
     </ng-template>
   </ion-modal>
 
-  <div id="container" style="padding-right:8px;">
+  <div id="container"  >
     <div id="board-container">
       <div class="pageError" *ngIf="errorPage && !alreadyStarted">
         <ion-label color="light"><ion-icon name="warning-outline" color="danger"></ion-icon><br>Estamos enfrentando problemas! <br><br>Favor tentar mais tarde! <br><br>Desculpe o transtorno!</ion-label>
+      </div>
+
+      <div class="alreadyDone" *ngIf="areadyDone">
+        <ion-grid>
+          <ion-row>
+            <ion-col size="12">
+              <h2>Seu resultado de hoje!</h2>
+              <h4>{{wordsStorage.score}} Pontos</h4>
+            </ion-col>
+          </ion-row>
+          <ion-row *ngFor="let w of wordsStorage.words; let i = index">
+            <ion-col size="8" style="text-align: left;">
+              <ion-label>{{w.word}}</ion-label>
+            </ion-col>
+            <ion-col size="4" style="text-align: right;">
+              <ion-label name="checkmark-done-outline" *ngIf="wordsStorage.status[i].status === 'success'">✅</ion-label>
+              <ion-label name="checkmark-done-outline" *ngIf="wordsStorage.status[i].status !== 'success'">❌</ion-label>
+            </ion-col>
+          </ion-row>
+          <ion-row style="margin-top: 8px;">
+            <ion-col size="12">
+              <ion-button class="btn" (click)="showShareOptions()">
+                Compartilhe <ion-icon name="share-social-outline" style="padding-left:5px;padding-top:2px;"></ion-icon>
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
       </div>
 
       <div *ngIf="!errorPage && alreadyStarted">
@@ -119,7 +119,7 @@
     </div>
   </div>
 
-  <div id="keyboard-container">
+  <div id="keyboard-container" *ngIf="!areadyDone">
     <div class="keyboard-row">
         <button *ngFor="let first of keyboardFirstRow" id="{{first}}" (click)="updateGuessedWords($event)" style="position: relative;">{{first}}<span class="badge" id="{{first}}_badge"></span></button>
     </div>
@@ -147,7 +147,7 @@
           </ion-chip>
           <span style="margin-left: 8px; color: #fff !important">🏆 {{ totalScore }}</span>
           <ion-chip id="triggerHelp" outline color="warning" style="float: right; margin-right:5px;" data-toggle="tooltip" data-placement="bottom" title="Ajuda">
-            AJUDA
+            Obter Ajuda
             <ion-icon name="help-circle-outline" style="margin-left:5px;"></ion-icon>
           </ion-chip>
         </ion-col>
