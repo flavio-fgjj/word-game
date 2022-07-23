@@ -16,7 +16,6 @@ import { SuccessComponent } from 'src/app/components/success/success.component';
 import { Status } from 'src/app/models/Status';
 import { ScoreEnum } from './handles/score.handle';
 
-
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',

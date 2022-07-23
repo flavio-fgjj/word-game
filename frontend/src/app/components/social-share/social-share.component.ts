@@ -60,6 +60,54 @@ export class SocialShareComponent implements OnInit {
     }
   }
 
+  async toCanvas() {
+    // const image = document.querySelector('#capture')[0];
+
+    // const canvas = document.createElement('canvas');
+    // canvas.width = image.naturalWidth;
+    // canvas.height = image.naturalHeight;
+    // const context = canvas.getContext('2d');
+    // context.drawImage(image, 0, 0);
+
+    // canvas.toBlob(blob => {
+    //   navigator.clipboard.write([
+    //     new ClipboardItem({
+    //       [blob.type]: blob
+    //     })
+    //   ]).then(() => {
+    //     console.log('Copied');
+    //   });
+    // });
+
+    // html2canvas(document.querySelector('#capture')).then(canvas => {
+    //   document.body.appendChild(canvas);
+
+    //   let newI: Blob;
+    //   canvas.toBlob(blob => {
+    //     const newImg = document.createElement('img');
+    //     const url = URL.createObjectURL(blob);
+
+    //     newImg.onload = () => {
+    //       URL.revokeObjectURL(url);
+    //     };
+
+    //     newI =;
+    //     newImg.src = url;
+    //     document.body.appendChild(newImg);
+    //   });
+
+    //   try {
+    //     navigator.clipboard.write([
+    //         new ClipboardItem({
+    //             'image/png': b
+    //         })
+    //     ]);
+    // } catch (error) {
+    //     console.error(error);
+    // }
+    // });
+  }
+
   async copyToClipboard() {
     this.sharingText = `Meu desempenho no Letrando hoje: 
 ✅ --> ${this.wordsStorage.success}

@@ -63,6 +63,12 @@
         <ion-img class="socialLogo" [src]="item['logo']" style="width: 40px; height: 40px;"></ion-img>
       </div>
     </div>
+    
+    <div id="capture" style="padding: 10px; background: #f5da55">
+      <h4 style="color: #000; ">Hello world!</h4>
+    </div>
+    <button type="button" class="btn btn-outline-primary" (click)="shareCustomImage()">To Canvas</button>
+
     <ion-button class="btn" (click)="copyToClipboard()">
       Compartilhe <ion-icon name="share-social-outline" style="padding-left:5px;padding-top:2px;"></ion-icon>
     </ion-button>
